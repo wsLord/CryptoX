@@ -1,11 +1,9 @@
 const express = require("express");
 
 const app = express();
-
 const mainRouter = require('./routes/mainRouter');
-
 const port = 5000;
-
+const db = require('./config/mongoose')
 app.use('/', mainRouter);
 
 app.listen(port, (err) => {
