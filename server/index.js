@@ -10,6 +10,20 @@ const db = require('./config/mongoose')
 
 app.use('/', mainRouter);
 
+app.use((req, res, next) => {
+  const error = new Error('Could not find this route.');
+  throw error;
+});
+
+// Handling error
+app.use((error, req, res, next) => {
+  if (res.headerSent) {
+    return next(error);
+  }
+  res.status(error.code || 500);
+  res.json({ message: error.message || 'An unknown error occurred!' });
+});
+
 app.listen(port, (err) => {
 	if(err){
 		console.log(`Error in running the server:${err}`);
