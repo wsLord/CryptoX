@@ -1,4 +1,5 @@
 const { validationResult } = require("express-validator");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 require('dotenv').config();
 
@@ -104,8 +105,8 @@ const login = async (req, res, next) => {
 
 	res.status(201).json({
 		message: "Logged in!",
-		userId: createdUser.id,
-		email: createdUser.email,
+		userId: existingUser.id,
+		email: existingUser.email,
 		token: token,
 	});
 };
