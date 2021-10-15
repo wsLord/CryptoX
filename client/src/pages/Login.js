@@ -5,7 +5,8 @@ import Alert from "../shared/components/Alert";
 import LoadingSpinner from "../shared/components/UIElements/LoadingSpinner";
 
 const Login = (props) => {
-	const [isLoading, setIsLoading] = useState(true);
+	const [isLoading, setIsLoading] = useState(false);
+	// const [error, setError] = useState("baat hai");
 
 	const loginHandler = async (event) => {
 		event.preventDefault();
@@ -27,6 +28,10 @@ const Login = (props) => {
 		// 	auth.login(responseData.user.id);
 		// } catch (err) {}
 	};
+
+	// const clearError = () => {
+	// 	setError(null);
+	// }
 
 	return (
 		<Fragment>

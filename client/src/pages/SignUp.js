@@ -7,6 +7,7 @@ import LoadingSpinner from "../shared/components/UIElements/LoadingSpinner";
 
 const SignUp = (props) => {
 	const [isLoading, setIsLoading] = useState(false);
+	// const [error, setError] = useState(null);
 
 	const signupHandler = async (event) => {
 		event.preventDefault();
@@ -30,6 +31,10 @@ const SignUp = (props) => {
 		// 	auth.login(responseData.user.id);
 		// } catch (err) {}
 	};
+
+	// const clearError = () => {
+	// 	setError(null);
+	// }
 
 	return (
 		<div>
