@@ -4,7 +4,7 @@ const { check } = require("express-validator");
 const router = express.Router();
 const usersController = require("../controllers/usersController");
 
-router.get("/profile", usersController.profile);
+// router.get("/profile", usersController.profile);
 
 router.post(
 	"/signup",

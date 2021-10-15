@@ -1,4 +1,6 @@
 const { validationResult } = require("express-validator");
+const jwt = require("jsonwebtoken");
+require('dotenv').config();
 
 const User = require("../models/user");
 
@@ -43,7 +45,25 @@ const signup = async (req, res, next) => {
 		return next(new Error("Signing up failed, please try again later."));
 	}
 
-	res.status(201).json({ user: createdUser.toObject({ getters: true }) });
+	let token;
+	try {
+		token = jwt.sign(
+			{ userId: createdUser.id, email: createdUser.email },
+			process.env.JWT_PRIVATE_KEY,
+			{ expiresIn: "1h" }
+		);
+	} catch (err) {
+		return next(new Error("User Registered! Failed to log in."));
+	}
+
+	res
+		.status(201)
+		.json({
+			message: "Logged in!",
+			userId: createdUser.id,
+			email: createdUser.email,
+			token: token,
+		});
 };
 
 const login = async (req, res, next) => {
@@ -53,30 +73,42 @@ const login = async (req, res, next) => {
 	try {
 		existingUser = await User.findOne({ email: email });
 	} catch (err) {
-		const error = new HttpError(
-			"Loggin in failed, please try again later.",
-			500
-		);
-		return next(error);
+		return next(new Error("Loggin in failed, please try again later."));
 	}
 
-	if (!existingUser || existingUser.password !== password) {
-		const error = new HttpError(
-			"Invalid credentials, could not log you in.",
-			401
-		);
-		return next(error);
+	if (!existingUser) {
+		return next(new Error("Invalid credentials, no such user found."));
 	}
 
-	res.json({
+	let isValidPassword = false;
+	try {
+		isValidPassword = await bcrypt.compare(password, existingUser.password);
+	} catch (err) {
+		return next(new Error("Cannot login, please try again."));
+	}
+
+	if (!isValidPassword) {
+		return next(new Error("Invalid credentials, could not log you in."));
+	}
+
+	let token;
+	try {
+		token = jwt.sign(
+			{ userId: existingUser.id, email: existingUser.email },
+			process.env.JWT_PRIVATE_KEY,
+			{ expiresIn: "1h" }
+		);
+	} catch (err) {
+		return next(new Error("User Registered! Failed to log in."));
+	}
+
+	res.status(201).json({
 		message: "Logged in!",
-		user: existingUser.toObject({ getters: true }),
+		userId: createdUser.id,
+		email: createdUser.email,
+		token: token,
 	});
 };
-
-// module.exports.profile = (req,res)=>{
-//     return res.end('<h1>User Profile</h1>');
-// }
 
 exports.signup = signup;
 exports.login = login;
