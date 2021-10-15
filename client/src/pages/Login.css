@@ -1,0 +1,37 @@
+.login
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: left;
+    background-color: black;
+}
+#loginform
+{
+    padding: 39px;
+    margin: 34px;
+    font-size: 22px;
+    background-color: white;
+}
+#title
+{
+    padding-bottom: 30px;
+}
+.form-control
+{
+    font-size: 20px;
+}
+.reg
+{
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content:center;
+    align-items: center;
+    font-size: 17px;
+}
+.nav-link:hover
+{
+    color: gray;
+}

@@ -1,0 +1,17 @@
+#signupform
+{
+    padding: 80px;
+    font-size: 18px;
+    background-color: white;
+    margin: 34px;
+}
+#password
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+#password .mb-3
+{
+    margin: 1px;
+}

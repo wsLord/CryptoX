@@ -1,8 +1,13 @@
-function App() {
+// import { Fragment } from "react";
+
+import Home from "./Home/pages/Home";
+import "./App.css"
+
+const App = () => {
   return (
-    <div>
-      <h2>Let's get started!</h2>
-    </div>
+    <div className="App">
+			<Home />
+		</div>
   );
 }
 

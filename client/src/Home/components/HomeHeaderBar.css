@@ -1,0 +1,41 @@
+.nav-link
+{
+    font-size: 20px;
+}
+.img-fluid
+{
+    width: 200%;
+}
+.d-flex
+{
+    margin: 100px;
+}
+.card
+{
+    width: 400px;
+}
+.card p
+{
+    color: gray;
+    font-size: 19px;
+}
+.card-body .fa{
+    font-size: 50px;
+    text-align: center;
+    margin: 10px;
+    color: black;
+}
+.navbar-brand
+{
+    font-size: 35px;
+    font-weight: bold;
+}
+#toplink:hover
+{
+    color: gray;
+}
+#getStarted
+{
+    margin-bottom: 20px;
+    font-size: 22px;
+}
