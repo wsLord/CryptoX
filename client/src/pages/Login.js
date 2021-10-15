@@ -1,14 +1,44 @@
-import React, { Fragment } from "react";
+import { Fragment, useState } from "react";
 import "./Login.css";
 import { Link } from "react-router-dom";
 import Alert from "../shared/components/Alert";
+import LoadingSpinner from "../shared/components/UIElements/LoadingSpinner";
 
 const Login = (props) => {
+	const [isLoading, setIsLoading] = useState(true);
+
+	const loginHandler = async (event) => {
+		event.preventDefault();
+
+		console.log(event);
+
+		// try {
+		// 	const responseData = await sendRequest(
+		// 		"http://localhost:5000/api/users/login",
+		// 		"POST",
+		// 		JSON.stringify({
+		// 			email: formState.inputs.email.value,
+		// 			password: formState.inputs.password.value,
+		// 		}),
+		// 		{
+		// 			"Content-Type": "application/json",
+		// 		}
+		// 	);
+		// 	auth.login(responseData.user.id);
+		// } catch (err) {}
+	};
+
 	return (
 		<Fragment>
+			{/* <ErrorModal error={error} onClear={clearError} /> */}
 			{props.ismsg && <Alert msg={props.msg} />}
 			<div className="login">
-				<form className="border border-dark rounded" id="loginform">
+				{isLoading && <LoadingSpinner asOverlay />}
+				<form
+					className="border border-dark rounded"
+					id="loginform"
+					onSubmit={loginHandler}
+				>
 					<h2 className="text-center" id="title">
 						Login to CryptoX
 					</h2>

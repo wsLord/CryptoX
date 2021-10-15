@@ -1,15 +1,47 @@
-import React from "react";
+import { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 
 import "./SignUp.css";
 import Alert from "../shared/components/Alert";
+import LoadingSpinner from "../shared/components/UIElements/LoadingSpinner";
 
 const SignUp = (props) => {
+	const [isLoading, setIsLoading] = useState(false);
+
+	const signupHandler = async (event) => {
+		event.preventDefault();
+
+		console.log(event);
+
+		// try {
+		// 	const responseData = await sendRequest(
+		// 		"http://localhost:5000/users/signup",
+		// 		"POST",
+		// 		JSON.stringify({
+		// 			name: formState.inputs.name.value,
+		// 			email: formState.inputs.email.value,
+		// 			password: formState.inputs.password.value,
+		// 		}),
+		// 		{
+		// 			"Content-Type": "application/json",
+		// 		}
+		// 	);
+
+		// 	auth.login(responseData.user.id);
+		// } catch (err) {}
+	};
+
 	return (
 		<div>
 			{props.ismsg && <Alert msg={props.msg} />}
+			{/* <ErrorModal error={error} onClear={clearError} /> */}
 			<div className="login" id="signup">
-				<form className="border border-dark rounded" id="signupform">
+				{isLoading && <LoadingSpinner asOverlay />}
+				<form
+					className="border border-dark rounded"
+					id="signupform"
+					onSubmit={signupHandler}
+				>
 					<h2 className="text-center" id="title">
 						Signup to CryptoX
 					</h2>
