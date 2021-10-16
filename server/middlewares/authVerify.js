@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-module.exports = (req, res, next) => {
+module.exports.verify = (req, res, next) => {
 	if (req.method === "OPTIONS") {
 		return next();
 	}
@@ -12,7 +12,7 @@ module.exports = (req, res, next) => {
 			throw new Error("Authentication failed!");
 		}
 		const decodedToken = jwt.verify(token, process.env.JWT_PRIVATE_KEY);
-		req.userData = { userId: decodedToken.userId };
+		req.userData={ userId: decodedToken.userId };
 		next();
 	} catch (err) {
 		const error = new Error("Authentication failed!");

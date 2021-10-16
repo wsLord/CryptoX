@@ -8,15 +8,15 @@ const portfolioSchema=new mongoose.Schema({
 
     coinsOwned: [{
         coidId: {
-            type:string,
+            type:String,
             required: true
         },
         quantity: {
-            type: Integer,
+            type: String,
             required: true
         },
         priceOfBuy: {
-            type: Double,
+            type: String,
             required: true
         }
     }]

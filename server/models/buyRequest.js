@@ -14,14 +14,14 @@ const buyRequestSchema=new mongoose.Schema({
         required :true
     },
     mode: {
-        
-            type:String,
-            required :true
+        type:String,//1 means limit order from the main market and 2 means limit order from the user in the app itself
+        required :true
         
         
     },
-    price: {
-        
+    maxPrice: {
+        type:String,
+        required :true
     }
 
   
