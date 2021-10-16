@@ -1,6 +1,7 @@
 import { Fragment, useState, useRef } from "react";
-import "./Login.css";
 import { Link } from "react-router-dom";
+
+import "./Login.css";
 import Alert from "../shared/components/Alert";
 import LoadingSpinner from "../shared/components/UIElements/LoadingSpinner";
 
@@ -121,9 +122,9 @@ const Login = (props) => {
 						<Link to="/signup" className="nav-link active">
 							Not registered yet? Register
 						</Link>
-						<a href="/" className="nav-link active">
+						<Link to="/forgotpassword" className="nav-link active">
 							Forgot Password
-						</a>
+						</Link>
 					</div>
 				</form>
 			</div>

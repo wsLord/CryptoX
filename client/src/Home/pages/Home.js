@@ -6,6 +6,7 @@ import HeaderBar from "../components/HomeHeaderBar";
 import HomeBody from "./HomeBody";
 import Login from "../../pages/Login";
 import SignUp from "../../pages/SignUp";
+import ForgotPassword from "../../pages/ForgotPassword";
 
 const Home = () => {
 	return (
@@ -20,6 +21,9 @@ const Home = () => {
 				</Route>
 				<Route exact path="/signup">
 					<SignUp ismsg={false} msg={""} />
+				</Route>
+				<Route exact path="/forgotpassword">
+					<ForgotPassword />
 				</Route>
 			</Switch>
 			<Footer />

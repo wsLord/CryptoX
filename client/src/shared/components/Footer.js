@@ -20,7 +20,7 @@ const Footer = () => {
 				</div>
 				<div className="footer-copyright text-center py-3">
 					© 2k21 Copyright:
-					<Link to="/">
+					<Link to="/" className={styles["footer-link"]}>
 						CryptoX.com
 					</Link>
 				</div>
