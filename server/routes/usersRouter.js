@@ -2,7 +2,8 @@ const express = require("express");
 const { check } = require("express-validator");
 
 const router = express.Router();
-const usersController = require("../controllers/usersController");
+const signupController = require("../controllers/signupController");
+const loginController = require("../controllers/loginController");
 
 // router.get("/profile", usersController.profile);
 
@@ -14,9 +15,9 @@ router.post(
 		check("mobile").isLength({ min: 10, max: 10 }),
 		check("password").isLength({ min: 6 })
 	],
-	usersController.signup
+	signupController
 );
 
-router.post("/login", usersController.login);
+router.post("/login", loginController);
 
 module.exports = router;
