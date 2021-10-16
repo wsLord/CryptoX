@@ -1,32 +1,56 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState, useRef } from "react";
 import "./Login.css";
 import { Link } from "react-router-dom";
 import Alert from "../shared/components/Alert";
 import LoadingSpinner from "../shared/components/UIElements/LoadingSpinner";
 
 const Login = (props) => {
+	const inputRefEmail = useRef();
+	const inputRefPassword = useRef();
+
 	const [isLoading, setIsLoading] = useState(false);
 	// const [error, setError] = useState("baat hai");
 
 	const loginHandler = async (event) => {
 		event.preventDefault();
+		setIsLoading(true);
 
-		console.log(event);
+		const enteredEmail = inputRefEmail.current.value;
+		const enteredPassword = inputRefPassword.current.value;
 
-		// try {
-		// 	const responseData = await sendRequest(
-		// 		"http://localhost:5000/api/users/login",
-		// 		"POST",
-		// 		JSON.stringify({
-		// 			email: formState.inputs.email.value,
-		// 			password: formState.inputs.password.value,
-		// 		}),
-		// 		{
-		// 			"Content-Type": "application/json",
-		// 		}
-		// 	);
-		// 	auth.login(responseData.user.id);
-		// } catch (err) {}
+		try {
+			const res = await fetch(
+				`${process.env.REACT_APP_SERVER_URL}/user/login`,
+				{
+					method: "POST",
+					body: JSON.stringify({
+						email: enteredEmail,
+						password: enteredPassword
+					}),
+					headers: {
+						"Content-Type": "application/json"
+					}
+				}
+			);
+
+			const responseData = await res.json();
+
+			setIsLoading(false);
+			if(res.ok) {
+				// logged in
+				
+				console.log(responseData);
+
+			}
+			else {
+				console.log(responseData.message);
+			}
+
+			// auth.login(responseData.user.id);
+		} catch (err) {
+			setIsLoading(false);
+			console.log(err);
+		}
 	};
 
 	// const clearError = () => {
@@ -56,6 +80,7 @@ const Login = (props) => {
 							className="form-control"
 							id="email"
 							aria-describedby="emailHelp"
+							ref={inputRefEmail}
 							required
 						/>
 						<div id="emailHelp" className="form-text">
@@ -70,6 +95,7 @@ const Login = (props) => {
 							type="password"
 							className="form-control"
 							id="password"
+							ref={inputRefPassword}
 							required
 						/>
 					</div>

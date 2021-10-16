@@ -60,7 +60,7 @@ const signup = async (req, res, next) => {
 	res
 		.status(201)
 		.json({
-			message: "Logged in!",
+			message: "Registered & Logged in!",
 			userId: createdUser.id,
 			email: createdUser.email,
 			token: token,

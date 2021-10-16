@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 import "./SignUp.css";
@@ -34,7 +34,8 @@ const SignUp = (props) => {
 						name: enteredName,
 						email: enteredEmail,
 						password: enteredPassword,
-						mobile: enteredMobile
+						mobile: enteredMobile,
+						referral: enteredReferralCode
 					}),
 					headers: {
 						"Content-Type": "application/json"
@@ -129,7 +130,7 @@ const SignUp = (props) => {
 							<input
 								type="password"
 								className="form-control"
-								id="password"
+								id="confirm-password"
 								required
 							/>
 						</div>
