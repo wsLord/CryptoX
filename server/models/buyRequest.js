@@ -8,7 +8,7 @@ const buyRequestSchema=new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref: 'Wallet'
     },
-    //include the ids of comments in an array
+    //comment 
     quantity: {
         type:Integer,
         required :true
