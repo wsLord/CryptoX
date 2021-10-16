@@ -1,9 +1,10 @@
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-require('dotenv').config();
+require("dotenv").config();
 
 const User = require("../models/user");
+const emailVerifyTokenSender = require("../middlewares/emailToken");
 
 const loginController = async (req, res, next) => {
 	const { email, password } = req.body;
@@ -28,6 +29,22 @@ const loginController = async (req, res, next) => {
 
 	if (!isValidPassword) {
 		return next(new Error("Invalid credentials, could not log you in."));
+	}
+
+	let info;
+	if (!existingUser.isVerified) {
+		try {
+			//Mail Verification
+			info = await emailVerifyTokenSender(existingUser, req.headers.host);
+		} catch (err) {
+			console.log(err);
+		}
+		return next(
+			new Error(
+				"E-mail ID not verified! Check your mailbox and try again." +
+					info.messageId
+			)
+		);
 	}
 
 	let token;
