@@ -5,6 +5,7 @@ import './header.css'
 import CryptoList from '../Trade/CryptoList';
 import Portfolio from '../Portfolio/Portfolio';
 import Watchlist from '../Watchlist/Watchlist';
+import Dashboard from './dashboard';
 
 export default function Header() {
     return (
@@ -42,6 +43,9 @@ export default function Header() {
                 </nav>
             </div>
             <Switch>
+                <Route exact path="/">
+                    <Dashboard username="Sanskar jain" isverified={false}/>
+                </Route>
                 <Route exact path="/list">
                     <CryptoList />
                 </Route>
