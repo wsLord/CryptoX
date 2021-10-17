@@ -106,16 +106,15 @@ module.exports.sell= async(req,res)=>{
         let WalletOfUser=await Wallet.findById(user.walletId);
         WalletOfUser.balance=newBalance.toString();
         await WalletOfUser.save();
-
+        res.redirect('back');
     }
     else{
         console.log('the transaction is not possible');
         res.redirect('back');
     }
 
-
     
-    await portfolioOfUser.save()
+    
 
 
 }
