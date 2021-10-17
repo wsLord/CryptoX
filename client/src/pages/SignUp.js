@@ -46,9 +46,9 @@ const SignUp = (props) => {
 			const responseData = await res.json();
 
 			setIsLoading(false);
-			if(res.ok) {
+			if (res.ok) {
 				// logged in
-				
+
 				console.log(responseData);
 
 			}
@@ -66,6 +66,49 @@ const SignUp = (props) => {
 	// const clearError = () => {
 	// 	setError(null);
 	// }
+
+	const [check, setcheck] = useState({
+		pass: "",
+		confirmpass: ""
+	});
+
+	const [Style, setStyle] = useState({
+		backgroundColor: ""
+	})
+
+	let handlepassword = (event) => {
+		console.log("-->",event.target.value);
+		setcheck({
+			pass: event.target.value,
+			confirmpass: check.confirmpass
+		})
+		if (check.confirmpass !== event.target.value) {
+			setStyle({
+				backgroundColor: "lightcoral"
+			})
+		}
+		else {
+			setStyle({
+				backgroundColor: "lightgreen"
+			})
+		}
+	}
+	let handlechange = (event) => {
+		setcheck({
+			confirmpass: event.target.value,
+			pass: check.pass
+		})
+		if (event.target.value !== check.pass) {
+			setStyle({
+				backgroundColor: "lightcoral"
+			})
+		}
+		else {
+			setStyle({
+				backgroundColor: "lightgreen"
+			})
+		}
+	}
 
 	return (
 		<div>
@@ -115,22 +158,26 @@ const SignUp = (props) => {
 								Password
 							</label>
 							<input
+								style={Style}
 								type="password"
 								className="form-control"
 								id="password"
 								ref={inputRefPassword}
 								minLength={6}
+								onInput={handlepassword}
 								required
 							/>
 						</div>
 						<div className="mb-3">
-							<label for="password" className="form-label">
+							<label for="confirm-password" className="form-label">
 								Confirm Password
 							</label>
 							<input
+								style={Style}
 								type="password"
 								className="form-control"
 								id="confirm-password"
+								onInput={handlechange}
 								required
 							/>
 						</div>
@@ -151,13 +198,6 @@ const SignUp = (props) => {
 						Referral Code (Optional)
 					</label>
 					<div className="input-group mb-3">
-						<div className="input-group-text">
-							<input
-								className="form-check-input mt-0"
-								type="checkbox"
-								value=""
-							/>
-						</div>
 						<input
 							type="text"
 							className="form-control"
@@ -170,6 +210,11 @@ const SignUp = (props) => {
 							<strong>SIGNUP </strong>
 							<i className="fa fa-chevron-right"></i>
 						</button>
+					</div>
+					<hr />
+					<div className="social">
+						<button type="button" class="btn btn-danger"><i class="fa fa-google-plus"> <span> Sign in with Google+</span></i></button>
+						<button type="button" class="btn btn-primary"><i class="fa fa-facebook"> <span> Login with Facebook</span></i></button>
 					</div>
 					<hr />
 					<div className="reg">

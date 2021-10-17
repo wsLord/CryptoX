@@ -15,3 +15,20 @@
 {
     margin: 1px;
 }
+.social
+{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 35px;
+    margin-bottom: 35px;
+}
+.social i
+{
+    font-size: 30px;
+}
+.social span
+{
+    font-size: 17px;
+    font-family:Arial, Helvetica, sans-serif;
+}
