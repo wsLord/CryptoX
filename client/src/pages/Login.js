@@ -37,9 +37,9 @@ const Login = (props) => {
 			const responseData = await res.json();
 
 			setIsLoading(false);
-			if(res.ok) {
+			if (res.ok) {
 				// logged in
-				
+
 				console.log(responseData);
 
 			}
@@ -105,10 +105,9 @@ const Login = (props) => {
 							type="checkbox"
 							className="form-check-input"
 							id="check"
-							required
 						/>
 						<label className="form-check-label" for="exampleCheck1">
-							Check me out
+							Remember me
 						</label>
 					</div>
 					<div className="d-grid gap-2">
