@@ -1,6 +1,6 @@
 // import { Fragment } from "react";
 
-import Home from "./Dashboard/dashboard";
+import Home from "./Home/pages/Home";
 import "./App.css"
 
 const App = () => {

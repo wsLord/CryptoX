@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import Cryptoitem from './CryptoItem'
-import './crypto.css'
+import Cryptoitem from '../shared/components/CryptoItem'
+import '../shared/components/crypto.css'
 import Spinner from './Spinner';
 import InfiniteScroll from "react-infinite-scroll-component";
 
@@ -61,7 +61,7 @@ export default class CryptoList extends Component {
                         <ul className="list-group list-group-horizontal">
                             <li className="list-group-item" id="cryptoid1">Name</li>
                             <li className="list-group-item" id="cryptoid1">Price</li>
-                            <li className="list-group-item" id="cryptoid1">Change <i className="fa fa-sort"></i></li>
+                            <li className="list-group-item" id="cryptoid1">Change(%)</li>
                             <li className="list-group-item" id="cryptoid1">Trade</li>
                         </ul>
                         {this.state.left && this.state.articles.map((element) => {

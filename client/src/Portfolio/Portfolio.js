@@ -48,7 +48,7 @@ export default function Portfolio() {
                             </div>
                             <div className="vr"></div>
                             <div className="d-flex flex-column">
-                                <button type="button" onClick={onClickAdd} className="btn btn-outline-dark m-2">
+                                <button type="button" onClick={onClickAdd} className="btn btn-outline-dark m-2 align-left">
                                     <img className={Styles.icon} src={addMoneyimg} alt="" />
                                     <span className={Styles.text}> Add Money</span>
                                 </button>

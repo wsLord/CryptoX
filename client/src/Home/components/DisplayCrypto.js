@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 
-import CryptoItem from "./CryptoItem";
-import "./crypto.css";
+import CryptoItem from "../../shared/components/CryptoItem";
+import "../../shared/components/crypto.css";
 
 export default class DisplayCrypto extends Component {
 	constructor() {
@@ -36,7 +36,7 @@ export default class DisplayCrypto extends Component {
 						Price
 					</li>
 					<li className="list-group-item" id="cryptoid1">
-						Change<i className="fa fa-sort"></i>
+						Change(%)
 					</li>
 					<li className="list-group-item" id="cryptoid1">
 						Trade
