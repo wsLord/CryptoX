@@ -1,0 +1,37 @@
+#top
+{
+    margin-top: 20px;
+    padding: 20px;
+    text-align: left;
+}
+#cards
+{
+    margin-right: 20px;
+    padding-bottom: 20px;
+}
+.icon
+{
+    width: 40px;
+    height: 40px;
+}
+.text
+{
+    font-size: 21px;
+}
+#addMoney
+{
+    padding: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 10px;
+    width: 50%;
+}
+#addMoney input,#addMoney span,#addMoney i
+{
+    font-size: 20px;
+}
+.bitcoin
+{
+    width: 80px;
+    height: 80px;
+}
