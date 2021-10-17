@@ -3,7 +3,7 @@ import "./crypto.css";
 
 const CryptoItem = (props) => {
 	return (
-		<div>
+		<div key={props.symbol}>
 			<ul className="list-group list-group-horizontal">
 				<li className="list-group-item" id="coins">
 					<button

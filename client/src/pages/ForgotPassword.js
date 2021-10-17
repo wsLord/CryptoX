@@ -71,7 +71,7 @@ const ForgotPassword = props => {
 						Reset Password
 					</h2>
 					<div className="mb-3">
-						<label for="email" className="form-label">
+						<label htmlFor="email" className="form-label">
 							Email address
 						</label>
 						<input

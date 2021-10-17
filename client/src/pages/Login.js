@@ -1,16 +1,25 @@
-import { Fragment, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Fragment, useState, useRef, useContext } from "react";
+import { Link, useHistory } from "react-router-dom";
 
 import "./Login.css";
 import Alert from "../shared/components/Alert";
 import LoadingSpinner from "../shared/components/UIElements/LoadingSpinner";
+import AuthContext from "../store/authContext";
 
 const Login = (props) => {
+	const history = useHistory();
+	const ctx = useContext(AuthContext);
+
 	const inputRefEmail = useRef();
 	const inputRefPassword = useRef();
+	const [isRememberMe, setIsRememberMe] = useState(false);
 
 	const [isLoading, setIsLoading] = useState(false);
-	// const [error, setError] = useState("baat hai");
+	const [error, setError] = useState(null);
+
+	const isRememberMeHandler = (cbevent) => {
+		setIsRememberMe(cbevent.target.checked);
+	};
 
 	const loginHandler = async (event) => {
 		event.preventDefault();
@@ -26,11 +35,12 @@ const Login = (props) => {
 					method: "POST",
 					body: JSON.stringify({
 						email: enteredEmail,
-						password: enteredPassword
+						password: enteredPassword,
+						toRemember: isRememberMe,
 					}),
 					headers: {
-						"Content-Type": "application/json"
-					}
+						"Content-Type": "application/json",
+					},
 				}
 			);
 
@@ -38,30 +48,42 @@ const Login = (props) => {
 
 			setIsLoading(false);
 			if (res.ok) {
-				// logged in
+				// Logging in now
 
+				// Here, responseData.expiresIn is in seconds
+				const expirationTime = new Date(
+					new Date().getTime() + +responseData.expiresIn * 1000
+				);
+
+				ctx.login(
+					responseData.token,
+					responseData.userId,
+					expirationTime.toISOString()
+				);
 				console.log(responseData);
 
-			}
-			else {
+				//Redirecting
+				history.replace("/");
+			} else {
+				//Got an Error from server
+				setError(responseData.message);
 				console.log(responseData.message);
 			}
-
-			// auth.login(responseData.user.id);
 		} catch (err) {
 			setIsLoading(false);
 			console.log(err);
+			setError(err.message);
 		}
 	};
 
-	// const clearError = () => {
-	// 	setError(null);
-	// }
+	const clearError = () => {
+		setError(null);
+	};
 
 	return (
 		<Fragment>
 			{/* <ErrorModal error={error} onClear={clearError} /> */}
-			{props.ismsg && <Alert msg={props.msg} />}
+			{error && <Alert msg={error} onClose={clearError} />}
 			<div className="login">
 				{isLoading && <LoadingSpinner asOverlay />}
 				<form
@@ -73,7 +95,7 @@ const Login = (props) => {
 						Login to CryptoX
 					</h2>
 					<div className="mb-3">
-						<label for="email" className="form-label">
+						<label htmlFor="email" className="form-label">
 							Email address
 						</label>
 						<input
@@ -89,7 +111,7 @@ const Login = (props) => {
 						</div>
 					</div>
 					<div className="mb-3">
-						<label for="password" className="form-label">
+						<label htmlFor="password" className="form-label">
 							Password
 						</label>
 						<input
@@ -105,8 +127,9 @@ const Login = (props) => {
 							type="checkbox"
 							className="form-check-input"
 							id="check"
+							onChange={isRememberMeHandler}
 						/>
-						<label className="form-check-label" for="exampleCheck1">
+						<label className="form-check-label" htmlFor="exampleCheck1">
 							Remember me
 						</label>
 					</div>

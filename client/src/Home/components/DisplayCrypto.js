@@ -44,15 +44,14 @@ export default class DisplayCrypto extends Component {
 				</ul>
 				{this.state.articles.map((element) => {
 					return (
-						<>
-							<CryptoItem
-								name={element.name}
-								img={element.image}
-								price={element.current_price}
-								symbol={element.symbol}
-								change={element.price_change_percentage_24h}
-							/>
-						</>
+						<CryptoItem
+							name={element.name}
+							img={element.image}
+							key={element.symbol}
+							price={element.current_price}
+							symbol={element.symbol}
+							change={element.price_change_percentage_24h}
+						/>
 					);
 				})}
 			</div>

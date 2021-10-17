@@ -7,7 +7,7 @@ const User = require("../models/user");
 const emailVerifyTokenSender = require("../middlewares/emailToken");
 
 const loginController = async (req, res, next) => {
-	const { email, password } = req.body;
+	const { email, password, toRemember } = req.body;
 
 	let existingUser;
 	try {
@@ -47,12 +47,16 @@ const loginController = async (req, res, next) => {
 		);
 	}
 
+	let tokenExpireTime = 3600; //seconds
+	if(toRemember)
+		tokenExpireTime = 7 * 24 * 3600; // 7 days (in seconds)
+
 	let token;
 	try {
 		token = jwt.sign(
 			{ userId: existingUser.id, email: existingUser.email },
 			process.env.JWT_PRIVATE_KEY,
-			{ expiresIn: "1h" }
+			{ expiresIn: tokenExpireTime }
 		);
 	} catch (err) {
 		return next(new Error("User Registered! Failed to log in."));
@@ -63,6 +67,7 @@ const loginController = async (req, res, next) => {
 		userId: existingUser.id,
 		email: existingUser.email,
 		token: token,
+		expiresIn: tokenExpireTime
 	});
 };
 

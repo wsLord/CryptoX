@@ -125,7 +125,7 @@ const SignUp = (props) => {
 						Signup to CryptoX
 					</h2>
 					<div className="mb-3">
-						<label for="name" className="form-label">
+						<label htmlFor="name" className="form-label">
 							Name
 						</label>
 						<input
@@ -137,7 +137,7 @@ const SignUp = (props) => {
 						/>
 					</div>
 					<div className="mb-3">
-						<label for="email" className="form-label">
+						<label htmlFor="email" className="form-label">
 							Email address
 						</label>
 						<input
@@ -154,7 +154,7 @@ const SignUp = (props) => {
 					</div>
 					<div id="password">
 						<div className="mb-3">
-							<label for="password" className="form-label">
+							<label htmlFor="password" className="form-label">
 								Password
 							</label>
 							<input
@@ -169,7 +169,7 @@ const SignUp = (props) => {
 							/>
 						</div>
 						<div className="mb-3">
-							<label for="confirm-password" className="form-label">
+							<label htmlFor="confirm-password" className="form-label">
 								Confirm Password
 							</label>
 							<input
@@ -183,7 +183,7 @@ const SignUp = (props) => {
 						</div>
 					</div>
 					<div className="mb-3">
-						<label for="phone" className="form-label">
+						<label htmlFor="phone" className="form-label">
 							Mobile Number
 						</label>
 						<input
@@ -194,7 +194,7 @@ const SignUp = (props) => {
 							required
 						/>
 					</div>
-					<label for="referral" className="form-label">
+					<label htmlFor="referral" className="form-label">
 						Referral Code (Optional)
 					</label>
 					<div className="input-group mb-3">
