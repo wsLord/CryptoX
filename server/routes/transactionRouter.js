@@ -6,6 +6,6 @@ const transactionController = require("../controllers/transactionController");
 const authenticate = require("../middlewares/authVerify");
 // router.get("/profile", usersController.profile);
 router.post('/buy:id',authenticate.verify,transactionController.buy);
-
+router.post('/sell:id',authenticate.verify,transactionController.sell)
 
 module.exports = router;
