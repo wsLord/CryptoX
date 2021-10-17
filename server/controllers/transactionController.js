@@ -2,6 +2,7 @@ const axios = require('axios');
 const User = require('../models/user');
 const Wallet=require('../models/wallet');
 const Portfolio = require('../models/portfolio');
+const Transaction = require('../models/transaction');
 module.exports.buy= async(req,res)=>{
     if(!req.userData){
         res.redirect('back');
@@ -56,7 +57,25 @@ module.exports.buy= async(req,res)=>{
         })
     }
     await portfolioOfUser.save()
+    try{
+        let transac = await Transaction.create({
+            category: 'buy',
+            walletId: WalletOfUser._id,
+            quantity: quantity.toString(),
+            price:price.toString(),
+            user:user._id,
+            portfolioId:portfolioOfUser._id,
+            coinId:coinId
 
+        });
+
+       
+        return res.redirect('back');
+    }
+    catch(err) {
+        console.log('error',err);
+        return;
+    }
 
 }
 
@@ -106,7 +125,28 @@ module.exports.sell= async(req,res)=>{
         let WalletOfUser=await Wallet.findById(user.walletId);
         WalletOfUser.balance=newBalance.toString();
         await WalletOfUser.save();
-        res.redirect('back');
+        try{
+            let transac = await Transaction.create({
+                category: 'sell',
+                walletId: WalletOfUser._id,
+                quantity: quantity.toString(),
+                price:price.toString(),
+                user:user._id,
+                portfolioId:portfolioOfUser._id,
+                coinId:coinId
+    
+            });
+    
+           
+            return res.redirect('back');
+        }
+        catch(err) {
+            console.log('error',err);
+            return;
+        }
+        
+
+
     }
     else{
         console.log('the transaction is not possible');
