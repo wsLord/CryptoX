@@ -41,8 +41,12 @@ export default function Portfolio() {
                 <div className="w-100 h-100" id={Styles.cards}>
                     <div className="card">
                         <div className="card-header "><h3>Wallet</h3></div>
-                        <div className="card-body">
-                            <h3>Balance &#8377;123</h3>
+                        <div className="card-body d-flex justify-content-around">
+                            <div className="d-flex flex-column align-items-center justify-content-center">
+                                <h1>Balance:</h1>
+                                <h2 className="text-secondary">&#x20B9; 123</h2>
+                            </div>
+                            <div className="vr"></div>
                             <div className="d-flex flex-column">
                                 <button type="button" onClick={onClickAdd} className="btn btn-outline-dark m-2">
                                     <img className={Styles.icon} src={addMoneyimg} alt="" />
