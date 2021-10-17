@@ -90,10 +90,10 @@ export default function Portfolio() {
 							<h3>Daily Report</h3>
 						</div>
 						<div className="card-body">
-							<span class="placeholder col-12"></span>
-							<span class="placeholder col-12"></span>
-							<span class="placeholder col-12"></span>
-							<span class="placeholder col-12"></span>
+							<span className="placeholder col-12"></span>
+							<span className="placeholder col-12"></span>
+							<span className="placeholder col-12"></span>
+							<span className="placeholder col-12"></span>
 						</div>
 					</div>
 				</div>

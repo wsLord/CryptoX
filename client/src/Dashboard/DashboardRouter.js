@@ -1,6 +1,6 @@
-import React from "react";
+import React, { Fragment } from "react";
 import Header from "./Header";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { Switch, Route, Redirect } from "react-router-dom";
 
 import Dashboard from "./Dashboard";
 import CryptoList from "../Trade/CryptoList";
@@ -9,7 +9,7 @@ import Watchlist from "../Watchlist/Watchlist";
 
 const DashboardRouter = () => {
 	return (
-		<Router>
+		<Fragment>
 			<Header />
 			<Switch>
 				<Route exact path="/">
@@ -24,8 +24,11 @@ const DashboardRouter = () => {
 				<Route exact path="/watchlist">
 					<Watchlist />
 				</Route>
+				<Route path='*'>
+					<Redirect to="/" />
+				</Route>
 			</Switch>
-		</Router>
+		</Fragment>
 	);
 }
 
