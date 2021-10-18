@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 
-import Header from "./Header";
+import Header from "../shared/components/Header";
 import Footer from '../shared/components/Footer'
 import Dashboard from "./Dashboard";
 import CryptoList from "../Trade/CryptoList";

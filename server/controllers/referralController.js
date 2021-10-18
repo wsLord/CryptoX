@@ -1,5 +1,6 @@
 const referral = require("express").Router();
 const nodemailer = require("nodemailer");
+const authVerify = require("../middlewares/authVerify");
 require("dotenv").config();
 
 referral.post('/', async (req, res, next) => {
@@ -38,6 +39,12 @@ referral.post('/', async (req, res, next) => {
 		message: "Invite Sent!",
 		mailinfo: info.messageId
 	});
+});
+
+referral.use(authVerify);
+
+referral.get('/', (req, res, next) => {
+
 });
 
 module.exports = referral;

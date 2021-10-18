@@ -1,16 +1,23 @@
 import { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import "./SignUp.css";
 import Alert from "../shared/components/Alert";
 import LoadingSpinner from "../shared/components/UIElements/LoadingSpinner";
 
 const SignUp = (props) => {
+	const { refCode } = useParams();
+	
 	const inputRefName = useRef();
 	const inputRefEmail = useRef();
-	const inputRefPassword = useRef();
 	const inputRefMobile = useRef();
-	const inputRefReferralCode = useRef();
+	const [enteredPassword, setEnteredPassword] = useState('');
+	const [confirmPassword, setConfirmPassword] = useState('');
+	const [referralCode, setReferralCode] = useState(refCode || '');
+
+	const [Style, setStyle] = useState({
+		backgroundColor: ""
+	});
 
 	const [isLoading, setIsLoading] = useState(false);
 	// const [error, setError] = useState(null);
@@ -21,9 +28,7 @@ const SignUp = (props) => {
 
 		const enteredName = inputRefName.current.value;
 		const enteredEmail = inputRefEmail.current.value;
-		const enteredPassword = inputRefPassword.current.value;
 		const enteredMobile = inputRefMobile.current.value;
-		const enteredReferralCode = inputRefReferralCode.current.value;
 
 		try {
 			const res = await fetch(
@@ -35,7 +40,7 @@ const SignUp = (props) => {
 						email: enteredEmail,
 						password: enteredPassword,
 						mobile: enteredMobile,
-						referral: enteredReferralCode
+						referral: referralCode
 					}),
 					headers: {
 						"Content-Type": "application/json"
@@ -67,47 +72,37 @@ const SignUp = (props) => {
 	// 	setError(null);
 	// }
 
-	const [check, setcheck] = useState({
-		pass: "",
-		confirmpass: ""
-	});
+	let passwordHandler = (event) => {
+		setEnteredPassword(event.target.value);
 
-	const [Style, setStyle] = useState({
-		backgroundColor: ""
-	})
-
-	let handlepassword = (event) => {
-		setcheck({
-			pass: event.target.value,
-			confirmpass: check.confirmpass
-		})
-		if (check.confirmpass !== event.target.value) {
+		if (confirmPassword !== event.target.value) {
 			setStyle({
 				backgroundColor: "lightcoral"
-			})
-		}
-		else {
+			});
+		} else {
 			setStyle({
 				backgroundColor: "white"
-			})
+			});
 		}
 	}
-	let handlechange = (event) => {
-		setcheck({
-			confirmpass: event.target.value,
-			pass: check.pass
-		})
-		if (event.target.value !== check.pass) {
+
+	let confirmPasswordHandler = (event) => {
+		setConfirmPassword(event.target.value);
+
+		if (enteredPassword !== event.target.value) {
 			setStyle({
 				backgroundColor: "lightcoral"
-			})
-		}
-		else {
+			});
+		} else {
 			setStyle({
 				backgroundColor: "white"
-			})
+			});
 		}
 	}
+
+	let referralCodeHandler = (event) => {
+		setReferralCode(event.target.value);
+	};
 
 	return (
 		<div>
@@ -161,9 +156,9 @@ const SignUp = (props) => {
 								type="password"
 								className="form-control"
 								id="password"
-								ref={inputRefPassword}
+								value={enteredPassword}
 								minLength={6}
-								onInput={handlepassword}
+								onChange={passwordHandler}
 								required
 							/>
 						</div>
@@ -176,7 +171,8 @@ const SignUp = (props) => {
 								type="password"
 								className="form-control"
 								id="confirm-password"
-								onInput={handlechange}
+								value={confirmPassword}
+								onChange={confirmPasswordHandler}
 								required
 							/>
 						</div>
@@ -201,7 +197,8 @@ const SignUp = (props) => {
 							type="text"
 							className="form-control"
 							id="referral"
-							ref={inputRefReferralCode}
+							value={referralCode}
+							onChange={referralCodeHandler}
 						/>
 					</div>
 					<div className="d-grid gap-2">
