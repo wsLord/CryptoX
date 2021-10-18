@@ -1,11 +1,11 @@
 import React from "react";
-import "./crypto.css";
+import Styles from "./crypto.module.css";
 
 const CryptoItem = (props) => {
 	return (
 		<div key={props.symbol}>
-			<ul className="list-group list-group-horizontal">
-				<li className="list-group-item" id="coins">
+			<ul className="list-group list-group-horizontal" id={Styles.groups}>
+				<li className="list-group-item" id={Styles.coins}>
 					<button
 						id="add"
 						type="button"
@@ -14,7 +14,7 @@ const CryptoItem = (props) => {
 						data-bs-placement="left"
 						title="Add to Watchlist"
 					>
-						<i className="fa fa-star-o"></i>
+						<i className="fa fa-star-o" id={Styles.star}></i>
 					</button>
 					<div>
 						<h5>
@@ -23,23 +23,23 @@ const CryptoItem = (props) => {
 						<h6>({props.symbol})</h6>
 					</div>
 				</li>
-				<li className="list-group-item" id="cryptoid">
+				<li className="list-group-item" id={Styles.cryptoid}>
 					<strong>&#8377; </strong>
 					{props.price}
 				</li>
 				{props.change < 0 && (
-					<li className="list-group-item text-danger" id="cryptoid">
+					<li className="list-group-item text-danger" id={Styles.cryptoid}>
 						{props.change}
 						<strong> &#8595;</strong>
 					</li>
 				)}
 				{props.change >= 0 && (
-					<li className="list-group-item text-success" id="cryptoid">
+					<li className="list-group-item text-success" id={Styles.cryptoid}>
 						{props.change}
 						<strong> &#8593;</strong>
 					</li>
 				)}
-				<li className="list-group-item" id="cryptoid">
+				<li className="list-group-item" id={Styles.cryptoid}>
 					<button type="button" className="btn btn-success">
 						Buy
 					</button>

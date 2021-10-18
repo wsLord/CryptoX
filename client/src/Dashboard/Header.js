@@ -1,12 +1,12 @@
 import React from "react";
 import Logo from "../shared/img/icon.png";
 import { Link } from "react-router-dom";
-import "./header.css";
+import Styles from "./header.module.css"
 
 export default function Header() {
 	return (
 		<div className="top">
-			<nav className="navbar navbar-expand-lg navbar-light bg-light" id="links">
+			<nav className="navbar navbar-expand-lg navbar-light bg-light" id={Styles.links}>
 				<div className="container-fluid">
 					<Link className="navbar-brand" to="/">
 						<img
@@ -32,30 +32,30 @@ export default function Header() {
 						<span className="navbar-toggler-icon"></span>
 					</button>
 					<div className="collapse navbar-collapse" id="navbarSupportedContent">
-						<ul className="navbar-nav me-auto mb-2 mb-lg-0">
+						<ul className="navbar-nav me-auto mb-2 mb-lg-0" id={Styles.links}>
 							<li className="nav-item">
-								<Link className="nav-link active" id="toplink" to="/portfolio">
+								<Link className="nav-link active" id={Styles.toplink} to="/portfolio">
 									Portfolio
 								</Link>
 							</li>
 							<li className="nav-item">
-								<Link className="nav-link active" id="toplink" to="/watchlist">
+								<Link className="nav-link active" id={Styles.toplink} to="/watchlist">
 									Watchlist
 								</Link>
 							</li>
 							<li className="nav-item">
-								<Link className="nav-link active" id="toplink" to="/list">
+								<Link className="nav-link active" id={Styles.toplink} to="/list">
 									Trade
 								</Link>
 							</li>
 							<li className="nav-item">
-								<Link className="nav-link active" id="toplink" to="/">
+								<Link className="nav-link active" id={Styles.toplink} to="/">
 									Exchange
 								</Link>
 							</li>
 						</ul>
 						<ul className="nav navbar-nav navbar-right">
-							<button type="button" id="profile" className="btn btn-light">
+							<button type="button" id={Styles.profile} className="btn btn-light">
 								<i className="fa fa-user-circle-o"></i>
 							</button>
 						</ul>

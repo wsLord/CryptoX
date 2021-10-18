@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 
 import CryptoItem from "../../shared/components/CryptoItem";
-import "../../shared/components/crypto.css";
+import Styles from "../../shared/components/crypto.module.css";
 
 export default class DisplayCrypto extends Component {
 	constructor() {
@@ -20,7 +20,7 @@ export default class DisplayCrypto extends Component {
 	}
 	render() {
 		return (
-			<div className="d-flex flex-column justify-content-center">
+			<div className="d-flex flex-column justify-content-center" id={Styles.crypto}>
 				<h1>
 					Trending
 					<img
@@ -28,17 +28,17 @@ export default class DisplayCrypto extends Component {
 						alt=""
 					/>
 				</h1>
-				<ul className="list-group list-group-horizontal">
-					<li className="list-group-item" id="cryptoid1">
+				<ul className="list-group list-group-horizontal" id={Styles.groups}>
+					<li className="list-group-item" id={Styles.cryptoid1}>
 						Name
 					</li>
-					<li className="list-group-item" id="cryptoid1">
+					<li className="list-group-item" id={Styles.cryptoid1}>
 						Price
 					</li>
-					<li className="list-group-item" id="cryptoid1">
+					<li className="list-group-item" id={Styles.cryptoid1}>
 						Change(%)
 					</li>
-					<li className="list-group-item" id="cryptoid1">
+					<li className="list-group-item" id={Styles.cryptoid1}>
 						Trade
 					</li>
 				</ul>

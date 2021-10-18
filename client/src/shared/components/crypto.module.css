@@ -1,22 +1,23 @@
-.list-group-item{
+#cryptoid1{
     width: 400px;
     font-size: 13px;
 }
-.list-group-item img
+#groups li img
 {
     width: 30px;
     height: 30px;
 }
 #cryptoid
 {
-    font-size: 22px;
+    font-size: 21px;
+    width: 400px;
 }
 #cryptoid1
 {
     font-weight: bold;
-    font-size: 23px;
+    font-size: 21px;
 }
-.list-group-item .fa
+#star
 {
     color: black;
     font-size: 22px;
@@ -27,4 +28,11 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    width: 400px;
+    font-size: 13px;
+}
+#crypto
+{
+    margin-left: 270px;
+    margin-right: 270px;
 }

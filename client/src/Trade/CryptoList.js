@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import Cryptoitem from '../shared/components/CryptoItem'
-import '../shared/components/crypto.css'
+import Styles from '../shared/components/crypto.module.css'
 import Spinner from './Spinner';
 import InfiniteScroll from "react-infinite-scroll-component";
 
@@ -58,11 +58,11 @@ export default class CryptoList extends Component {
                         loader={<Spinner />}
                     >
                         {this.state.loading && <Spinner />}
-                        <ul className="list-group list-group-horizontal">
-                            <li className="list-group-item" id="cryptoid1">Name</li>
-                            <li className="list-group-item" id="cryptoid1">Price</li>
-                            <li className="list-group-item" id="cryptoid1">Change(%)</li>
-                            <li className="list-group-item" id="cryptoid1">Trade</li>
+                        <ul className="list-group list-group-horizontal" id={Styles.groups}>
+                            <li className="list-group-item" id={Styles.cryptoid1}>Name</li>
+                            <li className="list-group-item" id={Styles.cryptoid1}>Price</li>
+                            <li className="list-group-item" id={Styles.cryptoid1}>Change(%)</li>
+                            <li className="list-group-item" id={Styles.cryptoid1}>Trade</li>
                         </ul>
                         {this.state.left && this.state.articles.map((element) => {
                             var change=element.price_change_percentage_1h_in_currency;
