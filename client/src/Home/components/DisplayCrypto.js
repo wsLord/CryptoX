@@ -19,7 +19,7 @@ export default class DisplayCrypto extends Component {
 	}
 	render() {
 		return (
-			<div className="d-flex flex-column justify-content-center" id={Styles.crypto}>
+			<div className="d-flex flex-column align-items-center" id={Styles.crypto}>
 				<h1>
 					Trending
 					<img

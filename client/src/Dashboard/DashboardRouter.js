@@ -2,10 +2,12 @@ import React, { Fragment } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 
 import Header from "./Header";
+import Footer from '../shared/components/Footer'
 import Dashboard from "./Dashboard";
 import CryptoList from "../Trade/CryptoList";
 import Portfolio from "../Portfolio/Portfolio";
 import Watchlist from "../Watchlist/Watchlist";
+import Referral from "../pages/Referral";
 
 const DashboardRouter = () => {
 	return (
@@ -24,10 +26,14 @@ const DashboardRouter = () => {
 				<Route exact path="/watchlist">
 					<Watchlist />
 				</Route>
+				<Route exact path="/referral">
+					<Referral referralCode={"SANSK7"}/>
+				</Route>
 				<Route path='*'>
 					<Redirect to="/" />
 				</Route>
 			</Switch>
+			<Footer/>
 		</Fragment>
 	);
 }
