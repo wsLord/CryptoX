@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import Cryptoitem from '../shared/components/CryptoItem'
 import Styles from '../shared/components/crypto.module.css'
-import Spinner from './Spinner';
+import Spinner from '../shared/components/Spinner';
 import InfiniteScroll from "react-infinite-scroll-component";
 
 export default class CryptoList extends Component {

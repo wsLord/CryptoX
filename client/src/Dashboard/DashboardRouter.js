@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import Header from "./Header";
 import { Switch, Route, Redirect } from "react-router-dom";
 
-import Dashboard from "./Dashboard";
+import Dashboard from "./dashboard";
 import CryptoList from "../Trade/CryptoList";
 import Portfolio from "../Portfolio/Portfolio";
 import Watchlist from "../Watchlist/Watchlist";
