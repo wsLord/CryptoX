@@ -1,10 +1,14 @@
-import React from "react";
-import Logo from "../shared/img/icon.png";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
+
+import Logo from "../shared/img/icon.png";
 import Styles from "./header.module.css"
 import profile from "../shared/img/profile.png"
+import AuthContext from "../store/authContext";
 
-export default function Header() {
+const Header = () => {
+	const ctx = useContext(AuthContext);
+
 	return (
 		<div className="top">
 			<nav className="navbar navbar-expand-lg navbar-light bg-light" id={Styles.links}>
@@ -62,7 +66,7 @@ export default function Header() {
 								</button>
 								<ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
 									<li><a className="dropdown-item" href="/">Setting</a></li>
-									<li><a className="dropdown-item" href="/">Sign out</a></li>
+									<li><button className="dropdown-item" onClick={ctx.logout}>Sign out</button></li>
 								</ul>
 							</div>
 						</ul>
@@ -72,3 +76,5 @@ export default function Header() {
 		</div>
 	);
 }
+
+export default Header;

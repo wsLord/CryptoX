@@ -1,8 +1,8 @@
 import React, { Fragment } from "react";
-import Header from "./Header";
 import { Switch, Route, Redirect } from "react-router-dom";
 
-import Dashboard from "./dashboard";
+import Header from "./Header";
+import Dashboard from "./Dashboard";
 import CryptoList from "../Trade/CryptoList";
 import Portfolio from "../Portfolio/Portfolio";
 import Watchlist from "../Watchlist/Watchlist";
@@ -13,7 +13,7 @@ const DashboardRouter = () => {
 			<Header />
 			<Switch>
 				<Route exact path="/">
-					<Dashboard username="Sanskar Jain" isverify="true"/>
+					<Dashboard username="Sanskar Jain" isverify={false}/>
 				</Route>
 				<Route exact path="/list">
 					<CryptoList />
