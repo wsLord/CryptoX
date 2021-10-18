@@ -30,13 +30,13 @@ const CryptoItem = (props) => {
 				{props.change < 0 && (
 					<li className="list-group-item text-danger" id={Styles.cryptoid}>
 						{props.change}
-						<strong> &#8595;</strong>
+						<strong> <i className="fa fa-caret-down"></i></strong>
 					</li>
 				)}
 				{props.change >= 0 && (
 					<li className="list-group-item text-success" id={Styles.cryptoid}>
 						{props.change}
-						<strong> &#8593;</strong>
+						<strong> <i className="fa fa-caret-up"></i></strong>
 					</li>
 				)}
 				<li className="list-group-item" id={Styles.cryptoid}>

@@ -77,7 +77,6 @@ const SignUp = (props) => {
 	})
 
 	let handlepassword = (event) => {
-		console.log("-->",event.target.value);
 		setcheck({
 			pass: event.target.value,
 			confirmpass: check.confirmpass
@@ -89,7 +88,7 @@ const SignUp = (props) => {
 		}
 		else {
 			setStyle({
-				backgroundColor: "lightgreen"
+				backgroundColor: "white"
 			})
 		}
 	}
@@ -105,7 +104,7 @@ const SignUp = (props) => {
 		}
 		else {
 			setStyle({
-				backgroundColor: "lightgreen"
+				backgroundColor: "white"
 			})
 		}
 	}
@@ -213,8 +212,8 @@ const SignUp = (props) => {
 					</div>
 					<hr />
 					<div className="social">
-						<button type="button" class="btn btn-danger"><i class="fa fa-google-plus"> <span> Sign in with Google+</span></i></button>
-						<button type="button" class="btn btn-primary"><i class="fa fa-facebook"> <span> Login with Facebook</span></i></button>
+						<button type="button" className="btn btn-danger"><i className="fa fa-google-plus"> <span> Sign in with Google+</span></i></button>
+						<button type="button" className="btn btn-primary"><i className="fa fa-facebook"> <span> Login with Facebook</span></i></button>
 					</div>
 					<hr />
 					<div className="reg">

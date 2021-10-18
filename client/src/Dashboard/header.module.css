@@ -8,7 +8,13 @@
 {
     color: gray;
 }
-#profile i
+#profile
 {
-    font-size: 29px;
+    width: 40px;
+    height: 40px;
+}
+#btn
+{
+    background-color:transparent;
+    border: none;
 }

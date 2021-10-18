@@ -2,6 +2,7 @@ import React from "react";
 import Logo from "../shared/img/icon.png";
 import { Link } from "react-router-dom";
 import Styles from "./header.module.css"
+import profile from "../shared/img/profile.png"
 
 export default function Header() {
 	return (
@@ -55,9 +56,15 @@ export default function Header() {
 							</li>
 						</ul>
 						<ul className="nav navbar-nav navbar-right">
-							<button type="button" id={Styles.profile} className="btn btn-light">
-								<i className="fa fa-user-circle-o"></i>
-							</button>
+							<div className="dropstart">
+								<button id={Styles.btn} className="dropdown-toggle" type="button" data-bs-toggle="dropdown">
+									<img src={profile} id={Styles.profile} alt="" />
+								</button>
+								<ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+									<li><a className="dropdown-item" href="/">Setting</a></li>
+									<li><a className="dropdown-item" href="/">Sign out</a></li>
+								</ul>
+							</div>
 						</ul>
 					</div>
 				</div>

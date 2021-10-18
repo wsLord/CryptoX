@@ -13,7 +13,7 @@ const DashboardRouter = () => {
 			<Header />
 			<Switch>
 				<Route exact path="/">
-					<Dashboard />
+					<Dashboard username="Sanskar Jain" isverify="true"/>
 				</Route>
 				<Route exact path="/list">
 					<CryptoList />

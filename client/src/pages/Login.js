@@ -129,7 +129,7 @@ const Login = (props) => {
 							id="check"
 							onChange={isRememberMeHandler}
 						/>
-						<label className="form-check-label" htmlFor="exampleCheck1">
+						<label className="form-check-label" htmlFor="check">
 							Remember me
 						</label>
 					</div>

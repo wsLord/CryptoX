@@ -20,7 +20,6 @@ export default class CryptoList extends Component {
         let url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&order=market_cap_desc&per_page=25&sparkline=false&price_change_percentage=1h%2C%2024h%2C%207d%2C%2014d%2C%2030d%2C%20200d%2C%201y";
         let data = await fetch(url);
         let parseDate = await data.json();
-        console.log(parseDate);
         this.setState({
             articles: parseDate,
             total: parseDate.length,
@@ -69,14 +68,14 @@ export default class CryptoList extends Component {
                             if(change===null)
                                 change=0;
                             return (
-                                <>
+                                <div key={element.symbol}>
                                     <Cryptoitem name={element.name}
                                         img={element.image}
                                         price={element.current_price}
                                         symbol={element.symbol}
                                         change={change.toPrecision(4)}
                                     />
-                                </>
+                                </div>
                             )
                         })}
                     </InfiniteScroll>

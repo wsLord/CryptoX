@@ -40,33 +40,33 @@ export default class dashboard extends Component {
     render() {
         return (
             <div>
-                <div class="card" id={Styles.top}>
-                    <div class="card-body">
+                <div className="card" id={Styles.top}>
+                    <div className="card-body">
                         <h4>Welcome {this.props.username}</h4>
-                        <div class="card shadow-sm p-3 mb-5 bg-body rounded">
+                        <div className="card shadow-sm p-3 mb-5 bg-body rounded">
                             {this.props.isverify &&
-                                <div class="card-body" id={Styles.verify}>
-                                    <i class="fa fa-check-circle text-success"> Account verified</i>
+                                <div className="card-body" id={Styles.verify}>
+                                    <i className="fa fa-check-circle text-success"> Account verified</i>
                                 </div>
                             }
                             {!this.props.isverify &&
-                                <div class="card-body" id={Styles.verify}>
-                                    <i class="fa fa-exclamation-triangle text-danger"> Account not verified</i>
-                                    <button type="button" class="btn btn-success"><strong>Verify your ID</strong></button>
+                                <div className="card-body" id={Styles.verify}>
+                                    <i className="fa fa-exclamation-triangle text-danger"> Account not verified</i>
+                                    <button type="button" className="btn btn-success"><strong>Verify your ID</strong></button>
                                 </div>
                             }
                         </div>
-                        <div class="card shadow-sm p-3 mb-5 bg-body rounded">
-                            <div class="card-body">
+                        <div className="card shadow-sm p-3 mb-5 bg-body rounded">
+                            <div className="card-body">
                                 <h3>Total balance ₹ 0.00</h3>
                                 <h4>Total amount earned from referral ₹ 0.00</h4>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="card" id={Styles.body}>
-                    <div class="card-header"><h3>Top Stories</h3></div>
-                    <div class="card-body">
+                <div className="card" id={Styles.body}>
+                    <div className="card-header"><h3>Top Stories</h3></div>
+                    <div className="card-body">
                         <InfiniteScroll
                             dataLength={this.state.articles.length}
                             next={this.fetchMoreData}
@@ -74,9 +74,9 @@ export default class dashboard extends Component {
                             loader={<Spinner />}
                         >
                             {this.state.loading && <Spinner />}
-                            {this.state.articles.map((element)=>{
-                                return(
-                                    <News articles={element}/>
+                            {this.state.articles.map((element) => {
+                                return (
+                                    <News articles={element} key={element.url} />
                                 );
                             })}
                         </InfiniteScroll>
