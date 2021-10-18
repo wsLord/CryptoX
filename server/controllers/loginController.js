@@ -41,8 +41,7 @@ const loginController = async (req, res, next) => {
 		}
 		return next(
 			new Error(
-				"E-mail ID not verified! Check your mailbox and try again." +
-					info.messageId
+				"E-mail ID not verified! Check your mailbox and try again."
 			)
 		);
 	}

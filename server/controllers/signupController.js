@@ -1,5 +1,6 @@
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
+const shortuid = require("short-unique-id");
 
 const User = require("../models/user");
 const emailVerifyTokenSender = require("../middlewares/emailToken");
@@ -32,11 +33,15 @@ const signupController = async (req, res, next) => {
 		);
 	}
 
+	const shortUIDGenerator = new shortuid({ length: 5, dictionary: 'alphanum_upper' });
+	let referralCode = shortUIDGenerator();
+
 	const createdUser = new User({
 		name,
 		email,
 		mobile,
 		password: hashedPassword,
+		referralID: referralCode
 	});
 
 	try {
