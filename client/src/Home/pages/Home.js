@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, Redirect } from "react-router-dom";
 
 import Footer from "../../shared/components/Footer";
 import HeaderBar from "../components/HomeHeaderBar";
@@ -24,6 +24,9 @@ const Home = () => {
 				</Route>
 				<Route exact path="/forgotpassword">
 					<ForgotPassword />
+				</Route>
+				<Route path="*">
+					<Redirect to="/" />
 				</Route>
 			</Switch>
 			<Footer />

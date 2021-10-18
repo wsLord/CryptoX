@@ -10,6 +10,14 @@ const userSchema = new mongoose.Schema({
 		default: false,
 		required: true,
 	},
+	referralID: {
+		type: String,
+		required: true
+	},
+	referredBy: {
+		type: String,
+		default: null
+	},
 	walletId: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "Wallet",

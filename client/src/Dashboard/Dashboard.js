@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-import Styles from './dashboard.module.css'
 import InfiniteScroll from "react-infinite-scroll-component"
+
+import Styles from './dashboard.module.css'
 import Spinner from '../shared/components/Spinner';
 import News from './News'
 
@@ -17,7 +18,7 @@ export default class dashboard extends Component {
     }
     async componentDidMount() {
         this.setState({ loading: true })
-        let url = `https://newsapi.org/v2/everything?sortBy=popularity&q=crypto&page=${this.state.page}&pageSize=10&apiKey=b9f009ee2e9c41a2be4b97d2fca59d35`;
+        let url = `https://newsapi.org/v2/everything?sortBy=popularity&q=crypto&page=${this.state.page}&pageSize=10&apiKey=${process.env.REACT_APP_NEWS_API_KEY}`;
         let date = await fetch(url);
         let parseDate = await date.json();
         this.setState({
@@ -30,7 +31,7 @@ export default class dashboard extends Component {
         this.setState({
             page: this.state.page + 1,
         });
-        let url = `https://newsapi.org/v2/everything?sortBy=popularity&q=crypto&page=${this.state.page}&pageSize=10&apiKey=b9f009ee2e9c41a2be4b97d2fca59d35`;
+        let url = `https://newsapi.org/v2/everything?sortBy=popularity&q=crypto&page=${this.state.page}&pageSize=10&apiKey=${process.env.REACT_APP_NEWS_API_KEY}`;
         let date = await fetch(url);
         let parseDate = await date.json();
         this.setState({
