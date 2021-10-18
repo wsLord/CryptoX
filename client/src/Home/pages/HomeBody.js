@@ -14,29 +14,29 @@ const HomeBody = () => {
 					<div className="card" id={Styles.card}>
 						<div className="card-body">
 							<i className="fa fa-bolt" aria-hidden="true"></i>
-							<p>
+							<div>
 								<h4>Fast & simple</h4>
 								Start investing in under 10 minutes
-							</p>
+							</div>
 						</div>
 					</div>
 					<div className="card" id={Styles.card}>
 						<div className="card-body">
 							<i className="fa fa-credit-card-alt" aria-hidden="true"></i>
-							<p>
+							<div>
 								<h4>Easy deposit & withdrawals</h4>
 								Quickly add & withdraw funds to your bank account
-							</p>
+							</div>
 						</div>
 					</div>
 					<div className="card" id={Styles.card}>
 						<div className="card-body">
 							<i className="fa fa-shield" aria-hidden="true"></i>
-							<p>
+							<div>
 								<h4>Safe & secure</h4>
 								World className security features ensure your investments are in
 								safe hands
-							</p>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -45,30 +45,30 @@ const HomeBody = () => {
 					<div className="card" id={Styles.card}>
 						<div className="card-body">
 							<i className="fa fa-user-plus" aria-hidden="true"></i>
-							<p>
+							<div>
 								<h4>1. Create an account</h4>
 								Sign up with your email and mobile in just 5 minutes
-							</p>
+							</div>
 						</div>
 					</div>
 					<h1>&#8594;</h1>
 					<div className="card" id={Styles.card}>
 						<div className="card-body">
 							<i className="fa fa-inr" aria-hidden="true"></i>
-							<p>
+							<div>
 								<h4>2. Add funds to wallet</h4>
 								Quickly add money to your CryptoX investment wallet
-							</p>
+							</div>
 						</div>
 					</div>
 					<h1>&#8594;</h1>
 					<div className="card" id={Styles.card}>
 						<div className="card-body">
 							<i className="fa fa-btc" aria-hidden="true"></i>
-							<p>
+							<div>
 								<h4>3. Start investing in crypto</h4>
 								Buy & Sell a variety of top coins at the best prices
-							</p>
+							</div>
 						</div>
 					</div>
 				</div>

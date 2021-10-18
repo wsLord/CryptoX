@@ -50,7 +50,7 @@ export default class Assets extends Component {
                                         var change = element.market_data.current_price.inr - element.purchasedPrice;
                                         change = (change / element.purchasedPrice) * 100;
                                         return (
-                                            <tr>
+                                            <tr key={element.sno}>
                                                 <th scope="row">{element.sno}</th>
                                                 <td>
                                                     <span><img src={element.image.small} alt="" /> {element.name}</span>
@@ -60,8 +60,8 @@ export default class Assets extends Component {
                                                 </td>
                                                 <td>&#8377; {element.market_data.current_price.inr}</td>
                                                 <td>&#8377; {element.purchasedPrice}</td>
-                                                {change < 0 && <td className="text-danger">{change.toFixed(3)} 	&#8595;</td>}
-                                                {change >= 0 && <td className="text-success">{change.toFixed(3)} &#8593;</td>}
+                                                {change < 0 && <td className="text-danger">{change.toFixed(3)} 	<i className="fa fa-caret-down"></i></td>}
+                                                {change >= 0 && <td className="text-success">{change.toFixed(3)} <i className="fa fa-caret-up"></i></td>}
                                                 <td>
                                                     <button type="button" className="btn btn-success">Sell</button>
                                                 </td>

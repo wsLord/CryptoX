@@ -53,7 +53,7 @@ export default class Watchlist extends Component {
                                 <tbody>
                                     {this.state.articles.map((element) => {
                                         return (
-                                           <Watchitems data={element}/>
+                                           <Watchitems data={element} key={element.symbol}/>
                                         );
                                     })}
                                 </tbody>

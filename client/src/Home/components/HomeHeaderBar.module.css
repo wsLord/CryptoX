@@ -15,10 +15,14 @@
 {
     width: 400px;
 }
-#card p
+#card div
 {
     color: gray;
     font-size: 19px;
+}
+#card div h4
+{
+    color: black;
 }
 #card i{
     font-size: 50px;
