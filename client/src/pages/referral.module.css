@@ -1,0 +1,45 @@
+#left
+{
+    padding: 50px;
+    text-align: left;
+}
+#body
+{
+    background-color: #F0F8FF;
+}
+#send
+{
+    padding-top:30px;
+    padding-left: 120px;
+    padding-right: 120px;
+}
+#send input
+{
+    height: 70px;
+    border-radius: 0%;
+    font-size: 23px;
+}
+#send button
+{
+    width: 100px;
+    border-radius: 0;
+}
+#text
+{
+    font-size: 21px;
+    margin: 20px;
+}
+#link
+{
+    background-color: white;
+}
+#share
+{
+    margin-left: 120px;
+    margin-right: 120px;
+    font-size: 21px;
+}
+.social
+{
+    margin: 15px;
+}

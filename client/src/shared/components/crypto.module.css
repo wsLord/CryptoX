@@ -1,5 +1,5 @@
 #cryptoid1{
-    width: 400px;
+    width: 300px;
     font-size: 13px;
 }
 #groups li img
@@ -10,7 +10,7 @@
 #cryptoid
 {
     font-size: 21px;
-    width: 400px;
+    width: 300px;
 }
 #cryptoid1
 {
@@ -28,11 +28,6 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    width: 400px;
+    width: 300px;
     font-size: 13px;
-}
-#crypto
-{
-    margin-left: 270px;
-    margin-right: 270px;
 }
