@@ -19,6 +19,9 @@ const Home = () => {
 				<Route exact path="/login">
 					<Login ismsg={false} msg={""} />
 				</Route>
+				<Route exact path="/signup/">
+					<SignUp ismsg={false} msg={""} />
+				</Route>
 				<Route path="/signup/:refCode">
 					<SignUp ismsg={false} msg={""} />
 				</Route>

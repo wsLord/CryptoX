@@ -27,7 +27,7 @@ const DashboardRouter = () => {
 					<Watchlist />
 				</Route>
 				<Route exact path="/referral">
-					<Referral referralCode={"SANSK7"}/>
+					<Referral />
 				</Route>
 				<Route path='*'>
 					<Redirect to="/" />

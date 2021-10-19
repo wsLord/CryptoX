@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import {
@@ -12,28 +12,92 @@ import {
 
 import Styles from "./referral.module.css";
 import img from "../shared/img/referral.jpg";
+import AuthContext from "../store/authContext";
 
 const Referral = (props) => {
-	
+	const ctx = useContext(AuthContext);
 
-	const [referralCode, setReferralCode] = useState();
-	const [link, setlink] = useState({
-		value: `${window.location.host}/signup/${props.referralCode}`,
+	const [referralCode, setReferralCode] = useState("");
+	const [link, setLink] = useState(
+		`${window.location.host}/signup/${referralCode}`
+	);
+	const [copyBtn, setCopyBtn] = useState({
 		copied: false,
 		btntext: "Copy link",
 	});
+	const inputRefEmail = useRef();
 
-	let copied = () => {
-		setlink({
+	useEffect(() => {
+		let data;
+		const fetchData = async () => {
+			try {
+				const res = await fetch(
+					`${process.env.REACT_APP_SERVER_URL}/referral/getcode`,
+					{
+						method: "GET",
+						headers: {
+							Authorization: "Bearer " + ctx.token,
+						}
+					}
+				);
+
+				data = await res.json();
+				// console.log("TEST" + data.email);
+				setReferralCode(data.refcode);
+				setLink(`${window.location.host}/signup/${data.refcode}`);
+			} catch (err) {
+				console.log(err);
+			}
+		};
+
+		fetchData();
+	}, [ctx]);
+
+	const copyHandler = () => {
+		setCopyBtn({
 			copied: true,
 			btntext: "Copied!",
 		});
 		setTimeout(() => {
-			setlink({
+			setCopyBtn({
 				copied: false,
 				btntext: "Copy link",
 			});
 		}, 3000);
+	};
+
+	const inviteHandler = async (event) => {
+		event.preventDefault();
+
+		const emailToSendInvite = inputRefEmail.current.value;
+		try {
+			const res = await fetch(
+				`${process.env.REACT_APP_SERVER_URL}/referral/invite`,
+				{
+					method: "POST",
+					body: JSON.stringify({
+						inviteLink: link,
+						emailToSend: emailToSendInvite
+					}),
+					headers: {
+						"Content-Type": "application/json"
+					}
+				}
+			);
+
+			const data = await res.json();
+
+			if(res.ok) {
+				console.log(data.message);
+				inputRefEmail.current.value = '';
+			}
+			else {
+				// Error sending mail
+				console.log(data.message);
+			}
+		} catch (err) {
+			console.log(err);
+		}
 	};
 
 	return (
@@ -44,11 +108,16 @@ const Referral = (props) => {
 					The referral program lets you earn a bonus for each friend (“invitee”)
 					who signs up and makes a crypto trade using your personal signup link.
 				</p>
-				<form className="input-group mb-3" id={Styles.send}>
+				<form
+					className="input-group mb-3"
+					id={Styles.send}
+					onSubmit={inviteHandler}
+				>
 					<input
 						type="email"
 						className="form-control"
 						placeholder="Enter email address"
+						ref={inputRefEmail}
 						required
 					/>
 					<button className="btn btn-success" type="submit">
@@ -59,13 +128,13 @@ const Referral = (props) => {
 					<input
 						id={Styles.link}
 						type="text"
-						value={link.value}
+						value={link}
 						className="form-control"
 						readOnly
 					/>
-					<CopyToClipboard text={link.value} onCopy={copied}>
+					<CopyToClipboard text={link} onCopy={copyHandler}>
 						<button className="btn btn-link" type="button">
-							<strong> {link.btntext} </strong>
+							<strong> {copyBtn.btntext} </strong>
 						</button>
 					</CopyToClipboard>
 				</div>
@@ -73,14 +142,14 @@ const Referral = (props) => {
 					<div className="card-header bg-white">Share your link</div>
 					<div className="card-body d-flex justify-content-center">
 						<FacebookShareButton
-							url={link.value}
+							url={link}
 							quote={"Join CryptoX"}
 							className={Styles.social}
 						>
 							<FacebookIcon size={45} round={true} />
 						</FacebookShareButton>
 						<WhatsappShareButton
-							url={link.value}
+							url={link}
 							title={"Join CryptoX"}
 							separator=": "
 							className={Styles.social}
@@ -88,7 +157,7 @@ const Referral = (props) => {
 							<WhatsappIcon size={45} round={true} />
 						</WhatsappShareButton>
 						<TelegramShareButton
-							url={link.value}
+							url={link}
 							title={"Join CryptoX"}
 							separator=": "
 							className={Styles.social}
