@@ -7,7 +7,7 @@ import LoadingSpinner from "../shared/components/UIElements/LoadingSpinner";
 
 const SignUp = (props) => {
 	const { refCode } = useParams();
-	
+
 	const inputRefName = useRef();
 	const inputRefEmail = useRef();
 	const inputRefMobile = useRef();
@@ -26,7 +26,7 @@ const SignUp = (props) => {
 		event.preventDefault();
 		setIsLoading(true);
 
-		if(enteredPassword !== confirmPassword) {
+		if (enteredPassword !== confirmPassword) {
 			setMessage('Password & Confirm Password must be same!');
 			setIsLoading(false);
 			return;
@@ -123,115 +123,111 @@ const SignUp = (props) => {
 			{/* <ErrorModal error={error} onClear={clearError} /> */}
 			<div className="login" id="signup">
 				{isLoading && <LoadingSpinner asOverlay />}
-				<form
+				<div
 					className="border border-dark rounded"
 					id="signupform"
-					onSubmit={signupHandler}
 				>
 					<h2 className="text-center" id="title">
 						Signup to CryptoX
 					</h2>
-					<div className="mb-3">
-						<label htmlFor="name" className="form-label">
-							Name
-						</label>
-						<input
-							type="text"
-							className="form-control"
-							id="name"
-							ref={inputRefName}
-							required
-						/>
-					</div>
-					<div className="mb-3">
-						<label htmlFor="email" className="form-label">
-							Email address
-						</label>
-						<input
-							type="email"
-							className="form-control"
-							id="email"
-							aria-describedby="emailHelp"
-							ref={inputRefEmail}
-							required
-						/>
-						<div id="emailHelp" className="form-text">
-							We'll never share your email with anyone else.
-						</div>
-					</div>
-					<div id="password">
+					<form onSubmit={signupHandler}>
 						<div className="mb-3">
-							<label htmlFor="password" className="form-label">
-								Password
+							<label htmlFor="name" className="form-label">
+								Name
 							</label>
 							<input
-								style={Style}
-								type="password"
+								type="text"
 								className="form-control"
-								id="password"
-								value={enteredPassword}
-								minLength={6}
-								onChange={passwordHandler}
+								id="name"
+								ref={inputRefName}
 								required
 							/>
 						</div>
 						<div className="mb-3">
-							<label htmlFor="confirm-password" className="form-label">
-								Confirm Password
+							<label htmlFor="email" className="form-label">
+								Email address
 							</label>
 							<input
-								style={Style}
-								type="password"
+								type="email"
 								className="form-control"
-								id="confirm-password"
-								value={confirmPassword}
-								onChange={confirmPasswordHandler}
+								id="email"
+								aria-describedby="emailHelp"
+								ref={inputRefEmail}
+								required
+							/>
+							<div id="emailHelp" className="form-text">
+								We'll never share your email with anyone else.
+							</div>
+						</div>
+						<div id="password">
+							<div className="mb-3">
+								<label htmlFor="password" className="form-label">
+									Password
+								</label>
+								<input
+									style={Style}
+									type="password"
+									className="form-control"
+									id="password"
+									value={enteredPassword}
+									minLength={6}
+									onChange={passwordHandler}
+									required
+								/>
+							</div>
+							<div className="mb-3">
+								<label htmlFor="confirm-password" className="form-label">
+									Confirm Password
+								</label>
+								<input
+									style={Style}
+									type="password"
+									className="form-control"
+									id="confirm-password"
+									value={confirmPassword}
+									onChange={confirmPasswordHandler}
+									required
+								/>
+							</div>
+						</div>
+						<div className="mb-3">
+							<label htmlFor="phone" className="form-label">
+								Mobile Number
+							</label>
+							<input
+								type="phone"
+								className="form-control"
+								id="phone"
+								ref={inputRefMobile}
 								required
 							/>
 						</div>
-					</div>
-					<div className="mb-3">
-						<label htmlFor="phone" className="form-label">
-							Mobile Number
+						<label htmlFor="referral" className="form-label">
+							Referral Code (Optional)
 						</label>
-						<input
-							type="phone"
-							className="form-control"
-							id="phone"
-							ref={inputRefMobile}
-							required
-						/>
-					</div>
-					<label htmlFor="referral" className="form-label">
-						Referral Code (Optional)
-					</label>
-					<div className="input-group mb-3">
-						<input
-							type="text"
-							className="form-control"
-							id="referral"
-							value={referralCode}
-							onChange={referralCodeHandler}
-						/>
-					</div>
-					<div className="d-grid gap-2">
-						<button type="submit" className="btn btn-primary">
-							<strong>SIGNUP </strong>
-							<i className="fa fa-chevron-right"></i>
-						</button>
-					</div>
-					<hr />
-					<div className="social">
-						<button type="button" className="btn btn-danger"><i className="fa fa-google-plus"> <span> Sign in with Google+</span></i></button>
-						<button type="button" className="btn btn-primary"><i className="fa fa-facebook"> <span> Login with Facebook</span></i></button>
-					</div>
+						<div className="input-group mb-3">
+							<input
+								type="text"
+								className="form-control"
+								id="referral"
+								value={referralCode}
+								onChange={referralCodeHandler}
+							/>
+						</div>
+						<div className="d-grid gap-2">
+							<button type="submit" className="btn btn-primary">
+								<strong>SIGNUP </strong>
+								<i className="fa fa-chevron-right"></i>
+							</button>
+						</div>
+					</form>
 					<hr />
 					<div className="reg">
 						<Link to="/login" className="nav-link active">
 							Already registered? Login
 						</Link>
 					</div>
-				</form>
+				</div>
 			</div>
 		</div>
 	);
