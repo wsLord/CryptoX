@@ -14,8 +14,8 @@ const tokenSchema = new mongoose.Schema({
 		type: Date,
 		required: true,
 		default: Date.now,
-		expires: 86400 // 24 Hours
+		expires: 600 // 10 mins
 	}
 });
 
-module.exports = mongoose.model('emailTokens', tokenSchema);
+module.exports = mongoose.model('passResetTokens', tokenSchema);

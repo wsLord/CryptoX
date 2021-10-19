@@ -28,7 +28,7 @@ const getData = function (portfolioOfUser, coinData) {
 		resolve(arr);
 	});
 };
-module.exports.portfolio = async (req, res) => {
+const portfolio = async (req, res) => {
 	if (!req.userData) {
 		res.redirect("back");
 	}
@@ -68,7 +68,8 @@ module.exports.portfolio = async (req, res) => {
 
 	res.redirect("back");
 };
-module.exports.addToWatchList = async (req, res) => {
+
+const addToWatchList = async (req, res) => {
 	if (!req.userData) {
 		res.redirect("back");
 	}
@@ -86,3 +87,6 @@ module.exports.addToWatchList = async (req, res) => {
 	user.save();
 	return res.redirect("back");
 };
+
+module.exports.portfolio = portfolio;
+module.exports.addToWatchList = addToWatchList;

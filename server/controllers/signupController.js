@@ -76,10 +76,10 @@ const signupController = async (req, res, next) => {
 	let info = await emailVerifyTokenSender(createdUser, req.headers.host);
 
 	res.status(201).json({
-		message: "Registered & a verification email has been sent.",
+		message: "Registered and verification email has been sent. Check your mailbox.",
 		userId: createdUser.id,
 		email: createdUser.email,
-		mailinfo: info.messageId,
+		mailinfo: info.messageId
 	});
 };
 

@@ -41,8 +41,8 @@ module.exports = async (createdUser, hostaddress) => {
 			hostaddress +
 			"/verify/email/" +
 			token.token +
-			"\nThis link will expire in 24 hours. Try logging in to receive new link." +
-			"\n\n\nRegards,\nCryptoX\n\nKeep Minting! :)",
+			"\n\nThis link will expire in 24 hours. Try logging in to receive new link." +
+			"\n\n\n\nRegards,\nCryptoX\n\nKeep Minting! :)",
 	};
 
 	let info;

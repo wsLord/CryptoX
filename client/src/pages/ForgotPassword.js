@@ -5,61 +5,60 @@ import "./ForgotPassword.css";
 import Alert from "../shared/components/Alert";
 import LoadingSpinner from "../shared/components/UIElements/LoadingSpinner";
 
-const ForgotPassword = props => {
+const ForgotPassword = (props) => {
 	const inputRefEmail = useRef();
 
 	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState("baat hai");
+	const [message, setMessage] = useState(null);
 
 	const resetPasswordHandler = async (event) => {
 		event.preventDefault();
-		// setIsLoading(true);
+		setIsLoading(true);
 
-		// const enteredEmail = inputRefEmail.current.value;
+		const enteredEmail = inputRefEmail.current.value;
 
-		// try {
-		// 	const res = await fetch(
-		// 		`${process.env.REACT_APP_SERVER_URL}/user/login`,
-		// 		{
-		// 			method: "POST",
-		// 			body: JSON.stringify({
-		// 				email: enteredEmail,
-		// 				password: enteredPassword
-		// 			}),
-		// 			headers: {
-		// 				"Content-Type": "application/json"
-		// 			}
-		// 		}
-		// 	);
+		try {
+			const res = await fetch(
+				`${process.env.REACT_APP_SERVER_URL}/forgotpassword`,
+				{
+					method: "POST",
+					body: JSON.stringify({
+						email: enteredEmail,
+					}),
+					headers: {
+						"Content-Type": "application/json",
+					},
+				}
+			);
 
-		// 	const responseData = await res.json();
+			const responseData = await res.json();
 
-		// 	setIsLoading(false);
-		// 	if(res.ok) {
-		// 		// logged in
-				
-		// 		console.log(responseData);
-
-		// 	}
-		// 	else {
-		// 		console.log(responseData.message);
-		// 	}
-
-		// 	// auth.login(responseData.user.id);
-		// } catch (err) {
-		// 	setIsLoading(false);
-		// 	console.log(err);
-		// }
+			setIsLoading(false);
+			if (res.ok) {
+				// Reset mail sent
+				setMessage(responseData.message);
+				inputRefEmail.current.value = "";
+				console.log(responseData);
+			} else {
+				// Something went wrong!
+				setMessage(responseData.message);
+				console.log(responseData.message);
+			}
+		} catch (err) {
+			setIsLoading(false);
+			console.log(err);
+			setMessage(err.message);
+		}
 	};
 
-	// const clearError = () => {
-	// 	setError(null);
-	// }
+	const clearmessage = () => {
+		setMessage(null);
+	};
 
 	return (
 		<Fragment>
 			{/* <ErrorModal error={error} onClear={clearError} /> */}
-			{error && <Alert msg={error} />}
+			{message && <Alert msg={message} onClose={clearmessage} />}
 			<div className="login">
 				{isLoading && <LoadingSpinner asOverlay />}
 				<form
