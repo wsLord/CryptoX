@@ -86,59 +86,60 @@ const Login = (props) => {
 			{error && <Alert msg={error} onClose={clearError} />}
 			<div className="login">
 				{isLoading && <LoadingSpinner asOverlay />}
-				<form
+				<div
 					className="border border-dark rounded"
 					id="loginform"
-					onSubmit={loginHandler}
 				>
 					<h2 className="text-center" id="title">
 						Login to CryptoX
 					</h2>
-					<div className="mb-3">
-						<label htmlFor="email" className="form-label">
-							Email address
-						</label>
-						<input
-							type="email"
-							className="form-control"
-							id="email"
-							aria-describedby="emailHelp"
-							ref={inputRefEmail}
-							required
-						/>
-						<div id="emailHelp" className="form-text">
-							We'll never share your email with anyone else.
+					<form onSubmit={loginHandler}>
+						<div className="mb-3">
+							<label htmlFor="email" className="form-label">
+								Email address
+							</label>
+							<input
+								type="email"
+								className="form-control"
+								id="email"
+								aria-describedby="emailHelp"
+								ref={inputRefEmail}
+								required
+							/>
+							<div id="emailHelp" className="form-text">
+								We'll never share your email with anyone else.
+							</div>
 						</div>
-					</div>
-					<div className="mb-3">
-						<label htmlFor="password" className="form-label">
-							Password
-						</label>
-						<input
-							type="password"
-							className="form-control"
-							id="password"
-							ref={inputRefPassword}
-							required
-						/>
-					</div>
-					<div className="mb-3 form-check">
-						<input
-							type="checkbox"
-							className="form-check-input"
-							id="check"
-							onChange={isRememberMeHandler}
-						/>
-						<label className="form-check-label" htmlFor="check">
-							Remember me
-						</label>
-					</div>
-					<div className="d-grid gap-2">
-						<button type="submit" className="btn btn-primary">
-							<strong>LOGIN </strong>
-							<i className="fa fa-chevron-right"></i>
-						</button>
-					</div>
+						<div className="mb-3">
+							<label htmlFor="password" className="form-label">
+								Password
+							</label>
+							<input
+								type="password"
+								className="form-control"
+								id="password"
+								ref={inputRefPassword}
+								required
+							/>
+						</div>
+						<div className="mb-3 form-check">
+							<input
+								type="checkbox"
+								className="form-check-input"
+								id="check"
+								onChange={isRememberMeHandler}
+							/>
+							<label className="form-check-label" htmlFor="check">
+								Remember me
+							</label>
+						</div>
+						<div className="d-grid gap-2">
+							<button type="submit" className="btn btn-primary">
+								<strong>LOGIN </strong>
+								<i className="fa fa-chevron-right"></i>
+							</button>
+						</div>
+					</form>
 					<hr />
 					<div className="reg">
 						<Link to="/signup" className="nav-link active">
@@ -148,7 +149,7 @@ const Login = (props) => {
 							Forgot Password
 						</Link>
 					</div>
-				</form>
+				</div>
 			</div>
 		</Fragment>
 	);
