@@ -2,6 +2,7 @@ import { Fragment, useState, useRef, useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
 
 import "./Login.css";
+import Sociallogin from "./Sociallogin"
 import Alert from "../shared/components/Alert";
 import LoadingSpinner from "../shared/components/UIElements/LoadingSpinner";
 import AuthContext from "../store/authContext";
@@ -140,6 +141,8 @@ const Login = (props) => {
 							</button>
 						</div>
 					</form>
+					<hr />
+					<Sociallogin/>
 					<hr />
 					<div className="reg">
 						<Link to="/signup" className="nav-link active">
