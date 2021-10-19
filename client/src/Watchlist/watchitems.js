@@ -7,15 +7,15 @@ export default function watchitems({ data }) {
     return (
         <tr>
             <td>
-                <button id="add" type="button" className="btn btn-light" data-bs-toggle="tooltip" data-bs-placement="left" title="Remove from Watchlist">
+                <button id="add" type="button" className="btn btn-light bg-white" data-bs-toggle="tooltip" data-bs-placement="left" title="Remove from Watchlist">
                     <i className="fa fa-star"></i>
                 </button>
             </td>
             <td>
-                <div>
+                <a href="/" className="text-dark text-decoration-none">
                     <h5>{data.name} <img className={Styles.coins} src={data.image.small} alt=""></img></h5>
                     <h6>({data.symbol})</h6>
-                </div>
+                </a>
             </td>
             <td>
                 <strong>&#8377; </strong>{data.market_data.current_price.inr}
