@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const RecurringJobs = require('../recurringjobs/transaction');
+const RecurringJobs = require('../recurringJobs/transaction');
 require('dotenv').config();
 
 const url = process.env.MONGODB_URL;
