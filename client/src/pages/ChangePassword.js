@@ -43,15 +43,15 @@ export default function ChangePassword() {
             <div className="card" id={Styles.card}>
                 <h2>Set New Password</h2>
                 <form id={Styles.form}>
-                    <div class="mb-3">
-                        <label HtmlFor="password" class="form-label">New Password</label>
-                        <input style={Style} type="password" class="form-control" id="password" onChange={passwordHandler} minLength={6} required />
+                    <div className="mb-3">
+                        <label HtmlFor="password" className="form-label">New Password</label>
+                        <input style={Style} type="password" className="form-control" id="password" onChange={passwordHandler} minLength={6} required />
                     </div>
-                    <div class="mb-3">
-                        <label HtmlFor="confirm-password" class="form-label">Confirm Password</label>
-                        <input style={Style} type="password" class="form-control" id="confirm-password" onChange={confirmPasswordHandler} minLength={6} required />
+                    <div className="mb-3">
+                        <label HtmlFor="confirm-password" className="form-label">Confirm Password</label>
+                        <input style={Style} type="password" className="form-control" id="confirm-password" onChange={confirmPasswordHandler} minLength={6} required />
                     </div>
-                    <button type="submit" class="btn btn-primary p-2.5 w-100"><strong> Change </strong><i className="fa fa-chevron-right"></i></button>
+                    <button type="submit" className="btn btn-primary p-2.5 w-100"><strong> Change </strong><i className="fa fa-chevron-right"></i></button>
                 </form>
             </div>
         </div>

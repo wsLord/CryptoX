@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import "./SignUp.css";
+import Sociallogin from "./Sociallogin";
 import Alert from "../shared/components/Alert";
 import LoadingSpinner from "../shared/components/UIElements/LoadingSpinner";
 
@@ -221,6 +222,8 @@ const SignUp = (props) => {
 							</button>
 						</div>
 					</form>
+					<hr/>
+					<Sociallogin/>
 					<hr />
 					<div className="reg">
 						<Link to="/login" className="nav-link active">
