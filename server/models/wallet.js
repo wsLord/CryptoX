@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const walletSchema = new mongoose.Schema(
 	{
 		balance: {
-			type: Integer,
+			type: String,
 			required: true,
 		},
 		user: {

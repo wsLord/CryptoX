@@ -4,7 +4,7 @@ const { check } = require("express-validator");
 const router = express.Router();
 const signupController = require("../controllers/signupController");
 const loginController = require("../controllers/loginController");
-
+const authenticate = require("../middlewares/authVerify");
 // router.get("/profile", usersController.profile);
 
 router.post(
@@ -20,4 +20,6 @@ router.post(
 
 router.post("/login", loginController);
 
+router.get("/portfolio",authenticate.verify,usersController.portfolio);
+router.get("/addToWatchList:id",authenticate.verify,usersController.addToWatchList);
 module.exports = router;

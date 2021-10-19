@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-module.exports = (req, res, next) => {
+module.exports.verify = (req, res, next) => {
 	if (req.method === "OPTIONS") {
 		return next();
 	}
