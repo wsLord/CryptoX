@@ -7,6 +7,7 @@ import HomeBody from "./HomeBody";
 import Login from "../../pages/Login";
 import SignUp from "../../pages/SignUp";
 import ForgotPassword from "../../pages/ForgotPassword";
+import ResetPassword from "../../pages/ResetPassword";
 
 const Home = () => {
 	return (
@@ -27,6 +28,9 @@ const Home = () => {
 				</Route>
 				<Route exact path="/forgotpassword">
 					<ForgotPassword />
+				</Route>
+				<Route path="/resetpassword/:token">
+					<ResetPassword />
 				</Route>
 				<Route path="*">
 					<Redirect to="/" />

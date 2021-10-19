@@ -61,9 +61,9 @@ forgotPassword.post(
 				"Hey " +
 				bhulakkadUser.name +
 				",\n\n" +
-				"You can reset your account's password by clicking the link: \nhttp://" +
-				req.headers.host +
-				"/resetpassword/" +
+				"You can reset your account's password by clicking the link: \n" +
+				req.header('Referer') +
+				"resetpassword/" +
 				token.token +
 				"\n\nThis link will expire in 10 mins. Ignore the mail if not requested." +
 				"\n\n\n\nRegards,\nCryptoX\n\nKeep Minting! :)",

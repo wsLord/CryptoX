@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import "./SignUp.css";
@@ -118,7 +118,7 @@ const SignUp = (props) => {
 	};
 
 	return (
-		<div>
+		<Fragment>
 			{message && <Alert msg={message} onClose={clearmessage} />}
 			{/* <ErrorModal error={error} onClear={clearError} /> */}
 			<div className="login" id="signup">
@@ -229,7 +229,7 @@ const SignUp = (props) => {
 					</div>
 				</div>
 			</div>
-		</div>
+		</Fragment>
 	);
 };
 
