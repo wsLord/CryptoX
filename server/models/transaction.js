@@ -7,14 +7,14 @@ const transactionSchema=new mongoose.Schema({
 	},
 	quantity: { type: String, required: true },
     price:{ type: String, required: true},
-	user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-    },
-    portfolioId: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: "Portfolio",
-	},
+	// user: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: "User",
+    // },
+    // portfolioId: {
+	// 	type: mongoose.Schema.Types.ObjectId,
+	// 	ref: "Portfolio",
+	// },
     coinId:{ type: String, required: true}
   
 

@@ -3,6 +3,7 @@ const User = require('../models/user');
 const Wallet=require('../models/wallet');
 const Portfolio = require('../models/portfolio');
 const Transaction = require('../models/transaction');
+const buyRequest = require('../models/buyRequest');
 module.exports.buy= async(req,res)=>{
     if(!req.userData){
         res.redirect('back');
@@ -63,8 +64,8 @@ module.exports.buy= async(req,res)=>{
             walletId: WalletOfUser._id,
             quantity: quantity.toString(),
             price:price.toString(),
-            user:user._id,
-            portfolioId:portfolioOfUser._id,
+            // user:user._id,
+            // portfolioId:portfolioOfUser._id,
             coinId:coinId
 
         });
@@ -131,8 +132,8 @@ module.exports.sell= async(req,res)=>{
                 walletId: WalletOfUser._id,
                 quantity: quantity.toString(),
                 price:price.toString(),
-                user:user._id,
-                portfolioId:portfolioOfUser._id,
+                // user:user._id,
+                // portfolioId:portfolioOfUser._id,
                 coinId:coinId
     
             });
@@ -152,9 +153,95 @@ module.exports.sell= async(req,res)=>{
         console.log('the transaction is not possible');
         res.redirect('back');
     }
+}
+module.exports.buyLimit=async (req,res)=>{
+    if(!req.userData){
+        res.redirect('back');
+    }
+    let user = await User.findById(req.userData);
+    if(!user){
+        res.redirect('back');
+    }
+    let maxpri=BigInt(req.body.maxPrice*10000000);
+    try{
+        let newRequest = await BuyRequest.create({
+            coinId:req.body.coinId,
+            form:user.walletId,
+            quantity:req.body.quantity,
+            mode:'1',
+            maxPrice:maxpri.toString(),
+            portfolioId:user.portfolioId
+        });
 
-    
-    
+       
+        return res.redirect('back');
+    }
+    catch(err) {
+        console.log('error',err);
+        res.redirect('back');
+    }
+}
 
+module.exports.exchange = async ()=>{
+    if(!req.userData){
+        res.redirect('back');
+    }
+    let user = await User.findById(req.userData);
+    if(!user){
+        res.redirect('back');
+    }
+    let coinIdToSell=req.body.sellCoin;
+    let coinIdToBuy=req.body.buyCoin;
+    
+    let coinDataSell = await axios.get(`https://api.coingecko.com/api/v3/coins/$(coinIdToSell)`);//axios by default parses Json response
+    let coinDataBuy = await axios.get(`https://api.coingecko.com/api/v3/coins/$(coinIdToBuy)`);
+    let priceOfBuyCoin=BigInt(coinDataBuy.market_data.current_price.inr*10000000);
+    let priceOfSellCoin=BigInt(coinDataSell.market_data.current_price.inr*10000000);
+    
+    // let portfolioOfUser=await Portfolio.findById(user.portfolioId);
+
+ 
+
+    //sellPart
+    let quantity=BigInt(req.body.quantity);
+
+
+    let portfolioOfUser=await Portfolio.findById(user.portfolioId);
+
+    var quantityOfCoinsOwned;
+    var avgPrice;
+    var index;
+
+
+    for(a of portfolioOfUser.coinsOwned){
+        if(a.coinId==coinIdToSell){
+            quantityOfCoinsOwned = BigInt(a.quantity);
+            avgPrice=a.priceOfBuy
+            index=portfolioOfUser.coinsOwned.findIndex(a);
+        }
+    }
+    if(index&&quantityOfCoinsOwned>=quantity){
+        portfolioOfUser.coinsOwned.slice(index, 1);
+        let newQuantity=quantityOfCoinsOwned-quantity;
+        if(newQuantity>0n){
+            portfolioOfUser.coinsOwned.push({
+                coidId: coinIdToSell,
+                quantity: newQuantity.toString(),
+                priceOfBuy:avgPrice
+            })
+        }
+        // await portfolioOfUser.save();
+        
+        let MoneyHeld=priceOfSellCoin*quantity;
+
+        let priceOfCoin
+        
+
+
+    }
+    else{
+        console.log('the transaction is not possible');
+        res.redirect('back');
+    }
 
 }

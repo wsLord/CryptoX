@@ -10,7 +10,7 @@ const buyRequestSchema=new mongoose.Schema({
     },
     //comment 
     quantity: {
-        type:Integer,
+        type:String,
         required :true
     },
     mode: {
@@ -22,7 +22,11 @@ const buyRequestSchema=new mongoose.Schema({
     maxPrice: {
         type:String,
         required :true
-    }
+    },
+    portfolioId: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "Portfolio",
+	}
 
   
 
