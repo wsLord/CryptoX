@@ -11,7 +11,7 @@ const signupController = async (req, res, next) => {
 		return next(new Error("Invalid inputs passed, please check your data."));
 	}
 
-	const { name, email, mobile, password } = req.body;
+	const { name, email, mobile, password, referral } = req.body;
 
 	let existingUser;
 	try {
@@ -33,15 +33,37 @@ const signupController = async (req, res, next) => {
 		);
 	}
 
-	const shortUIDGenerator = new shortuid({ length: 5, dictionary: 'alphanum_upper' });
+	const shortUIDGenerator = new shortuid({
+		length: 5,
+		dictionary: "alphanum_upper",
+	});
 	let referralCode = shortUIDGenerator();
+
+	let referredBy = null;
+	if (referral) {
+		try {
+			const referralUser = await User.findOne({ referralID: referral });
+
+			// Only check if such user found
+			if (referralUser) {
+				referredBy = referralUser.email;
+			}
+
+			// Add money to referred user wallet
+			// .........
+			// .........
+		} catch (err) {
+			return next(new Error("Signing up failed, please try again later."));
+		}
+	}
 
 	const createdUser = new User({
 		name,
 		email,
 		mobile,
 		password: hashedPassword,
-		referralID: referralCode
+		referralID: referralCode,
+		referredBy: referredBy
 	});
 
 	try {

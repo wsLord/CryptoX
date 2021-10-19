@@ -20,11 +20,17 @@ const SignUp = (props) => {
 	});
 
 	const [isLoading, setIsLoading] = useState(false);
-	// const [error, setError] = useState(null);
+	const [message, setMessage] = useState(null);
 
 	const signupHandler = async (event) => {
 		event.preventDefault();
 		setIsLoading(true);
+
+		if(enteredPassword !== confirmPassword) {
+			setMessage('Password & Confirm Password must be same!');
+			setIsLoading(false);
+			return;
+		}
 
 		const enteredName = inputRefName.current.value;
 		const enteredEmail = inputRefEmail.current.value;
@@ -52,25 +58,32 @@ const SignUp = (props) => {
 
 			setIsLoading(false);
 			if (res.ok) {
-				// logged in
-
+				// Registered and Email Verification Sent
+				setMessage(responseData.message);
 				console.log(responseData);
 
+				// Clearing the form
+				inputRefName.current.value = '';
+				inputRefEmail.current.value = '';
+				inputRefMobile.current.value = '';
+				setEnteredPassword('');
+				setConfirmPassword('');
 			}
 			else {
+				// Something went wrong!
+				setMessage(responseData.message);
 				console.log(responseData.message);
 			}
-
-			// auth.login(responseData.user.id);
 		} catch (err) {
 			setIsLoading(false);
+			setMessage(err.message);
 			console.log(err);
 		}
 	};
 
-	// const clearError = () => {
-	// 	setError(null);
-	// }
+	const clearmessage = () => {
+		setMessage(null);
+	}
 
 	let passwordHandler = (event) => {
 		setEnteredPassword(event.target.value);
@@ -106,7 +119,7 @@ const SignUp = (props) => {
 
 	return (
 		<div>
-			{props.ismsg && <Alert msg={props.msg} />}
+			{message && <Alert msg={message} onClose={clearmessage} />}
 			{/* <ErrorModal error={error} onClear={clearError} /> */}
 			<div className="login" id="signup">
 				{isLoading && <LoadingSpinner asOverlay />}
