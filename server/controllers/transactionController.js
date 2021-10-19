@@ -3,7 +3,8 @@ const User = require('../models/user');
 const Wallet=require('../models/wallet');
 const Portfolio = require('../models/portfolio');
 const Transaction = require('../models/transaction');
-const buyRequest = require('../models/buyRequest');
+const BuyRequest = require('../models/buyRequest');
+const Exchange = require('../models/exchange');
 module.exports.buy= async(req,res)=>{
     if(!req.userData){
         res.redirect('back');
@@ -233,10 +234,56 @@ module.exports.exchange = async ()=>{
         // await portfolioOfUser.save();
         
         let MoneyHeld=priceOfSellCoin*quantity;
+        // let charge=MoneyHeld-
 
-        let priceOfCoin
+        let quantityBoughtAgain=MoneyHeld/priceOfBuyCoin;
+
         
 
+        for(a of portfolioOfUser.coinsOwned){
+            if(a.coidId==coinIdToBuy){
+                quantityBought=a.quantity;
+                avgPrice=a.priceOfBuy;
+                index=portfolioOfUser.coinsOwned.findIndex(a);
+            }
+        }
+        if(index){
+            portfolioOfUser.coinsOwned.slice(index, 1);
+            let newAvgPrice=(avgPrice*quantityBought+MoneyHeld)/(quantityBought+quantityBoughtAgain);
+            let newQuantity=quantityBought+quantityBoughtAgain;
+            portfolioOfUser.coinsOwned.push({
+                coidId: coinIdToBuy,
+                quantity: newQuantity.toString(),
+                priceOfBuy:newAvgPrice.toString()
+            })
+        }
+        else{
+            portfolioOfUser.coinsOwned.push({
+                coidId: coinIdToBuy,
+                quantity: quantityBoughtAgain.toString(),
+                priceOfBuy:priceOfBuyCoin.toString()
+            })
+        }
+        await portfolioOfUser.save()
+        
+
+        try{
+            let xchange = await Exchange.create({
+                walletId: user.walletId,
+                quantitySold: quantity,
+                quantityBought: quantityBoughtAgain,
+                coinIdSold:coinIdToSell,
+                coinIdBought:coinIdToBuy
+    
+            });
+            
+           
+            return res.redirect('back');
+        }
+        catch(err) {
+            console.log('error',err);
+            return;
+        }
 
     }
     else{
