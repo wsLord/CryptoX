@@ -1,5 +1,7 @@
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 const shortuid = require("short-unique-id");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
@@ -10,7 +12,7 @@ const Wallet = require("../models/wallet");
 const Portfolio = require("../models/portfolio");
 const Transaction = require("../models/transaction");
 const emailVerifyTokenSender = require("../middlewares/emailToken");
-
+const passResetToken = require("../models/passResetToken");
 const getData = function (portfolioOfUser, coinData) {
 	return new Promise((resolve) => {
 		let arr = [];
@@ -157,6 +159,7 @@ const login = async (req, res, next) => {
 };
 
 const signup = async (req, res, next) => {
+	console.log('yaha aya');
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
 		return next(new Error("Invalid inputs passed, please check your data."));
@@ -286,7 +289,7 @@ const resetPasswordReq = async (req, res, next) => {
 			",\n\n" +
 			"You can reset your account's password by clicking the link: \n" +
 			req.header('Referer') +
-			"resetpassword/" +
+			"/user/reset/" +
 			token.token +
 			"\n\nThis link will expire in 10 mins. Ignore the mail if not requested." +
 			"\n\n\n\nRegards,\nCryptoX\n\nKeep Minting! :)",
