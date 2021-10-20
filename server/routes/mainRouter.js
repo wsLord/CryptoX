@@ -12,7 +12,7 @@ const homeController = require('../controllers/homeController');
 
 router.get("/", homeController.home);
 router.use("/user", usersRouter);
-router.use("/verify", require('./verificationRouter'));
+router.use("/verify", verificationRouter);
 router.use("/referral", referalRouter);
 router.use("/transaction", transactionRouter);
 // router.use("/forgotpassword", forgotPasswordController);
