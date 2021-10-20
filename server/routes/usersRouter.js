@@ -16,10 +16,11 @@ router.post(
 		check("mobile").isLength({ min: 10, max: 10 }),
 		check("password").isLength({ min: 6 })
 	],
-	signupController
+	usersController.signup
 );
 
-router.post("/login", usersController.login);
+router.get("/login", usersController.login);
+// router.post("/signup", usersController.signup);
 router.post("/resetPasswordReq",body("email").normalizeEmail().isEmail(),usersController.resetPasswordReq);
 router.post("/reset",body("newPassword").isLength({ min: 6 }),usersController.reset);
 
