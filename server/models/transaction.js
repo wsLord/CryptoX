@@ -1,6 +1,6 @@
 const mongoose=require('mongoose');
 const transactionSchema=new mongoose.Schema({
-    catagory: { type: String, required: true },
+    category: { type: String, required: true },
 	walletId: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "Wallet",
