@@ -6,79 +6,82 @@ const Transaction = require('../models/transaction');
 const BuyRequest = require('../models/buyRequest');
 const Exchange = require('../models/exchange');
 module.exports.buy= async(req,res)=>{
+    console.log(req.userData);
     if(!req.userData){
         res.redirect('back');
     }
-    let user = await User.findById(req.userData);
+    let user = await User.findById(req.userData.id);
     if(!user){
         res.redirect('back');
     }
-
+    // console.log(user);
     let coinId=req.params.id;
+    console.log(coinId);
     let quantity=BigInt(req.body.quantity);
-
-    let coinData = await axios.get(`https://api.coingecko.com/api/v3/coins/$(coinId)`);//axios by default parses Json response
-    let price=BigInt(coinData.market_data.current_price.inr*10000000);
     
-    let WalletOfUser=await Wallet.findById(user.walletId);
+    let coinData =  await axios.get(`https://api.coingecko.com/api/v3/coins/${coinId}`);//axios by default parses Json response
+    // console.log(coinData);
+    let price=BigInt(coinData.data.market_data.current_price.inr*10000000);
+    console.log(price);
+    // let WalletOfUser=await Wallet.findById(user.walletId);
     
-    if(BigInt(WalletOfUser.balance)<price*quantity){
-        console.log('Insufficient Balance');
-        res.redirect('back');
-    }
+    // if(BigInt(WalletOfUser.balance)<price*quantity){
+    //     console.log('Insufficient Balance');
+    //     res.redirect('back');
+    // }
 
-    let newBalance = BigInt(WalletOfUser.balance)-price*quantity;
-    WalletOfUser.balance=newBalance.toString();
-    await WalletOfUser.save();
-    let portfolioOfUser=await Portfolio.findById(user.portfolioId);
-    var quantityBought;
-    var avgPrice;
-    var index;
-    for(a of portfolioOfUser.coinsOwned){
-        if(a.coidId==coinId){
-            quantityBought=a.quantity;
-            avgPrice=a.priceOfBuy;
-            index=portfolioOfUser.coinsOwned.findIndex(a);
-        }
-    }
-    if(index){
-        portfolioOfUser.coinsOwned.slice(index, 1);
-        let newAvgPrice=(avgPrice*quantityBought+price*quantity)/(quantityBought+quantity);
-        let newQuantity=quantityBought+quantity;
-        portfolioOfUser.coinsOwned.push({
-            coidId: coinId,
-            quantity: newQuantity.toString(),
-            priceOfBuy:newAvgPrice.toString()
-        })
-    }
-    else{
-        portfolioOfUser.coinsOwned.push({
-            coidId: coinId,
-            quantity: quantity.toString(),
-            priceOfBuy:price.toString()
-        })
-    }
-    await portfolioOfUser.save()
-    try{
-        let transac = await Transaction.create({
-            category: 'buy',
-            walletId: WalletOfUser._id,
-            quantity: quantity.toString(),
-            price:price.toString(),
-            // user:user._id,
-            // portfolioId:portfolioOfUser._id,
-            coinId:coinId
+    // let newBalance = BigInt(WalletOfUser.balance)-price*quantity;
+    // WalletOfUser.balance=newBalance.toString();
+    // await WalletOfUser.save();
+    // let portfolioOfUser=await Portfolio.findById(user.portfolioId);
+    // var quantityBought;
+    // var avgPrice;
+    // var index;
+    // for(a of portfolioOfUser.coinsOwned){
+    //     if(a.coidId==coinId){
+    //         quantityBought=a.quantity;
+    //         avgPrice=a.priceOfBuy;
+    //         index=portfolioOfUser.coinsOwned.findIndex(a);
+    //     }
+    // }
+    // if(index){
+    //     portfolioOfUser.coinsOwned.slice(index, 1);
+    //     let newAvgPrice=(avgPrice*quantityBought+price*quantity)/(quantityBought+quantity);
+    //     let newQuantity=quantityBought+quantity;
+    //     portfolioOfUser.coinsOwned.push({
+    //         coidId: coinId,
+    //         quantity: newQuantity.toString(),
+    //         priceOfBuy:newAvgPrice.toString()
+    //     })
+    // }
+    // else{
+    //     portfolioOfUser.coinsOwned.push({
+    //         coidId: coinId,
+    //         quantity: quantity.toString(),
+    //         priceOfBuy:price.toString()
+    //     })
+    // }
+    // await portfolioOfUser.save()
+    // try{
+    //     let transac = await Transaction.create({
+    //         category: 'buy',
+    //         walletId: WalletOfUser._id,
+    //         quantity: quantity.toString(),
+    //         price:price.toString(),
+    //         // user:user._id,
+    //         // portfolioId:portfolioOfUser._id,
+    //         coinId:coinId
 
-        });
+    //     });
 
        
-        return res.redirect('back');
-    }
-    catch(err) {
-        console.log('error',err);
-        return;
-    }
-
+    //     return res.redirect('back');
+    // }
+    // catch(err) {
+    //     console.log('error',err);
+    //     return;
+    // }
+    return res.status(200).json('success');
 }
 
 

@@ -13,6 +13,7 @@ module.exports = (req, res, next) => {
 		}
 		const decodedToken = jwt.verify(token, process.env.JWT_PRIVATE_KEY);
 		req.userData = { id: decodedToken.userId, email: decodedToken.email };
+		console.log('done');
 		next();
 	} catch (err) {
 		const error = new Error("Authentication failed!");
