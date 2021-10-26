@@ -210,16 +210,26 @@ const signup = async (req, res, next) => {
 			return next(new Error("Signing up failed, please try again later."));
 		}
 	}
-
+	
 	const createdUser = new User({
 		name,
 		email,
 		mobile,
 		password: hashedPassword,
 		referralID: referralCode,
-		referredBy: referredBy
-	});
+		referredBy: referredBy,
 
+	});
+	let zero="0";
+	wallet = await Wallet.create({
+		balance:zero,
+		user: createdUser._id
+	});
+	portfo = await Portfolio.create({
+		user: createdUser._id
+	})
+	createdUser.walletId=wallet._id;
+	createdUser.portfolioId=portfo._id;
 	try {
 		await createdUser.save();
 	} catch (err) {

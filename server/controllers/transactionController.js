@@ -6,50 +6,56 @@ const Transaction = require('../models/transaction');
 const BuyRequest = require('../models/buyRequest');
 const Exchange = require('../models/exchange');
 module.exports.buy= async(req,res)=>{
+    
     if(!req.userData){
         res.redirect('back');
     }
-    let user = await User.findById(req.userData);
+    let user = await User.findById(req.userData.id);
     if(!user){
         res.redirect('back');
     }
-
+ 
     let coinId=req.params.id;
+    
     let quantity=BigInt(req.body.quantity);
-
-    let coinData = await axios.get(`https://api.coingecko.com/api/v3/coins/$(coinId)`);//axios by default parses Json response
-    let price=BigInt(coinData.market_data.current_price.inr*10000000);
+    
+    let coinData =  await axios.get(`https://api.coingecko.com/api/v3/coins/${coinId}`);//axios by default parses Json response
+  
+    let price=BigInt(coinData.data.market_data.current_price.inr*10000000);
     
     let WalletOfUser=await Wallet.findById(user.walletId);
     
     if(BigInt(WalletOfUser.balance)<price*quantity){
         console.log('Insufficient Balance');
-        res.redirect('back');
+        return res.status(405).json("Insufficient funds");
     }
 
     let newBalance = BigInt(WalletOfUser.balance)-price*quantity;
     WalletOfUser.balance=newBalance.toString();
     await WalletOfUser.save();
+    
     let portfolioOfUser=await Portfolio.findById(user.portfolioId);
     var quantityBought;
     var avgPrice;
-    var index;
+    var index=0;
+    var found;
     for(a of portfolioOfUser.coinsOwned){
         if(a.coidId==coinId){
-            quantityBought=a.quantity;
-            avgPrice=a.priceOfBuy;
-            index=portfolioOfUser.coinsOwned.findIndex(a);
+            quantityBought=BigInt(a.quantity);
+            avgPrice=BigInt(a.priceOfBuy);
+            found="yes";
         }
+        if(!found)
+        index=index+1;
     }
-    if(index){
-        portfolioOfUser.coinsOwned.slice(index, 1);
+    
+    if(found){
+        
         let newAvgPrice=(avgPrice*quantityBought+price*quantity)/(quantityBought+quantity);
         let newQuantity=quantityBought+quantity;
-        portfolioOfUser.coinsOwned.push({
-            coidId: coinId,
-            quantity: newQuantity.toString(),
-            priceOfBuy:newAvgPrice.toString()
-        })
+        portfolioOfUser.coinsOwned[index].quantity=newQuantity.toString();
+        portfolioOfUser.coinsOwned[index].priceOfBuy=newAvgPrice.toString();
+        
     }
     else{
         portfolioOfUser.coinsOwned.push({
@@ -65,20 +71,18 @@ module.exports.buy= async(req,res)=>{
             walletId: WalletOfUser._id,
             quantity: quantity.toString(),
             price:price.toString(),
-            // user:user._id,
-            // portfolioId:portfolioOfUser._id,
             coinId:coinId
 
         });
 
        
-        return res.redirect('back');
+    
     }
     catch(err) {
-        console.log('error',err);
-        return;
+       console.log(err);
+        return res.status(500).json("internal server error");
     }
-
+    return res.status(200).json("transaction complete");
 }
 
 

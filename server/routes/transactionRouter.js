@@ -8,8 +8,8 @@ const authVerify = require("../middlewares/authVerify");
 
 router.use(authVerify);
 
-router.post('/buy:id', transactionController.buy);
-router.post('/sell:id', transactionController.sell)
+router.post('/buy/:id', transactionController.buy);
+router.post('/sell/:id', transactionController.sell)
 router.post('/buyLimit', transactionController.buyLimit);
 router.post('/sellLimit', transactionController.buyLimit);
 router.post('/exchange', transactionController.exchange);
