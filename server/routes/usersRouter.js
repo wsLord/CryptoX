@@ -1,11 +1,15 @@
 const express = require("express");
-const { check } = require("express-validator");
-const { body } = require("express-validator");
+const { check, body } = require("express-validator");
 const router = express.Router();
 
-const usersController = require("../controllers/usersController");
+const addToWatchList = require("../controllers/usersController/addToWatchList");
+const login = require("../controllers/usersController/login");
+const portfolio = require("../controllers/usersController/portfolio");
+const resetPassword = require("../controllers/usersController/resetPassword");
+const resetPasswordRequest = require("../controllers/usersController/resetPasswordRequest");
+const signup = require("../controllers/usersController/signup");
+
 const authVerify = require("../middlewares/authVerify");
-// router.get("/profile", usersController.profile);
 
 router.post(
 	"/signup",
@@ -13,19 +17,32 @@ router.post(
 		check("name").not().isEmpty(),
 		check("email").normalizeEmail().isEmail(),
 		check("mobile").isLength({ min: 10, max: 10 }),
-		check("password").isLength({ min: 6 })
+		check("password").isLength({ min: 6 }),
 	],
-	usersController.signup
+	signup
 );
 
-router.get("/login", usersController.login);
-// router.post("/signup", usersController.signup);
-router.post("/resetPasswordReq",body("email").normalizeEmail().isEmail(),usersController.resetPasswordReq);
-router.post("/reset",body("newPassword").isLength({ min: 6 }),usersController.reset);
+router.post(
+	"/login",
+	[check("email").normalizeEmail().isEmail()],
+	login
+);
+
+router.post(
+	"/resetPasswordReq",
+	body("email").normalizeEmail().isEmail(),
+	resetPasswordRequest
+);
+
+router.post(
+	"/reset",
+	body("newPassword").isLength({ min: 6 }),
+	resetPassword
+);
 
 router.use(authVerify);
 
-router.get("/portfolio", usersController.portfolio);
-router.get("/addToWatchList:id", usersController.addToWatchList);
+router.get("/portfolio", portfolio);
+router.get("/addToWatchList:id", addToWatchList);
 
 module.exports = router;

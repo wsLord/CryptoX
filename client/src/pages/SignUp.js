@@ -2,7 +2,7 @@ import { Fragment, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import "./SignUp.css";
-import Sociallogin from "./Sociallogin";
+import SocialLogin from "./SocialLogin";
 import Alert from "../shared/components/Alert";
 import LoadingSpinner from "../shared/components/UIElements/LoadingSpinner";
 
@@ -223,7 +223,7 @@ const SignUp = (props) => {
 						</div>
 					</form>
 					<hr/>
-					<Sociallogin/>
+					<SocialLogin/>
 					<hr />
 					<div className="reg">
 						<Link to="/login" className="nav-link active">

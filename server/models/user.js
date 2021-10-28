@@ -34,10 +34,12 @@ const userSchema = new mongoose.Schema({
 	walletId: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "Wallet",
+		required: true,
 	},
 	portfolioId: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "Portfolio",
+		required: true,
 	},
 	watchList: [
 		{
