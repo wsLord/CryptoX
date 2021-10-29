@@ -1,5 +1,5 @@
 import React from 'react'
-import Styles from './portfolio.module.css'
+import Styles from './Portfolio.module.css'
 
 export default function AddMoney() {
     return (

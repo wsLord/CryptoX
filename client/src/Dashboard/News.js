@@ -1,6 +1,6 @@
 import React from 'react'
 import defaultimg from '../shared/img/news.jpg'
-import Styles from './dashboard.module.css'
+import Styles from './Dashboard.module.css'
 
 export default function News({articles}) {
     if(articles.urlToImage===null)

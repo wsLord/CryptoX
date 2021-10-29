@@ -1,6 +1,6 @@
 import React, { Fragment, useState } from "react";
 
-import Styles from "./portfolio.module.css";
+import Styles from "./Portfolio.module.css";
 import addMoneyimg from "../shared/img/add-money.png";
 import withdrawimg from "../shared/img/withdraw.png";
 import Transactionimg from "../shared/img/Transaction.png";
@@ -9,7 +9,7 @@ import Withdraw from "./Withdraw";
 import Transaction from "./Transaction";
 import Assets from "./Assets";
 
-export default function Portfolio() {
+const Portfolio = () => {
 	const [State, setState] = useState({
 		addMoney: false,
 		withdraw: false,
@@ -101,3 +101,5 @@ export default function Portfolio() {
 		</Fragment>
 	);
 }
+
+export default Portfolio;

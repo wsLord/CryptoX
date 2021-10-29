@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import bitimg from '../shared/img/bit.jpg'
-import Styles from './portfolio.module.css'
+import Styles from './Portfolio.module.css'
 
 export default class Assets extends Component {
     constructor() {
