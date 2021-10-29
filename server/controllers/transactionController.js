@@ -90,33 +90,38 @@ module.exports.sell= async(req,res)=>{
     if(!req.userData){
         res.redirect('back');
     }
-    let user = await User.findById(req.userData);
+    let user = await User.findById(req.userData.id);
     if(!user){
         res.redirect('back');
     }
-
+ 
     let coinId=req.params.id;
+    
     let quantity=BigInt(req.body.quantity);
-
-    let coinData = await axios.get(`https://api.coingecko.com/api/v3/coins/$(coinId)`);//axios by default parses Json response
-    let price=BigInt(coinData.market_data.current_price.inr*10000000);
+    
+    let coinData =  await axios.get(`https://api.coingecko.com/api/v3/coins/${coinId}`);//axios by default parses Json response
+   
+    let price=BigInt(coinData.data.market_data.current_price.inr*10000000);
+    
     
     let portfolioOfUser=await Portfolio.findById(user.portfolioId);
 
     var quantityOfCoinsOwned;
     var avgPrice;
-    var index;
-
-
+    var index=0;
+    var found;
     for(a of portfolioOfUser.coinsOwned){
-        if(a.coinId==coinId){
-            quantityOfCoinsOwned = BigInt(a.quantity);
-            avgPrice=a.priceOfBuy
-            index=portfolioOfUser.coinsOwned.findIndex(a);
+        if(a.coidId==coinId){
+            quantityOfCoinsOwned=BigInt(a.quantity);
+            avgPrice=BigInt(a.priceOfBuy);
+            found="yes";
         }
+        if(!found)
+        index=index+1;
     }
-    if(index&&quantityOfCoinsOwned>=quantity){
-        portfolioOfUser.coinsOwned.slice(index, 1);
+   
+    if(found&&quantityOfCoinsOwned>=quantity){
+        portfolioOfUser.coinsOwned.splice(index, 1);
         let newQuantity=quantityOfCoinsOwned-quantity;
         if(newQuantity>0n){
             portfolioOfUser.coinsOwned.push({
@@ -126,9 +131,11 @@ module.exports.sell= async(req,res)=>{
             })
         }
         await portfolioOfUser.save();
+        let WalletOfUser=await Wallet.findById(user.walletId);
+        
         let newBalance = BigInt(WalletOfUser.balance)+price*quantity;
 
-        let WalletOfUser=await Wallet.findById(user.walletId);
+        
         WalletOfUser.balance=newBalance.toString();
         await WalletOfUser.save();
         try{
@@ -144,20 +151,21 @@ module.exports.sell= async(req,res)=>{
             });
     
            
-            return res.redirect('back');
+            return res.status(200).json("transaction complete");
         }
         catch(err) {
-            console.log('error',err);
-            return;
+            console.log(err);
+            return res.status(500).json("internal server error");
         }
         
-
+    
 
     }
     else{
-        console.log('the transaction is not possible');
-        res.redirect('back');
+        console.log('Insufficient Coins');
+        return res.status(405).json("Insufficient Coins");
     }
+    
 }
 module.exports.buyLimit=async (req,res)=>{
     if(!req.userData){
