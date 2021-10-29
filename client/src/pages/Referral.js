@@ -17,10 +17,8 @@ import AuthContext from "../store/authContext";
 const Referral = (props) => {
 	const ctx = useContext(AuthContext);
 
-	const [referralCode, setReferralCode] = useState("");
-	const [link, setLink] = useState(
-		`${window.location.host}/signup/${referralCode}`
-	);
+	// const [referralCode, setReferralCode] = useState("");
+	const [link, setLink] = useState("Loading..."); //`${window.location.host}/signup/${referralCode}`
 	const [copyBtn, setCopyBtn] = useState({
 		copied: false,
 		btntext: "Copy link",
@@ -37,20 +35,31 @@ const Referral = (props) => {
 						method: "GET",
 						headers: {
 							Authorization: "Bearer " + ctx.token,
-						}
+						},
 					}
 				);
 
 				data = await res.json();
-				// console.log("TEST" + data.email);
-				setReferralCode(data.refcode);
-				setLink(`${window.location.host}/signup/${data.refcode}`);
+
+				if (res.ok) {
+					// setReferralCode(data.refcode);
+					setLink(`${window.location.host}/signup/${data.refcode}`);
+				} else {
+					// Error fetching Refferal Code
+					console.log(data.message);
+					setLink("Unable to fetch link! :(");
+				}
 			} catch (err) {
 				console.log(err);
 			}
 		};
 
 		fetchData();
+
+		return () => {
+			// setReferralCode("");
+      setLink("");
+    };
 	}, [ctx]);
 
 	const copyHandler = () => {
@@ -77,21 +86,20 @@ const Referral = (props) => {
 					method: "POST",
 					body: JSON.stringify({
 						inviteLink: link,
-						emailToSend: emailToSendInvite
+						emailToSend: emailToSendInvite,
 					}),
 					headers: {
-						"Content-Type": "application/json"
-					}
+						"Content-Type": "application/json",
+					},
 				}
 			);
 
 			const data = await res.json();
 
-			if(res.ok) {
+			if (res.ok) {
 				console.log(data.message);
-				inputRefEmail.current.value = '';
-			}
-			else {
+				inputRefEmail.current.value = "";
+			} else {
 				// Error sending mail
 				console.log(data.message);
 			}

@@ -2,7 +2,7 @@ const express = require("express");
 const { check, body } = require("express-validator");
 const router = express.Router();
 
-const addToWatchList = require("../controllers/usersController/addToWatchList");
+const watchListController = require("../controllers/usersController/WatchList");
 const login = require("../controllers/usersController/login");
 const portfolio = require("../controllers/usersController/portfolio");
 const resetPassword = require("../controllers/usersController/resetPassword");
@@ -43,6 +43,9 @@ router.post(
 router.use(authVerify);
 
 router.get("/portfolio", portfolio);
-router.get("/addToWatchList:id", addToWatchList);
+
+router.get("/watchlist/add/:id", watchListController.addToWatchList);
+router.get("/watchlist/remove/:id", watchListController.removeFromWatchList);
+router.get("/watchlist", watchListController.getWatchList);
 
 module.exports = router;

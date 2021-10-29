@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-module.exports = (req, res, next) => {
+module.exports = async (req, res, next) => {
 	if (req.method === "OPTIONS") {
 		return next();
 	}
@@ -11,9 +11,9 @@ module.exports = (req, res, next) => {
 		if (!token) {
 			throw new Error("Authentication failed!");
 		}
-		const decodedToken = jwt.verify(token, process.env.JWT_PRIVATE_KEY);
+		const decodedToken = await jwt.verify(token, process.env.JWT_PRIVATE_KEY);
 		req.userData = { id: decodedToken.userId, email: decodedToken.email };
-		console.log('done');
+		console.log('Authenticated with token!');
 		next();
 	} catch (err) {
 		const error = new Error("Authentication failed!");

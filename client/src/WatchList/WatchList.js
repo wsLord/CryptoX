@@ -1,39 +1,80 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import bitimg from "../shared/img/bit.jpg";
 import Styles from "./Watchlist.module.css";
 import WatchItem from "./WatchItem";
+import AuthContext from "../store/authContext";
 
 const CoinGecko = require("coingecko-api");
 const CoinGeckoClient = new CoinGecko();
 
 const Watchlist = () => {
-	const [currencies, setCurrencies] = useState([]);
-	const [totalCurrencies, setTotalCurrencies] = useState(0);
+	const ctx = useContext(AuthContext);
+
+	const [coins, setCoins] = useState([]);
+	const [totalCoins, setTotalCoins] = useState(0);
 
 	useEffect(() => {
 		const initialize = async () => {
-			const watchlist = ["bitcoin", "ethereum", "tether", "binancecoin", "solana"]; //Add id of coins in watchlist from database
+			let watchlist = [];
+
+			// Adding id of coins in watchlist from database
+			try {
+				const res = await fetch(
+					`${process.env.REACT_APP_SERVER_URL}/user/watchlist`,
+					{
+						method: "GET",
+						headers: {
+							Authorization: "Bearer " + ctx.token,
+						},
+					}
+				);
+
+				const responseData = await res.json();
+
+				if (res.ok) {
+					watchlist = responseData.data;
+				} else {
+					// Error fetching watchlist array
+					console.log(responseData.message);
+					console.log("Error fetching watchlist array");
+				}
+			} catch (err) {
+				console.log(err);
+			}
+
+			// watchlist = [
+			// 	"bitcoin",
+			// 	"ethereum",
+			// 	"tether",
+			// 	"binancecoin",
+			// 	"solana",
+			// ];
 			for (var coinid of watchlist) {
 				let { data } = await CoinGeckoClient.coins.fetch(coinid, {
 					tickers: false,
 					community_data: false,
 					developer_data: false,
-					sparkline: false
+					sparkline: false,
 				});
 
 				console.log(data);
 
-				setCurrencies(oldList => {
+				setCoins((oldList) => {
 					return [...oldList, data];
 				});
-				setTotalCurrencies(oldCount => {
-					return (oldCount + 1);
+				setTotalCoins((oldCount) => {
+					return oldCount + 1;
 				});
 			}
 		};
 
 		initialize();
-	}, []);
+
+		return () => {
+      setCoins([]);
+			setTotalCoins(0);
+    };
+	}, [ctx]);
 
 	return (
 		<div>
@@ -42,7 +83,7 @@ const Watchlist = () => {
 					<h3>Watchlist</h3>
 				</div>
 				<div className="card-body">
-					{totalCurrencies === 0 && (
+					{totalCoins === 0 && (
 						<div className="d-flex flex-column justify-content-center align-items-center">
 							<img src={bitimg} className={Styles.bitcoin} alt="" />
 							<h4>Start building your watchlist!</h4>
@@ -55,7 +96,7 @@ const Watchlist = () => {
 							</a>
 						</div>
 					)}
-					{totalCurrencies > 0 && (
+					{totalCoins > 0 && (
 						<table className="table">
 							<thead>
 								<tr>
@@ -69,7 +110,7 @@ const Watchlist = () => {
 								</tr>
 							</thead>
 							<tbody>
-								{currencies.map((element) => {
+								{coins.map((element) => {
 									return <WatchItem data={element} key={element.symbol} />;
 								})}
 							</tbody>
