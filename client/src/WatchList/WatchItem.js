@@ -1,7 +1,7 @@
-import React from 'react'
-import Styles from './watchlist.module.css';
+import React from 'react';
+import Styles from './Watchlist.module.css';
 
-export default function watchitems({ data }) {
+const WatchItem = ({ data }) => {
     let change_1h = data.market_data.price_change_percentage_1h_in_currency.inr;
     let change_24h = data.market_data.price_change_percentage_24h;
     return (
@@ -33,3 +33,5 @@ export default function watchitems({ data }) {
         </tr>
     )
 }
+
+export default WatchItem;

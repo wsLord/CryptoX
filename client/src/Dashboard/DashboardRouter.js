@@ -6,7 +6,7 @@ import Footer from '../shared/components/Footer'
 import Dashboard from "./Dashboard";
 import CryptoList from "../Trade/CryptoList";
 import Portfolio from "../Portfolio/Portfolio";
-import Watchlist from "../Watchlist/Watchlist";
+import Watchlist from "../WatchList/WatchList";
 import Referral from "../pages/Referral";
 
 const DashboardRouter = () => {
