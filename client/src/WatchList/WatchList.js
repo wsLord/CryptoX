@@ -49,7 +49,7 @@ const Watchlist = () => {
 			// 	"binancecoin",
 			// 	"solana",
 			// ];
-			for (var coinid of watchlist) {
+			for (let coinid of watchlist) {
 				let { data } = await CoinGeckoClient.coins.fetch(coinid, {
 					tickers: false,
 					community_data: false,
@@ -75,6 +75,12 @@ const Watchlist = () => {
 			setTotalCoins(0);
     };
 	}, [ctx]);
+
+	const removeFromCoinList = (id) => {
+		setCoins((currentList) => {
+			return currentList.filter(element => element.id !== id)
+		});
+	}
 
 	return (
 		<div>
@@ -111,7 +117,7 @@ const Watchlist = () => {
 							</thead>
 							<tbody>
 								{coins.map((element) => {
-									return <WatchItem data={element} key={element.symbol} />;
+									return <WatchItem data={element} key={element.symbol} onRemove={removeFromCoinList} />;
 								})}
 							</tbody>
 						</table>

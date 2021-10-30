@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+
 const walletSchema = new mongoose.Schema(
 	{
 		balance: {
@@ -9,8 +10,6 @@ const walletSchema = new mongoose.Schema(
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "User",
 		},
-		//include the ids of comments in an array
-
 		transactionList: [
 			{
 				type: mongoose.Schema.Types.ObjectId,
@@ -23,5 +22,4 @@ const walletSchema = new mongoose.Schema(
 	}
 );
 
-const Wallet = mongoose.model("Wallet", walletSchema);
-module.exports = Wallet;
+module.exports = mongoose.model("Wallet", walletSchema);
