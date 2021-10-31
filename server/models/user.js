@@ -31,12 +31,12 @@ const userSchema = new mongoose.Schema({
 		type: String,
 		default: null,
 	},
-	walletId: {
+	wallet: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "Wallet",
 		required: true,
 	},
-	portfolioId: {
+	portfolio: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "Portfolio",
 		required: true,

@@ -1,16 +1,20 @@
 const express = require("express");
+const router = express.Router();
 const { check } = require("express-validator");
 
-const router = express.Router();
-const transactionController = require("../controllers/transactionController");
 const authVerify = require("../middlewares/authVerify");
-// router.get("/profile", usersController.profile);
+const buy = require("../controllers/transactionController/buy");
+const buyLimit = require("../controllers/transactionController/buyLimit");
+const exchange = require("../controllers/transactionController/exchange");
+const sell = require("../controllers/transactionController/sell");
+const sellLimit = require("../controllers/transactionController/sellLimit");
 
 router.use(authVerify);
 
-router.post('/buy/:id', transactionController.buy);
-router.post('/sell/:id', transactionController.sell)
-router.post('/buyLimit', transactionController.buyLimit);
-router.post('/sellLimit', transactionController.buyLimit);
-router.post('/exchange', transactionController.exchange);
+router.post("/buy", buy);
+router.post("/sell/:id", sell);
+router.post("/buyLimit", buyLimit);
+router.post("/sellLimit", sellLimit);
+router.post("/exchange", exchange);
+
 module.exports = router;

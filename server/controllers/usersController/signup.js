@@ -58,7 +58,7 @@ const signup = async (req, res, next) => {
 			return next(new Error("Signing up failed, please try again later."));
 		}
 	}
-	
+
 	const createdUser = new User({
 		name,
 		email,
@@ -66,21 +66,21 @@ const signup = async (req, res, next) => {
 		password: hashedPassword,
 		referralID: referralCode,
 		referredBy: referredBy,
-		walletId: null,
-		portfolioId: null
+		wallet: null,
+		portfolio: null
 	});
 
-	let zero="0";
+	let zero = "0";
 	wallet = await Wallet.create({
-		balance:zero,
-		user: createdUser._id
+		balance: zero,
+		user: createdUser._id,
 	});
 	portfo = await Portfolio.create({
-		user: createdUser._id
-	})
-	createdUser.walletId=wallet._id;
-	createdUser.portfolioId=portfo._id;
-	
+		user: createdUser._id,
+	});
+	createdUser.wallet = wallet._id;
+	createdUser.portfolio = portfo._id;
+
 	try {
 		await createdUser.save();
 	} catch (err) {
@@ -91,10 +91,11 @@ const signup = async (req, res, next) => {
 	let info = await emailVerifyTokenSender(createdUser, req.headers.host);
 
 	res.status(201).json({
-		message: "Registered and verification email has been sent. Check your mailbox.",
+		message:
+			"Registered and verification email has been sent. Check your mailbox.",
 		userId: createdUser.id,
 		email: createdUser.email,
-		mailinfo: info.messageId
+		mailinfo: info.messageId,
 	});
 };
 
