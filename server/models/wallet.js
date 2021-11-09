@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+const walletTransactionSchema = require("./walletTransaction");
+
 const walletSchema = new mongoose.Schema(
 	{
 		balance: {
@@ -10,6 +12,12 @@ const walletSchema = new mongoose.Schema(
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "User",
 		},
+		walletTransactionsList: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "WalletTransaction",
+			}
+		],
 		transactionList: [
 			{
 				type: mongoose.Schema.Types.ObjectId,

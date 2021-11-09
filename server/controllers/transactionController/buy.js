@@ -2,8 +2,6 @@ const CoinGecko = require("coingecko-api");
 const CoinGeckoClient = new CoinGecko();
 
 const User = require("../../models/user");
-const Wallet = require("../../models/wallet");
-const Portfolio = require("../../models/portfolio");
 const Transaction = require("../../models/transaction");
 
 const buy = async (req, res, next) => {
