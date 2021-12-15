@@ -1,14 +1,10 @@
 const mongoose = require("mongoose");
 
-const walletTransactionSchema = new mongoose.Schema(
+const addMoneySchema = new mongoose.Schema(
 	{
 		walletId: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Wallet",
-		},
-		category: {
-			type: String,
-			required: true,
 		},
 		amount: {
 			type: String,
@@ -38,7 +34,7 @@ const walletTransactionSchema = new mongoose.Schema(
 	}
 );
 
-module.exports = mongoose.model("WalletTransaction", walletTransactionSchema);
+module.exports = mongoose.model("addMoney", addMoneySchema);
 
 // STATUS CODE
 // 1: SUCCESS/CAPTURED

@@ -4,7 +4,7 @@ const User = require('../models/user');
 const Wallet=require('../models/wallet');
 const Portfolio = require('../models/portfolio');
 const Transaction = require('../models/transaction');
-const buyRequest = require('../models/buyRequest');
+const buyRequest = require('../models/transactions/buyRequest');
 const executeOrders=async(coinData)=>{
     for(a of coinData){
         let buyReqs =await buyRequest.find({

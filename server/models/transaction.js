@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+
 const transactionSchema = new mongoose.Schema(
 	{
 		category: {
@@ -8,26 +9,31 @@ const transactionSchema = new mongoose.Schema(
 		walletId: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Wallet",
-		},
-		quantity: {
-			type: String,
 			required: true,
 		},
-		price: {
-			type: String,
-			required: true,
+		addMoney: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "addMoney",
 		},
-		// user: {
-		//     type: mongoose.Schema.Types.ObjectId,
-		//     ref: "User",
-		// },
-		// portfolioId: {
-		// 	type: mongoose.Schema.Types.ObjectId,
-		// 	ref: "Portfolio",
-		// },
-		coinId: {
-			type: String,
-			required: true,
+		buyCoin: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "buyCoin",
+		},
+		sellCoin: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "sellCoin",
+		},
+		buyRequest: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "buyRequest",
+		},
+		sellRequest: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "sellRequest",
+		},
+		withdrawMoney: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "withdrawMoney",
 		},
 	},
 	{

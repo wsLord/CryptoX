@@ -1,5 +1,5 @@
 const User = require("../../models/user");
-const BuyRequest = require("../../models/buyRequest");
+const BuyRequest = require("../../models/transactions/buyRequest");
 
 const buyLimit = async (req, res) => {
 	if (!req.userData) {

@@ -17,3 +17,11 @@ Client ENV File:
 * GOOGLE_CLIENT_ID
 * FB_CLIENT_ID
 
+DB Specs:
+
+transaction [id, ttype, 1_add_money, 2_withdraw_money, 3_buy_coin, 4_sell_coin, 5_buy_request, 6_sell_request]
+wallet [id, userid, list of references of "transaction"]
+
+each "transaction" has refernece to corresponding document and others are non-existent (not as null :*)
+
+

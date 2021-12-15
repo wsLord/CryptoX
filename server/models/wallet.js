@@ -12,12 +12,6 @@ const walletSchema = new mongoose.Schema(
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "User",
 		},
-		walletTransactionsList: [
-			{
-				type: mongoose.Schema.Types.ObjectId,
-				ref: "WalletTransaction",
-			}
-		],
 		transactionList: [
 			{
 				type: mongoose.Schema.Types.ObjectId,
