@@ -2,7 +2,6 @@
 
 const emailVerifyToken = require("../models/emailVerifyToken");
 
-
 const verification = async (req, res, next) => {
 	// Find a matching token
 	let tokenData;
@@ -19,7 +18,7 @@ const verification = async (req, res, next) => {
 	if (tokenData == null) {
 		return next(
 			new Error(
-				"We were unable to find a valid token. Your token may have expired."
+				"ERR: We were unable to find a valid token. Your token may have expired."
 			)
 		);
 	}
@@ -38,11 +37,11 @@ const verification = async (req, res, next) => {
 		await user.save();
 	} catch (err) {
 		console.log(err);
-		return next(new Error("Unable to verify. Please try later."));
+		return next(new Error("ERR: Unable to verify. Please try later."));
 	}
 
 	res.status(201).json({
 		message: "The account has been verified. Please log in.",
 	});
-}
+};
 module.exports.verification = verification;

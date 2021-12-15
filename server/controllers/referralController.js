@@ -33,7 +33,7 @@ const invite = async (req, res, next) => {
 		info = await transporter.sendMail(mailOptions);
 	} catch (err) {
 		console.log(err);
-		return next(new Error("Unable to send Email Verification mail."));
+		return next(new Error("ERR: Unable to send Email Verification mail."));
 	}
 
 	res.status(200).json({
@@ -47,7 +47,7 @@ const getCode = async (req, res, next) => {
 	try {
 		user = await User.findById(req.userData.id).exec();
 	} catch {
-		return next(new Error("Unable to find user."));
+		return next(new Error("ERR: Unable to find user."));
 	}
 
 	res.status(200).json({

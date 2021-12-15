@@ -1,131 +1,131 @@
-import React, { Fragment, useContext } from "react";
-import axios from "axios";
+import React, { Fragment, useRef } from "react";// useContext,
+// import axios from "axios";
 
-import AuthContext from "../store/authContext";
+// import AuthContext from "../store/authContext";
 import Styles from "./Portfolio.module.css";
-import Logo from "../shared/img/icon.png";
+// import Logo from "../shared/img/icon.png";
 
 const AddMoney = (props) => {
-	const ctx = useContext(AuthContext);
+	// const ctx = useContext(AuthContext);
 
 	const inputRefAmount = useRef();
 
-	useEffect(() => {
-		const script = document.createElement("script");
-		script.src = "https://checkout.razorpay.com/v1/checkout.js";
-		script.async = true;
-		document.body.appendChild(script);
+	// useEffect(() => {
+	// 	const script = document.createElement("script");
+	// 	script.src = "https://checkout.razorpay.com/v1/checkout.js";
+	// 	script.async = true;
+	// 	document.body.appendChild(script);
 
-		return () => {
-			document.body.removeChild(script);
-		};
-	}, []);
+	// 	return () => {
+	// 		document.body.removeChild(script);
+	// 	};
+	// }, []);
 
-	const checkoutHandler = (response) => {
-		if(response.error) {
-			console.log("Payment Failed ", response.error.description);
-			return;
-		}
+	// const checkoutHandler = (response) => {
+	// 	if(response.error) {
+	// 		console.log("Payment Failed ", response.error.description);
+	// 		return;
+	// 	}
 
-		try {
-			const { data } = await axios.post(
-				`${process.env.REACT_APP_SERVER_URL}/payment/capture`,
-				{
-					data: response,
-				},
-				{
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: "Bearer " + ctx.token,
-					},
-				}
-			);
-		}
-	catch (err) {
-		// Something went wrong! 400/500 Response
-		console.log(err);
-	}
-		alert(response.razorpay_payment_id);
-		alert(response.razorpay_order_id);
-		alert(response.razorpay_signature);
+	// 	try {
+	// 		const { data } = await axios.post(
+	// 			`${process.env.REACT_APP_SERVER_URL}/payment/capture`,
+	// 			{
+	// 				data: response,
+	// 			},
+	// 			{
+	// 				headers: {
+	// 					"Content-Type": "application/json",
+	// 					Authorization: "Bearer " + ctx.token,
+	// 				},
+	// 			}
+	// 		);
+	// 	}
+	// catch (err) {
+	// 	// Something went wrong! 400/500 Response
+	// 	console.log(err);
+	// }
+	// 	alert(response.razorpay_payment_id);
+	// 	alert(response.razorpay_order_id);
+	// 	alert(response.razorpay_signature);
 
 
-	};
+	// };
 
 	const razorpayPaymentHandler = async (event) => {
 		event.preventDefault();
 
-		const enteredAmount = inputRefAmount.current.value;
+	// 	const enteredAmount = inputRefAmount.current.value;
 
-		try {
-			const { data } = await axios.post(
-				`${process.env.REACT_APP_SERVER_URL}/payment/order`,
-				{
-					amount: enteredAmount,
-				},
-				{
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: "Bearer " + ctx.token,
-					},
-				}
-			);
+	// 	try {
+	// 		const { data } = await axios.post(
+	// 			`${process.env.REACT_APP_SERVER_URL}/payment/order`,
+	// 			{
+	// 				amount: enteredAmount,
+	// 			},
+	// 			{
+	// 				headers: {
+	// 					"Content-Type": "application/json",
+	// 					Authorization: "Bearer " + ctx.token,
+	// 				},
+	// 			}
+	// 		);
 
-			const options = {
-				key: process.env.REACT_APP_RAZORPAY_KEY_ID,
-				currency: data.currency,
-				amount: data.amount,
-				name: "CryptoX",
-				description: "Adding money to Wallet",
-				image: Logo,
-				order_id: data.id,
-				handler: checkoutHandler,
-				prefill: {
-					name: data.userDetails.name,
-					email: data.userDetails.email,
-					contact: data.userDetails.mobile,
-				},
-				theme: {
-					color: "#515967",
-				},
-			};
+	// 		const options = {
+	// 			key: process.env.REACT_APP_RAZORPAY_KEY_ID,
+	// 			currency: data.currency,
+	// 			amount: data.amount,
+	// 			name: "CryptoX",
+	// 			description: "Adding money to Wallet",
+	// 			image: Logo,
+	// 			order_id: data.id,
+	// 			handler: checkoutHandler,
+	// 			prefill: {
+	// 				name: data.userDetails.name,
+	// 				email: data.userDetails.email,
+	// 				contact: data.userDetails.mobile,
+	// 			},
+	// 			theme: {
+	// 				color: "#515967",
+	// 			},
+	// 		};
 
-			console.log(responseData.message);
-		} catch (err) {
-			// Something went wrong! 400/500 Response
-			console.log(err);
-		}
+	// 		console.log(responseData.message);
+	// 	} catch (err) {
+	// 		// Something went wrong! 400/500 Response
+	// 		console.log(err);
+	// 	}
 
-		const API_URL = `http://localhost:5000/razorpay/`;
-		const orderUrl = `${API_URL}order`;
-		const response = await Axios.get(orderUrl);
-		const { data } = response;
-		console.log("App -> razorPayPaymentHandler -> data", data);
+	// 	const API_URL = `http://localhost:5000/razorpay/`;
+	// 	const orderUrl = `${API_URL}order`;
+	// 	const response = await Axios.get(orderUrl);
+	// 	const { data } = response;
+	// 	console.log("App -> razorPayPaymentHandler -> data", data);
 
-		const options = {
-			key: "",
-			name: "avdojo",
-			description: "avodojo",
-			order_id: data.id,
-			handler: async (response) => {
-				try {
-					const paymentId = response.razorpay_payment_id;
-					const url = `${API_URL}capture/${paymentId}`;
-					const captureResponse = await Axios.post(url, {});
-					const successObj = JSON.parse(captureResponse.data);
-					const captured = successObj.captured;
-					console.log("App -> razorPayPaymentHandler -> captured", successObj);
-					if (captured) {
-						console.log("success");
-					}
-				} catch (err) {
-					console.log(err);
-				}
-			},
-		};
+	// 	const options = {
+	// 		key: "",
+	// 		name: "avdojo",
+	// 		description: "avodojo",
+	// 		order_id: data.id,
+	// 		handler: async (response) => {
+	// 			try {
+	// 				const paymentId = response.razorpay_payment_id;
+	// 				const url = `${API_URL}capture/${paymentId}`;
+	// 				const captureResponse = await Axios.post(url, {});
+	// 				const successObj = JSON.parse(captureResponse.data);
+	// 				const captured = successObj.captured;
+	// 				console.log("App -> razorPayPaymentHandler -> captured", successObj);
+	// 				if (captured) {
+	// 					console.log("success");
+	// 				}
+	// 			} catch (err) {
+	// 				console.log(err);
+	// 			}
+	// 		},
+	// 	};
 
-		const rzpwindow = new window.Razorpay(options);
-		rzpwindow.open();
+	// 	const rzpwindow = new window.Razorpay(options);
+	// 	rzpwindow.open();
 	};
 
 	return (

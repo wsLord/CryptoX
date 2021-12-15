@@ -24,7 +24,7 @@ app.use((req, res, next) => {
 app.use('/', mainRouter);
 
 app.use((req, res, next) => {
-  const error = new Error('Could not find this route.');
+  const error = new Error('ERR: Could not find this route.');
   throw error;
 });
 
@@ -34,7 +34,7 @@ app.use((error, req, res, next) => {
     return next(error);
   }
   res.status(error.code || 500);
-  res.json({ message: error.message || 'An unknown error occurred!' });
+  res.json({ message: error.message || 'ERR: An unknown error occurred!' });
 });
 
 app.listen(port, (err) => {

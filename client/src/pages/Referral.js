@@ -1,5 +1,6 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { Fragment, useContext, useEffect, useRef } from "react";
 import { useState } from "react";
+import axios from "axios";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import {
 	FacebookShareButton,
@@ -10,6 +11,7 @@ import {
 	TelegramIcon,
 } from "react-share";
 
+import Alert from "../shared/components/Alert";
 import Styles from "./referral.module.css";
 import img from "../shared/img/referral.jpg";
 import AuthContext from "../store/authContext";
@@ -23,34 +25,27 @@ const Referral = (props) => {
 		copied: false,
 		btntext: "Copy link",
 	});
+	const [error, setError] = useState(null);
 	const inputRefEmail = useRef();
 
 	useEffect(() => {
-		let data;
 		const fetchData = async () => {
 			try {
-				const res = await fetch(
+				let { data } = await axios.get(
 					`${process.env.REACT_APP_SERVER_URL}/referral/getcode`,
 					{
-						method: "GET",
 						headers: {
 							Authorization: "Bearer " + ctx.token,
 						},
 					}
 				);
 
-				data = await res.json();
-
-				if (res.ok) {
-					// setReferralCode(data.refcode);
-					setLink(`${window.location.host}/signup/${data.refcode}`);
-				} else {
-					// Error fetching Refferal Code
-					console.log(data.message);
-					setLink("Unable to fetch link! :(");
-				}
+				// setReferralCode(data.refcode);
+				setLink(`${window.location.host}/signup/${data.refcode}`);
 			} catch (err) {
-				console.log(err);
+				// Error fetching Refferal Code
+				console.log(err.response.data.message);
+				setLink("Unable to fetch link! :(");
 			}
 		};
 
@@ -58,8 +53,8 @@ const Referral = (props) => {
 
 		return () => {
 			// setReferralCode("");
-      setLink("");
-    };
+			setLink("");
+		};
 	}, [ctx]);
 
 	const copyHandler = () => {
@@ -80,105 +75,103 @@ const Referral = (props) => {
 
 		const emailToSendInvite = inputRefEmail.current.value;
 		try {
-			const res = await fetch(
+			let { data } = await axios.post(
 				`${process.env.REACT_APP_SERVER_URL}/referral/invite`,
 				{
-					method: "POST",
-					body: JSON.stringify({
-						inviteLink: link,
-						emailToSend: emailToSendInvite,
-					}),
-					headers: {
-						"Content-Type": "application/json",
-					},
+					inviteLink: link,
+					emailToSend: emailToSendInvite,
 				}
 			);
 
-			const data = await res.json();
-
-			if (res.ok) {
-				console.log(data.message);
-				inputRefEmail.current.value = "";
-			} else {
-				// Error sending mail
-				console.log(data.message);
-			}
+			console.log(data.message);
+			inputRefEmail.current.value = "";
+			setError("Invitation sent!");
 		} catch (err) {
-			console.log(err);
+			// Error sending mail
+			console.log(err.response.data.message);
+			setError(err.response.data.message);
 		}
 	};
 
+	const clearError = () => {
+		setError(null);
+	};
+
 	return (
-		<div className="d-flex" id={Styles.body}>
-			<div className="w-100" id={Styles.left}>
-				<h1>Invite a friend to CryptoX and you'll both get ₹100</h1>
-				<p className="text-secondary" id={Styles.text}>
-					The referral program lets you earn a bonus for each friend (“invitee”)
-					who signs up and makes a crypto trade using your personal signup link.
-				</p>
-				<form
-					className="input-group mb-3"
-					id={Styles.send}
-					onSubmit={inviteHandler}
-				>
-					<input
-						type="email"
-						className="form-control"
-						placeholder="Enter email address"
-						ref={inputRefEmail}
-						required
-					/>
-					<button className="btn btn-success" type="submit">
-						<strong> Send </strong>
-					</button>
-				</form>
-				<div id={Styles.send} className="input-group mb-3">
-					<input
-						id={Styles.link}
-						type="text"
-						value={link}
-						className="form-control"
-						readOnly
-					/>
-					<CopyToClipboard text={link} onCopy={copyHandler}>
-						<button className="btn btn-link" type="button">
-							<strong> {copyBtn.btntext} </strong>
+		<Fragment>
+			{error && <Alert msg={error} onClose={clearError} />}
+			<div className="d-flex" id={Styles.body}>
+				<div className="w-100" id={Styles.left}>
+					<h1>Invite a friend to CryptoX and you'll both get ₹100</h1>
+					<p className="text-secondary" id={Styles.text}>
+						The referral program lets you earn a bonus for each friend
+						(“invitee”) who signs up and makes a crypto trade using your
+						personal signup link.
+					</p>
+					<form
+						className="input-group mb-3"
+						id={Styles.send}
+						onSubmit={inviteHandler}
+					>
+						<input
+							type="email"
+							className="form-control"
+							placeholder="Enter email address"
+							ref={inputRefEmail}
+							required
+						/>
+						<button className="btn btn-success" type="submit">
+							<strong> Send </strong>
 						</button>
-					</CopyToClipboard>
-				</div>
-				<div id={Styles.share} className="card text-dark mb-3">
-					<div className="card-header bg-white">Share your link</div>
-					<div className="card-body d-flex justify-content-center">
-						<FacebookShareButton
-							url={link}
-							quote={"Join CryptoX"}
-							className={Styles.social}
-						>
-							<FacebookIcon size={45} round={true} />
-						</FacebookShareButton>
-						<WhatsappShareButton
-							url={link}
-							title={"Join CryptoX"}
-							separator=": "
-							className={Styles.social}
-						>
-							<WhatsappIcon size={45} round={true} />
-						</WhatsappShareButton>
-						<TelegramShareButton
-							url={link}
-							title={"Join CryptoX"}
-							separator=": "
-							className={Styles.social}
-						>
-							<TelegramIcon size={45} round={true} />
-						</TelegramShareButton>
+					</form>
+					<div id={Styles.send} className="input-group mb-3">
+						<input
+							id={Styles.link}
+							type="text"
+							value={link}
+							className="form-control"
+							readOnly
+						/>
+						<CopyToClipboard text={link} onCopy={copyHandler}>
+							<button className="btn btn-link" type="button">
+								<strong> {copyBtn.btntext} </strong>
+							</button>
+						</CopyToClipboard>
+					</div>
+					<div id={Styles.share} className="card text-dark mb-3">
+						<div className="card-header bg-white">Share your link</div>
+						<div className="card-body d-flex justify-content-center">
+							<FacebookShareButton
+								url={link}
+								quote={"Join CryptoX"}
+								className={Styles.social}
+							>
+								<FacebookIcon size={45} round={true} />
+							</FacebookShareButton>
+							<WhatsappShareButton
+								url={link}
+								title={"Join CryptoX"}
+								separator=": "
+								className={Styles.social}
+							>
+								<WhatsappIcon size={45} round={true} />
+							</WhatsappShareButton>
+							<TelegramShareButton
+								url={link}
+								title={"Join CryptoX"}
+								separator=": "
+								className={Styles.social}
+							>
+								<TelegramIcon size={45} round={true} />
+							</TelegramShareButton>
+						</div>
 					</div>
 				</div>
+				<div className="w-100">
+					<img className="img-fluid" src={img} alt="" />
+				</div>
 			</div>
-			<div className="w-100">
-				<img className="img-fluid" src={img} alt="" />
-			</div>
-		</div>
+		</Fragment>
 	);
 };
 

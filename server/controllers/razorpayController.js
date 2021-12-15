@@ -13,7 +13,7 @@ const razorInstance = new RazorPay({
 const createOrder = async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-		return next(new Error("Invalid inputs passed, please check your data."));
+		return next(new Error("ERR: Invalid inputs passed, please check your data."));
 	}
 
 	const { amount } = req.body;

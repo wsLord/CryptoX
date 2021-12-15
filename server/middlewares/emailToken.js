@@ -50,7 +50,7 @@ module.exports = async (createdUser, hostaddress) => {
 		info = await transporter.sendMail(mailOptions);
 	} catch (err) {
 		console.log(err);
-		return next(new Error("Unable to send Email Verification mail."));
+		return next(new Error("ERR: Unable to send Email Verification mail."));
 	}
 
 	return info;
