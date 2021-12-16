@@ -1,31 +1,57 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
+import axios from "axios";
 
 import Styles from "./Dashboard.module.css";
 import Spinner from "../shared/components/Spinner";
 import News from "./News";
+import AuthContext from "../store/authContext";
 
 const totalArticles = 100;
 
 const Dashboard = (props) => {
+	const ctx = useContext(AuthContext);
+
 	const [articles, setArticles] = useState([]);
-	const [page, setPage] = useState(1);
+	const [page, setPage] = useState(2);
 	const [loading, setLoading] = useState(false);
+	const [name, setName] = useState("User");
+	const [balanceRupees, setBalanceRupees] = useState("***");
+	const [balancePaise, setBalancePaise] = useState("**");
+	const [isEmailVerified, setIsEmailVerified] = useState(false);
 
 	useEffect(() => {
-		const initialize = async () => {
+		// Getting Balance and Email Verification Info & news articles
+		const fetchData = async () => {
 			setLoading(true);
 
-			let url = `https://newsapi.org/v2/everything?sortBy=popularity&q=crypto&page=1&pageSize=10&apiKey=${process.env.REACT_APP_NEWS_API_KEY}`;
-			let data = await fetch(url);
-			let parseData = await data.json();
+			try {
+				const { data } = await axios.get(
+					`${process.env.REACT_APP_SERVER_URL}/user/portfolio/emailverifybalance`,
+					{
+						headers: {
+							Authorization: "Bearer " + ctx.token,
+						},
+					}
+				);
 
-			setArticles(parseData.articles);
-			setLoading(false);
+				let url = `https://newsapi.org/v2/everything?sortBy=popularity&q=crypto&page=1&pageSize=10&apiKey=${process.env.REACT_APP_NEWS_API_KEY}`;
+				const { data: parseData } = await axios.get(url);
+
+				setName(data.userName);
+				setBalanceRupees(data.balanceRupees);
+				setBalancePaise(data.balancePaise);
+				setIsEmailVerified(data.emailVerified);
+				setArticles(parseData.articles);
+				setLoading(false);
+			} catch (err) {
+				// Error fetching Balance and Email Verification Info & news articles
+				console.log(err.response);
+			}
 		};
 
-		initialize();
-	}, []);
+		fetchData();
+	}, [ctx]);
 
 	const fetchMoreData = async () => {
 		setPage((lastPageNumber) => {
@@ -33,8 +59,7 @@ const Dashboard = (props) => {
 		});
 
 		let url = `https://newsapi.org/v2/everything?sortBy=popularity&q=crypto&page=${page}&pageSize=10&apiKey=${process.env.REACT_APP_NEWS_API_KEY}`;
-		let data = await fetch(url);
-		let parsedData = await data.json();
+		const { data: parsedData } = await axios.get(url);
 
 		setArticles((prevArticles) => {
 			return [...prevArticles, ...parsedData.articles];
@@ -45,16 +70,16 @@ const Dashboard = (props) => {
 		<Fragment>
 			<div className="card" id={Styles.top}>
 				<div className="card-body">
-					<h4>Welcome {props.username}</h4>
+					<h4>Welcome {name}</h4>
 					<div className="card shadow-sm p-3 mb-5 bg-body rounded">
-						{props.isverify && (
+						{isEmailVerified && (
 							<div className="card-body" id={Styles.verify}>
 								<i className="fa fa-check-circle text-success">
 									Account verified
 								</i>
 							</div>
 						)}
-						{!props.isverify && (
+						{!isEmailVerified && (
 							<div className="card-body" id={Styles.verify}>
 								<i className="fa fa-exclamation-triangle text-danger">
 									Account not verified
@@ -67,7 +92,9 @@ const Dashboard = (props) => {
 					</div>
 					<div className="card shadow-sm p-3 mb-5 bg-body rounded">
 						<div className="card-body">
-							<h3>Total balance ₹ 0.00</h3>
+							<h3>
+								Total balance ₹ {balanceRupees}.{balancePaise}
+							</h3>
 							<h4>Total amount earned from referral ₹ 0.00</h4>
 						</div>
 					</div>

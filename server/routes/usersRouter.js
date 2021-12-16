@@ -42,7 +42,7 @@ router.post(
 
 router.use(authVerify);
 
-router.get("/portfolio", portfolio);
+router.get("/portfolio/emailverifybalance", portfolio.getBalanceEmailVerify);
 
 router.get("/watchlist/add/:id", watchListController.addToWatchList);
 router.get("/watchlist/remove/:id", watchListController.removeFromWatchList);

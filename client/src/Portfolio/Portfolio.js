@@ -1,4 +1,5 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
+import axios from "axios";
 
 import Styles from "./Portfolio.module.css";
 import addMoneyimg from "../shared/img/add-money.png";
@@ -8,34 +9,65 @@ import AddMoney from "./AddMoney";
 import Withdraw from "./Withdraw";
 import Transaction from "./Transaction";
 import Assets from "./Assets";
+import AuthContext from "../store/authContext";
 
 const Portfolio = () => {
-	const [State, setState] = useState({
+	const ctx = useContext(AuthContext);
+
+	const [windows, setWindows] = useState({
 		addMoney: false,
 		withdraw: false,
 		transaction: false,
 	});
+	const [balanceRupees, setBalanceRupees] = useState("***");
+	const [balancePaise, setBalancePaise] = useState("**");
+
+	useEffect(() => {
+		// Getting Balance and Email Verification Info
+		const fetchData = async () => {
+			try {
+				const { data } = await axios.get(
+					`${process.env.REACT_APP_SERVER_URL}/user/portfolio/emailverifybalance`,
+					{
+						headers: {
+							Authorization: "Bearer " + ctx.token,
+						},
+					}
+				);
+
+				setBalanceRupees(data.balanceRupees);
+				setBalancePaise(data.balancePaise);
+			} catch (err) {
+				// Error fetching Balance and Email Verification Info
+				console.log(err);
+			}
+		};
+
+		fetchData();
+	}, [ctx]);
+
 	const onClickAdd = () => {
-		setState({
-			addMoney: !State.addMoney,
+		setWindows({
+			addMoney: !windows.addMoney,
 			withdraw: false,
 			transaction: false,
 		});
 	};
 	const onClickWithdraw = () => {
-		setState({
+		setWindows({
 			addMoney: false,
-			withdraw: !State.withdraw,
+			withdraw: !windows.withdraw,
 			transaction: false,
 		});
 	};
 	const onClickTransaction = () => {
-		setState({
+		setWindows({
 			addMoney: false,
 			withdraw: false,
-			transaction: !State.transaction,
+			transaction: !windows.transaction,
 		});
 	};
+
 	return (
 		<Fragment>
 			<div className="d-flex justify-content-around" id={Styles.top}>
@@ -47,7 +79,7 @@ const Portfolio = () => {
 						<div className="card-body d-flex justify-content-around">
 							<div className="d-flex flex-column align-items-center justify-content-center">
 								<h1>Balance:</h1>
-								<h2 className="text-secondary">&#x20B9; 123</h2>
+								<h2 className="text-secondary">&#x20B9; {balanceRupees}.{balancePaise}</h2>
 							</div>
 							<div className="vr"></div>
 							<div className="d-flex flex-column">
@@ -82,9 +114,9 @@ const Portfolio = () => {
 					<Assets />
 				</div>
 				<div className="w-100">
-					{State.addMoney && <AddMoney />}
-					{State.withdraw && <Withdraw />}
-					{State.transaction && <Transaction />}
+					{windows.addMoney && <AddMoney />}
+					{windows.withdraw && <Withdraw />}
+					{windows.transaction && <Transaction />}
 					<div className="card w-100">
 						<div className="card-header ">
 							<h3>Daily Report</h3>
@@ -100,6 +132,6 @@ const Portfolio = () => {
 			</div>
 		</Fragment>
 	);
-}
+};
 
 export default Portfolio;

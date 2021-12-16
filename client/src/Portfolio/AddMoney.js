@@ -11,6 +11,7 @@ const AddMoney = (props) => {
 	const inputRefAmount = useRef();
 
 	useEffect(() => {
+		// Loading RazorPay SDK
 		const script = document.createElement("script");
 		script.src = "https://checkout.razorpay.com/v1/checkout.js";
 		script.async = true;

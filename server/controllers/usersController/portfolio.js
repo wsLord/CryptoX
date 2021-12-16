@@ -7,6 +7,32 @@ const Wallet = require("../../models/wallet");
 const Portfolio = require("../../models/portfolio");
 const Transaction = require("../../models/transaction");
 
+const getBalanceEmailVerify = async (req, res, next) => {
+	let balanceRupees = "0";
+	let balancePaise = "00";
+	let emailVerified = false;
+	let userName = "User";
+
+	try {
+		const userDetails = await User.findById(req.userData.id).populate("wallet");
+		console.log(userDetails);
+		const balance = userDetails.wallet.balance;
+		userName = userDetails.name;
+		balanceRupees = balance.slice(0, -2);
+		balancePaise = balance.slice(-2);
+		emailVerified = userDetails.isVerified;
+	} catch (err) {
+		return next(new Error("ERR: Unable to fetch balance."));
+	}
+
+	res.status(201).json({
+		userName,
+		balanceRupees,
+		balancePaise,
+		emailVerified,
+	});
+};
+
 const getData = function (portfolioOfUser, coinData) {
 	return new Promise((resolve) => {
 		let arr = [];
@@ -26,7 +52,7 @@ const getData = function (portfolioOfUser, coinData) {
 	});
 };
 
-const portfolio = async (req, res) => {
+const portfoliotemp = async (req, res) => {
 	if (!req.userData) {
 		res.redirect("back");
 	}
@@ -67,4 +93,4 @@ const portfolio = async (req, res) => {
 	res.redirect("back");
 };
 
-module.exports = portfolio;
+module.exports.getBalanceEmailVerify = getBalanceEmailVerify;
