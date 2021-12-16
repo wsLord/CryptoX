@@ -12,10 +12,17 @@ router.post(
 	[check("amount").isInt({ min: 100, max: 100000 })],
 	razorpayController.createOrder
 );
+
 router.post(
 	"/capture",
 	[check("amount").isInt({ min: 100, max: 100000 })],
-	razorpayController.createOrder
+	razorpayController.capturePayment
+);
+
+router.post(
+	"/failed",
+	// [check("amount").isInt({ min: 100, max: 100000 })],
+	razorpayController.failedPayment
 );
 
 module.exports = router;

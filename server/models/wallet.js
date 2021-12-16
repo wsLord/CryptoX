@@ -1,9 +1,10 @@
 const mongoose = require("mongoose");
 
-const walletTransactionSchema = require("./walletTransaction");
+const TransactionSchema = require("./transaction");
 
 const walletSchema = new mongoose.Schema(
 	{
+		// in paise
 		balance: {
 			type: String,
 			required: true,

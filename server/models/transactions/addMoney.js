@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const addMoneySchema = new mongoose.Schema(
 	{
-		walletId: {
+		wallet: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Wallet",
 		},
@@ -11,22 +11,24 @@ const addMoneySchema = new mongoose.Schema(
 			required: true,
 		},
 		status: {
-			type: Number,
+			type: String,
 			required: true,
+			enum: ["SUCCESS", "PENDING", "FAILED"],
 		},
 		razorpay_payment_id: {
 			type: String,
 			required: true,
-			default: null,
+			default: "$$",
 		},
 		razorpay_order_id: {
 			type: String,
 			required: true,
+			default: "$$",
 		},
 		razorpay_signature: {
 			type: String,
 			required: true,
-			default: null,
+			default: "$$",
 		},
 	},
 	{

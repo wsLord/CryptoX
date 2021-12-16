@@ -5,8 +5,9 @@ const transactionSchema = new mongoose.Schema(
 		category: {
 			type: String,
 			required: true,
+			enum: ['add_money', 'withdraw_money', 'buy_coin', 'sell_coin', 'buy_request', 'sell_request']
 		},
-		walletId: {
+		wallet: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Wallet",
 			required: true,
@@ -42,3 +43,11 @@ const transactionSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model("Transaction", transactionSchema);
+
+// Categories
+// 1_add_money
+// 2_withdraw_money
+// 3_buy_coin
+// 4_sell_coin
+// 5_buy_request
+// 6_sell_request
