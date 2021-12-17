@@ -13,7 +13,7 @@ const addMoneySchema = new mongoose.Schema(
 		status: {
 			type: String,
 			required: true,
-			enum: ["SUCCESS", "PENDING", "FAILED"],
+			enum: ["SUCCESS", "UNVERIFIED_SUCCESS", "PENDING", "FAILED"],
 		},
 		razorpay_payment_id: {
 			type: String,
@@ -27,9 +27,12 @@ const addMoneySchema = new mongoose.Schema(
 		},
 		razorpay_signature: {
 			type: String,
-			required: true,
-			default: "$$",
 		},
+		verified_payment: {
+			type: Boolean,
+			required: true,
+			default: false,
+		}
 	},
 	{
 		timestamps: true,

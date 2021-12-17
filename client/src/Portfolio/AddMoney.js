@@ -1,4 +1,4 @@
-import React, { Fragment, useContext, useEffect, useRef } from "react";
+import React, { Fragment, useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
 
 import AuthContext from "../store/authContext";
@@ -9,6 +9,7 @@ const AddMoney = (props) => {
 	const ctx = useContext(AuthContext);
 
 	const inputRefAmount = useRef();
+	// const [transactionID, setTransactionID] = useState("");
 
 	useEffect(() => {
 		// Loading RazorPay SDK
@@ -22,9 +23,32 @@ const AddMoney = (props) => {
 		};
 	}, []);
 
-	const checkoutHandler = async (response) => {
+	const checkoutHandler = async (response, transactionID) => {
+		console.log("TID: "+ transactionID);
 		if (response.error) {
 			console.log("Payment Failed ", response.error.description);
+
+			try {
+				const { data } = await axios.post(
+					`${process.env.REACT_APP_SERVER_URL}/payment/failed`,
+					{
+						transaction_id: transactionID,
+						razorpay_payment_id: response.error.metadata.payment_id,
+						razorpay_order_id: response.error.metadata.order_id,
+					},
+					{
+						headers: {
+							Authorization: "Bearer " + ctx.token,
+						},
+					}
+				);
+
+				// Show error and others
+				console.log(data);
+			} catch (err) {
+				// Unable to log info
+				console.log(err);
+			}
 
 			// call failed payment api with addMoneyTransactionInstance.id;
 
@@ -32,21 +56,27 @@ const AddMoney = (props) => {
 			return;
 		}
 
-		// try {
-		// 	const { data } = await axios.post(
-		// 		`${process.env.REACT_APP_SERVER_URL}/payment/capture`,
-		// 		response,
-		// 		{
-		// 			headers: {
-		// 				"Content-Type": "application/json",
-		// 				Authorization: "Bearer " + ctx.token,
-		// 			},
-		// 		}
-		// 	);
-		// } catch (err) {
-		// 	// Something went wrong! 400/500 Response
-		// 	console.log(err);
-		// }
+		try {
+			const { data } = await axios.post(
+				`${process.env.REACT_APP_SERVER_URL}/payment/capture`,
+				{
+					...response,
+					transaction_id: transactionID,
+				},
+				{
+					headers: {
+						Authorization: "Bearer " + ctx.token,
+					},
+				}
+			);
+
+			// Show new payment page with deatils
+			console.log(data);
+
+		} catch (err) {
+			// Something went wrong! 400/500 Response
+			console.log(err.response);
+		}
 
 		// console.log(response);
 		alert(response.razorpay_payment_id);
@@ -81,7 +111,7 @@ const AddMoney = (props) => {
 				description: "Adding money to Wallet",
 				image: Logo,
 				order_id: data.id,
-				handler: checkoutHandler,
+				handler: (response) => {checkoutHandler(response, data.receipt)},
 				prefill: {
 					name: data.userDetails.name,
 					email: data.userDetails.email,
