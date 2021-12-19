@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 
 import Logo from "../img/icon.png";
-import Styles from "./header.module.css"
+import Styles from "./Header.module.css"
 import profile from "../img/profile.png"
 import AuthContext from "../../store/authContext";
 

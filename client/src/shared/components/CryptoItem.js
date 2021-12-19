@@ -8,6 +8,8 @@ import AuthContext from "../../store/authContext";
 const CryptoItem = (props) => {
 	const ctx = useContext(AuthContext);
 
+	console.log(props);
+
 	const addToWatchList = async () => {
 		const coinID = props.symbol;
 
@@ -58,7 +60,6 @@ const CryptoItem = (props) => {
 					<li className="list-group-item text-danger" id={Styles.cryptoid}>
 						{props.change}
 						<strong>
-							{" "}
 							<i className="fa fa-caret-down"></i>
 						</strong>
 					</li>
@@ -67,7 +68,6 @@ const CryptoItem = (props) => {
 					<li className="list-group-item text-success" id={Styles.cryptoid}>
 						{props.change}
 						<strong>
-							{" "}
 							<i className="fa fa-caret-up"></i>
 						</strong>
 					</li>

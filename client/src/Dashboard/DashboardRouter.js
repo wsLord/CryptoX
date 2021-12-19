@@ -4,6 +4,7 @@ import { Switch, Route, Redirect } from "react-router-dom";
 import Header from "../shared/components/Header";
 import Footer from '../shared/components/Footer'
 import Dashboard from "./Dashboard";
+import CoinDetail from "../ViewCoin/CoinDetail";
 import CryptoList from "../Trade/CryptoList";
 import Portfolio from "../Portfolio/Portfolio";
 import Watchlist from "../WatchList/WatchList";
@@ -15,7 +16,7 @@ const DashboardRouter = () => {
 			<Header />
 			<Switch>
 				<Route exact path="/">
-					<Dashboard username="Sanskar Jain" isverify={false}/>
+					<Dashboard />
 				</Route>
 				<Route exact path="/list">
 					<CryptoList />
@@ -28,6 +29,9 @@ const DashboardRouter = () => {
 				</Route>
 				<Route exact path="/referral">
 					<Referral />
+				</Route>
+				<Route path="/coins/:coinid">
+					<CoinDetail />
 				</Route>
 				<Route path='*'>
 					<Redirect to="/" />

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+
 const portfolioSchema = new mongoose.Schema(
 	{
 		user: {
@@ -7,7 +8,7 @@ const portfolioSchema = new mongoose.Schema(
 		},
 		coinsOwned: [
 			{
-				coidId: {
+				coinid: {
 					type: String,
 					required: true,
 				},

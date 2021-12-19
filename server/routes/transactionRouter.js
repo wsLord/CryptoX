@@ -9,10 +9,26 @@ const exchange = require("../controllers/transactionController/exchange");
 const sell = require("../controllers/transactionController/sell");
 const sellLimit = require("../controllers/transactionController/sellLimit");
 
-router.use(authVerify);
+// router.use(authVerify);
 
-router.post("/buy", buy);
-router.post("/sell/:id", sell);
+router.post(
+	"/buy",
+	[
+		check("quantity").not().isEmpty(),
+		check("coinid").isLength({ min: 3, max: 3 }),
+	],
+	buy
+);
+router.post(
+	"/sell",
+	[
+		check("name").not().isEmpty(),
+		check("email").normalizeEmail().isEmail(),
+		check("mobile").isLength({ min: 10, max: 10 }),
+		check("password").isLength({ min: 6 }),
+	],
+	sell
+);
 router.post("/buyLimit", buyLimit);
 router.post("/sellLimit", sellLimit);
 router.post("/exchange", exchange);

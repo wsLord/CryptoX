@@ -1,6 +1,8 @@
 import React, { useState } from "react";
-import Styles from './view.module.css'
-export default function View() {
+
+import Styles from './CoinDetail.module.css'
+
+const CoinDetail = () => {
 
     const [modes, setModes] = useState({
         buy: "nav-link active",
@@ -136,3 +138,5 @@ export default function View() {
         </div>
     )
 }
+
+export default CoinDetail;

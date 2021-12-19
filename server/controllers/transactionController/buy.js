@@ -3,80 +3,110 @@ const CoinGeckoClient = new CoinGecko();
 
 const User = require("../../models/user");
 const Transaction = require("../../models/transaction");
+const buyCoinTransaction = require("../../models/transactions/buyCoin");
 
 const buy = async (req, res, next) => {
-	let coinId = req.body.id;
-	let quantity = BigInt(req.body.quantity);
+	const coinid = req.body.coinid;
+	const quantity = BigInt(req.body.quantity);
 
 	try {
-		let user = await User.findById(req.userData.id)
+		const user = await User.findById(req.userData.id)
 			.populate("wallet")
 			.populate("portfolio")
 			.exec();
 
-		let { data: coinData } = await CoinGeckoClient.coins.fetch(coinId);
+		const { data: coinData } = await CoinGeckoClient.coins.fetch(coinid);
 
-		let price = BigInt(coinData.market_data.current_price.inr * 10000000);
+		const price = BigInt(coinData.market_data.current_price.inr * 10000000);
 
-		let walletOfUser = user.wallet;
-		let portfolioOfUser = user.portfolio;
+		const walletOfUser = user.wallet;
+		const portfolioOfUser = user.portfolio;
+		const cost = price * quantity;
+
+		// Creating Transaction Instance
+		let transactionInstance = await Transaction.create({
+			category: "buy_coin",
+			wallet: walletOfUser.id,
+			buyCoin: null,
+		});
+
+		// Creating Buy Coin Transaction Instance
+		let buyCoinTransactionInstance = await buyCoinTransaction.create({
+			wallet: walletOfUser.id,
+			coinid: coinid,
+			amount: cost.toString(),
+			price: price.toString(),
+			quantity: quantity.toString(),
+			status: "PENDING",
+		});
+
+		// Linking Transaction Instance to Add Money Transaction Instance
+		transactionInstance.buyCoin = buyCoinTransactionInstance.id;
+		await transactionInstance.save();
 
 		console.log(BigInt(walletOfUser.balance));
 
-		if (BigInt(walletOfUser.balance) < price * quantity) {
+		if (BigInt(walletOfUser.balance) < cost) {
 			console.log("Insufficient Balance");
 
-			const err = new Error("Insufficient funds in wallet!");
-			err.code = 405;
-			return next(err);
+			// const err = new Error("");
+			try {
+				buyCoinTransactionInstance.status = "FAILED";
+				buyCoinTransactionInstance.statusMessage =
+					"Insufficient funds in wallet.";
+				await buyCoinTransactionInstance.save();
+			} catch (err) {
+				const error = new Error("Some error occured. Details: " + err.message);
+				error.code = 405;
+				return next(error);
+			}
+
+			return res.status(200).json({
+				success: false,
+				message: "ERR: Insufficient funds in wallet!",
+				transactionID: transactionInstance.id,
+			});
 		}
 
-		let newBalance = BigInt(walletOfUser.balance) - price * quantity;
+		let newBalance = BigInt(walletOfUser.balance) - cost;
 		walletOfUser.balance = newBalance.toString();
 		await walletOfUser.save();
 
-		let quantityBought;
-		let avgPrice;
-		let index = 0;
-		let found;
-		for (a of portfolioOfUser.coinsOwned) {
-			if (a.coidId == coinId) {
-				quantityBought = BigInt(a.quantity);
-				avgPrice = BigInt(a.priceOfBuy);
-				found = "yes";
+		let oldQuantity;
+		let oldAvgPrice;
+		// Checking if coin is already existent in Portfolio and getting its index
+		let coinIndex = portfolioOfUser.coinsOwned.findIndex((tcoin) => {
+			if (tcoin.coinid === coinid) {
+				oldQuantity = BigInt(tcoin.quantity);
+				oldAvgPrice = BigInt(tcoin.priceOfBuy);
+				return true;
 			}
-			if (!found) index = index + 1;
-		}
+			return false;
+		});
 
-		if (found) {
-			let newAvgPrice =
-				(avgPrice * quantityBought + price * quantity) /
-				(quantityBought + quantity);
+		if (coinIndex) {
 			let newQuantity = quantityBought + quantity;
-			portfolioOfUser.coinsOwned[index].quantity = newQuantity.toString();
-			portfolioOfUser.coinsOwned[index].priceOfBuy = newAvgPrice.toString();
+			let newAvgPrice = (oldAvgPrice + cost) / newQuantity;
+
+			portfolioOfUser.coinsOwned[coinIndex].quantity = newQuantity.toString();
+			portfolioOfUser.coinsOwned[coinIndex].priceOfBuy = newAvgPrice.toString();
 		} else {
 			portfolioOfUser.coinsOwned.push({
-				coidId: coinId,
+				coinid: coinid,
 				quantity: quantity.toString(),
 				priceOfBuy: price.toString(),
 			});
 		}
 		await portfolioOfUser.save();
 
-		let currTransaction = await Transaction.create({
-			category: "buy",
-			walletId: walletOfUser._id,
-			quantity: quantity.toString(),
-			price: price.toString(),
-			coinId: coinId,
+		buyCoinTransactionInstance.status = "SUCCESS";
+		await buyCoinTransactionInstance.save();
+
+		return res.status(200).json({
+			success: true,
+			message: "Transaction complete",
+			transactionID: transactionInstance.id,
 		});
-		return res
-			.status(200)
-			.json({
-				message: "Transaction complete",
-				transactionID: currTransaction.id,
-			});
 	} catch (err) {
 		const error = new Error("Some error occured. Details: " + err.message);
 		error.code = 405;
