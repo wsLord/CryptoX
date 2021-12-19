@@ -7,7 +7,7 @@ import Dashboard from "./Dashboard";
 import CryptoList from "../Trade/CryptoList";
 import Portfolio from "../Portfolio/Portfolio";
 import Watchlist from "../WatchList/WatchList";
-import Referral from "../pages/Referral";
+import Referral from "../pages/Referral"; 
 
 const DashboardRouter = () => {
 	return (

@@ -1,0 +1,28 @@
+.logo
+{
+    height: 60px;
+    width: 100px;
+}
+#overview
+{
+    margin-right: 10px;
+    height: 100%;
+}
+#buyform 
+{
+    margin: 20px;
+}
+#sellform
+{
+    margin: 20px;
+    padding: 5px;
+}
+#submit
+{
+    margin-top: 15px;
+    font-size: 21px;
+}
+#options
+{
+    margin-top: 15px;
+}
