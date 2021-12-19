@@ -1,6 +1,5 @@
 const { validationResult } = require("express-validator");
 const RazorPay = require("razorpay");
-const sha256 = require("js-sha256");
 const crypto = require("crypto");
 require("dotenv").config();
 

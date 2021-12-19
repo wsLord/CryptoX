@@ -1,16 +1,17 @@
 const User = require("../../models/user");
 
 const getWatchList = async (req, res, next) => {
+	let user;
 	try {
-		let user = await User.findById(req.userData.id);
+		user = await User.findById(req.userData.id);
 	} catch (err) {
-		return next(new Error("Unable to find userdata!"));
+		return next(new Error("ERR: Unable to load watchlist."));
 	}
 
-	return res.status(200).json({
-		message: "WatchList Data",
-		data: ["chicken"], //user.watchList
-	});
+	// WatchList Data
+	return res.status(200).json(
+		user.watchList //["chicken"]
+	);
 };
 
 const addToWatchList = async (req, res, next) => {
@@ -26,19 +27,19 @@ const addToWatchList = async (req, res, next) => {
 	if (isPresent) {
 		// Already present
 		return res.status(200).json({
-			message: "Already in the WatchList."
+			message: coinId.toUpperCase() + " is already in the WatchList.",
 		});
 	}
 
-	user.watchList.push(coinId);
 	try {
+		user.watchList.push(coinId);
 		await user.save();
 	} catch (err) {
 		return next(new Error("Unable to save changes!"));
 	}
-	
+
 	return res.status(200).json({
-		message: "Added to the WatchList."
+		message: coinId.toUpperCase() + " added to the WatchList.",
 	});
 };
 
@@ -55,19 +56,19 @@ const removeFromWatchList = async (req, res, next) => {
 	if (!isPresent) {
 		// Already removed
 		return res.status(200).json({
-			message: "Not present in the WatchList."
+			message: "Not present in the WatchList.",
 		});
 	}
 
-	user.watchList.pull(coinId);
 	try {
+		user.watchList.pull(coinId);
 		await user.save();
 	} catch (err) {
 		return next(new Error("Unable to save changes!"));
 	}
 
 	return res.status(200).json({
-		message: "Removed from the WatchList."
+		message: "Removed from the WatchList.",
 	});
 };
 

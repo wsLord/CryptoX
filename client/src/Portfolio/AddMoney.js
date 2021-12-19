@@ -1,4 +1,4 @@
-import React, { Fragment, useContext, useEffect, useRef, useState } from "react";
+import React, { Fragment, useContext, useEffect, useRef } from "react";
 import axios from "axios";
 
 import AuthContext from "../store/authContext";
@@ -9,7 +9,6 @@ const AddMoney = (props) => {
 	const ctx = useContext(AuthContext);
 
 	const inputRefAmount = useRef();
-	// const [transactionID, setTransactionID] = useState("");
 
 	useEffect(() => {
 		// Loading RazorPay SDK
@@ -49,8 +48,6 @@ const AddMoney = (props) => {
 				// Unable to log info
 				console.log(err);
 			}
-
-			// call failed payment api with addMoneyTransactionInstance.id;
 
 			// show message also
 			return;
@@ -159,12 +156,6 @@ const AddMoney = (props) => {
 							/>
 							<span className="input-group-text">.00</span>
 						</div>
-						{/* <div className="mb-3">
-							<label htmlFor="upi" className="form-label">
-								UPI ID
-							</label>
-							<input type="text" className="form-control" id="upi" required />
-						</div> */}
 						<button type="submit" className="btn btn-success">
 							<strong>ADD</strong>
 						</button>

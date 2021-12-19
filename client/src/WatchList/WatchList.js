@@ -1,7 +1,10 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, Fragment } from "react";
+import axios from "axios";
+
 import bitimg from "../shared/img/bit.jpg";
 import Styles from "./Watchlist.module.css";
 import WatchItem from "./WatchItem";
+import Alert from "../shared/components/Alert";
 import AuthContext from "../store/authContext";
 
 const CoinGecko = require("coingecko-api");
@@ -10,6 +13,7 @@ const CoinGeckoClient = new CoinGecko();
 const Watchlist = () => {
 	const ctx = useContext(AuthContext);
 
+	const [error, setError] = useState(null);
 	const [coins, setCoins] = useState([]);
 	const [totalCoins, setTotalCoins] = useState(0);
 
@@ -19,71 +23,79 @@ const Watchlist = () => {
 
 			// Adding id of coins in watchlist from database
 			try {
-				const res = await fetch(
+				const responseData = await axios.get(
 					`${process.env.REACT_APP_SERVER_URL}/user/watchlist`,
 					{
-						method: "GET",
 						headers: {
 							Authorization: "Bearer " + ctx.token,
 						},
 					}
 				);
 
-				const responseData = await res.json();
+				console.log(responseData);
 
-				if (res.ok) {
-					watchlist = responseData.data;
-				} else {
-					// Error fetching watchlist array
-					console.log(responseData.message);
-					console.log("Error fetching watchlist array");
+				watchlist = responseData.data;
+
+				for (let coinid of watchlist) {
+					let { data } = await CoinGeckoClient.coins.fetch(coinid, {
+						tickers: false,
+						community_data: false,
+						developer_data: false,
+						sparkline: false,
+					});
+
+					console.log(coinid, data);
+
+					setCoins((oldList) => {
+						return [...oldList, data];
+					});
+					setTotalCoins((oldCount) => {
+						return oldCount + 1;
+					});
 				}
 			} catch (err) {
 				console.log(err);
-			}
-
-			// watchlist = [
-			// 	"bitcoin",
-			// 	"ethereum",
-			// 	"tether",
-			// 	"binancecoin",
-			// 	"solana",
-			// ];
-			for (let coinid of watchlist) {
-				let { data } = await CoinGeckoClient.coins.fetch(coinid, {
-					tickers: false,
-					community_data: false,
-					developer_data: false,
-					sparkline: false,
-				});
-
-				console.log(data);
-
-				setCoins((oldList) => {
-					return [...oldList, data];
-				});
-				setTotalCoins((oldCount) => {
-					return oldCount + 1;
-				});
+				// console.log(err.response.data.message);
+				setError("Error fetching watchlist array");
 			}
 		};
 
 		initialize();
 
 		return () => {
-      setCoins([]);
+			setCoins([]);
 			setTotalCoins(0);
-    };
+		};
 	}, [ctx]);
 
-	const removeFromCoinList = (id) => {
-		setCoins((currentList) => {
-			return currentList.filter(element => element.id !== id)
-		});
-	}
+	const removeFromWatchList = async (id) => {
+		try {
+			const res = await axios.get(
+				`${process.env.REACT_APP_SERVER_URL}/user/watchlist/remove/${id}`,
+				{
+					headers: {
+						Authorization: "Bearer " + ctx.token,
+					},
+				}
+			);
+
+			setError(res.data.message);
+			setCoins((currentList) => {
+				return currentList.filter((element) => element.id !== id);
+			});
+		} catch (err) {
+			console.log(err.response.data.message);
+			setError(err.response.data.message);
+		}
+	};
+
+	const clearError = () => {
+		setError(null);
+	};
 
 	return (
-		<div>
+		<Fragment>
+			{error && <Alert msg={error} onClose={clearError} />}
 			<div className="card shadow p-3 mb-5 bg-body rounded" id={Styles.watch}>
 				<div className="card-header ">
 					<h3>Watchlist</h3>
@@ -117,14 +129,20 @@ const Watchlist = () => {
 							</thead>
 							<tbody>
 								{coins.map((element) => {
-									return <WatchItem data={element} key={element.symbol} onRemove={removeFromCoinList} />;
+									return (
+										<WatchItem
+											data={element}
+											key={element.symbol}
+											onRemove={removeFromWatchList}
+										/>
+									);
 								})}
 							</tbody>
 						</table>
 					)}
 				</div>
 			</div>
-		</div>
+		</Fragment>
 	);
 };
 
