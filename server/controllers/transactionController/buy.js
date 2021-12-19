@@ -7,7 +7,9 @@ const buyCoinTransaction = require("../../models/transactions/buyCoin");
 
 const buy = async (req, res, next) => {
 	const coinid = req.body.coinid;
-	const quantity = BigInt(req.body.quantity);
+
+	// Quantity precise to 7 places
+	const quantity = BigInt(parseFloat(req.body.quantity).toFixed(7) * 10000000);
 
 	try {
 		const user = await User.findById(req.userData.id)
@@ -15,13 +17,39 @@ const buy = async (req, res, next) => {
 			.populate("portfolio")
 			.exec();
 
-		const { data: coinData } = await CoinGeckoClient.coins.fetch(coinid);
+		const { data: coinData } = await CoinGeckoClient.coins.fetch(coinid, {
+			tickers: false,
+			community_data: false,
+			developer_data: false,
+			sparkline: false,
+		});
 
-		const price = BigInt(coinData.market_data.current_price.inr * 10000000);
+		// Price in Paise
+		const price = BigInt(
+			parseFloat(coinData.market_data.current_price.inr).toFixed(2) * 100
+		);
 
 		const walletOfUser = user.wallet;
 		const portfolioOfUser = user.portfolio;
-		const cost = price * quantity;
+
+		// Cost in BigInt with 7 extra precision digits
+		let tcost = price * quantity;
+		tcost = tcost.toString();
+
+		// Length of tcost must be >= 10 so that transaction is worth Re. 1
+		if (tcost.length < 10) {
+			const error = new Error(
+				"TRANSACTION DECLINED! Cost must be atleast Re. 1"
+			);
+			error.code = 405;
+			return next(error);
+		}
+
+		// Trimming last 7 extra digits
+		tcost = tcost.slice(0, -7);
+
+		// Cost in paise in BigInt
+		const cost = BigInt(tcost);
 
 		// Creating Transaction Instance
 		let transactionInstance = await Transaction.create({
@@ -49,7 +77,6 @@ const buy = async (req, res, next) => {
 		if (BigInt(walletOfUser.balance) < cost) {
 			console.log("Insufficient Balance");
 
-			// const err = new Error("");
 			try {
 				buyCoinTransactionInstance.status = "FAILED";
 				buyCoinTransactionInstance.statusMessage =
@@ -85,7 +112,7 @@ const buy = async (req, res, next) => {
 		});
 
 		if (coinIndex) {
-			let newQuantity = quantityBought + quantity;
+			let newQuantity = oldQuantity + quantity;
 			let newAvgPrice = (oldAvgPrice + cost) / newQuantity;
 
 			portfolioOfUser.coinsOwned[coinIndex].quantity = newQuantity.toString();

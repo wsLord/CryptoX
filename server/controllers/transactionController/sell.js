@@ -1,79 +1,144 @@
-const axios = require("axios");
+const CoinGecko = require("coingecko-api");
+const CoinGeckoClient = new CoinGecko();
+
 const User = require("../../models/user");
-const Wallet = require("../../models/wallet");
-const Portfolio = require("../../models/portfolio");
 const Transaction = require("../../models/transaction");
+const sellCoinTransaction = require("../../models/transactions/sellCoin");
 
-const sell = async (req, res) => {
-	if (!req.userData) {
-		res.redirect("back");
-	}
-	let user = await User.findById(req.userData.id);
-	if (!user) {
-		res.redirect("back");
-	}
+const sell = async (req, res, next) => {
+	const coinid = req.body.coinid;
 
-	let coinId = req.params.id;
+	// Quantity precise to 7 places
+	const quantity = BigInt(parseFloat(req.body.quantity).toFixed(7) * 10000000);
 
-	let quantity = BigInt(req.body.quantity);
+	try {
+		const user = await User.findById(req.userData.id)
+			.populate("wallet")
+			.populate("portfolio")
+			.exec();
 
-	let coinData = await axios.get(
-		`https://api.coingecko.com/api/v3/coins/${coinId}`
-	); //axios by default parses Json response
+		const { data: coinData } = await CoinGeckoClient.coins.fetch(coinid, {
+			tickers: false,
+			community_data: false,
+			developer_data: false,
+			sparkline: false,
+		});
 
-	let price = BigInt(coinData.data.market_data.current_price.inr * 10000000);
+		// Price in Paise
+		const price = BigInt(
+			parseFloat(coinData.market_data.current_price.inr).toFixed(2) * 100
+		);
 
-	let portfolioOfUser = await Portfolio.findById(user.portfolioId);
+		const walletOfUser = user.wallet;
+		const portfolioOfUser = user.portfolio;
 
-	var quantityOfCoinsOwned;
-	var avgPrice;
-	var index = 0;
-	var found;
-	for (a of portfolioOfUser.coinsOwned) {
-		if (a.coidId == coinId) {
-			quantityOfCoinsOwned = BigInt(a.quantity);
-			avgPrice = BigInt(a.priceOfBuy);
-			found = "yes";
+		// Cost in BigInt with 7 extra precision digits
+		let tcost = price * quantity;
+		tcost = tcost.toString();
+
+		// Length of tcost must be >= 10 so that transaction is worth Re. 1
+		if (tcost.length < 10) {
+			const error = new Error(
+				"TRANSACTION DECLINED! Cost must be atleast Re. 1"
+			);
+			error.code = 405;
+			return next(error);
 		}
-		if (!found) index = index + 1;
-	}
 
-	if (found && quantityOfCoinsOwned >= quantity) {
-		portfolioOfUser.coinsOwned.splice(index, 1);
-		let newQuantity = quantityOfCoinsOwned - quantity;
+		// Trimming last 7 extra digits
+		tcost = tcost.slice(0, -7);
+
+		// Cost in paise in BigInt
+		const cost = BigInt(tcost);
+
+		let oldQuantity;
+		let avgPrice;
+		// Checking if coin is already existent in Portfolio and getting its index
+		let coinIndex = portfolioOfUser.coinsOwned.findIndex((tcoin) => {
+			if (tcoin.coinid === coinid) {
+				oldQuantity = BigInt(tcoin.quantity);
+				avgPrice = BigInt(tcoin.priceOfBuy);
+				return true;
+			}
+			return false;
+		});
+
+		// Declining transaction when coin doesn't exist
+		if (!coinIndex) {
+			const error = new Error("TRANSACTION DECLINED! Quantity of coin is 0.");
+			error.code = 405;
+			return next(error);
+		}
+
+		// Creating Transaction Instance
+		let transactionInstance = await Transaction.create({
+			category: "sell_coin",
+			wallet: walletOfUser.id,
+			sellCoin: null,
+		});
+
+		// Creating Buy Coin Transaction Instance
+		let sellCoinTransactionInstance = await sellCoinTransaction.create({
+			wallet: walletOfUser.id,
+			coinid: coinid,
+			amount: cost.toString(),
+			price: price.toString(),
+			quantity: quantity.toString(),
+			status: "PENDING",
+		});
+
+		// Linking Transaction Instance to Add Money Transaction Instance
+		transactionInstance.sellCoin = sellCoinTransactionInstance.id;
+		await transactionInstance.save();
+
+		if (oldQuantity < quantity) {
+			console.log("Insufficient Coins");
+
+			try {
+				sellCoinTransactionInstance.status = "FAILED";
+				sellCoinTransactionInstance.statusMessage =
+					"Insufficient coins in assets.";
+				await sellCoinTransactionInstance.save();
+			} catch (err) {
+				const error = new Error("Some error occured. Details: " + err.message);
+				error.code = 405;
+				return next(error);
+			}
+
+			return res.status(200).json({
+				success: false,
+				message: "ERR: Insufficient coins in assets.",
+				transactionID: transactionInstance.id,
+			});
+		}
+
+		let newBalance = BigInt(walletOfUser.balance) + cost;
+		walletOfUser.balance = newBalance.toString();
+		await walletOfUser.save();
+
+		portfolioOfUser.coinsOwned.splice(coinIndex, 1);
+		let newQuantity = oldQuantity - quantity;
 		if (newQuantity > 0n) {
 			portfolioOfUser.coinsOwned.push({
-				coidId: coinId,
+				coinid: coinid,
 				quantity: newQuantity.toString(),
 				priceOfBuy: avgPrice,
 			});
 		}
 		await portfolioOfUser.save();
-		let WalletOfUser = await Wallet.findById(user.walletId);
 
-		let newBalance = BigInt(WalletOfUser.balance) + price * quantity;
+		sellCoinTransactionInstance.status = "SUCCESS";
+		await sellCoinTransactionInstance.save();
 
-		WalletOfUser.balance = newBalance.toString();
-		await WalletOfUser.save();
-		try {
-			let transac = await Transaction.create({
-				category: "sell",
-				walletId: WalletOfUser._id,
-				quantity: quantity.toString(),
-				price: price.toString(),
-				// user:user._id,
-				// portfolioId:portfolioOfUser._id,
-				coinId: coinId,
-			});
-
-			return res.status(200).json("transaction complete");
-		} catch (err) {
-			console.log(err);
-			return res.status(500).json("internal server error");
-		}
-	} else {
-		console.log("Insufficient Coins");
-		return res.status(405).json("Insufficient Coins");
+		return res.status(200).json({
+			success: true,
+			message: "Transaction complete",
+			transactionID: transactionInstance.id,
+		});
+	} catch (err) {
+		const error = new Error("Some error occured. Details: " + err.message);
+		error.code = 405;
+		return next(error);
 	}
 };
 
