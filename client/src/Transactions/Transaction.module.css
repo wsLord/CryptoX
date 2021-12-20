@@ -11,5 +11,12 @@
 #details
 {
     margin: auto;
-    width: 50%;
+    width: 30%;
+}
+#tid
+{
+    width: 400px;
+    padding: 3px;
+    background-color: rgb(198, 233, 248);
+    border-radius: 12px;
 }

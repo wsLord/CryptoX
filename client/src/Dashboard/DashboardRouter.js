@@ -8,7 +8,7 @@ import CoinDetail from "../ViewCoin/CoinDetail";
 import CryptoList from "../Trade/CryptoList";
 import Portfolio from "../Portfolio/Portfolio";
 import Watchlist from "../WatchList/WatchList";
-import Transactions from "../Transactions/BuySellDetails";
+import Transactions from "../Transactions/TransactionsList";
 import Referral from "../pages/Referral"; 
 
 const DashboardRouter = () => {
@@ -29,7 +29,7 @@ const DashboardRouter = () => {
 					<Watchlist />
 				</Route>
 				<Route exact path="/transactions">
-					<Transactions status={true}/>
+					<Transactions />
 				</Route>
 				<Route exact path="/referral">
 					<Referral />
