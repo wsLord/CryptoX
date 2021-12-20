@@ -10,7 +10,7 @@ const sellRequestSchema=new mongoose.Schema({
     },
     //include the ids of comments in an array
     quantity: {
-        type:Integer,
+        type:String,
         required :true
     },
     mode: {

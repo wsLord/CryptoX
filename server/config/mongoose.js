@@ -10,7 +10,7 @@ const db = mongoose.connection;
 db.on("error", console.error.bind(console, "Error connecting to mongodb"));
 db.once("open", () => {
 	console.log("Connected to Database :: MongoDB");
-	// RecurringJobs.checkLimitBuy();
+	RecurringJobs.checkLimitBuy();
 });
 
 module.exports = db;
