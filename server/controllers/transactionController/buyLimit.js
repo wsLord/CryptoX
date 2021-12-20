@@ -13,11 +13,11 @@ const buyLimit = async (req, res) => {
 		
 		let newRequest = await BuyRequest.create({
 			coinId: req.body.coinId,
-			from: user.walletId,
+			from: user.wallet,
 			quantity: req.body.quantity,
 			mode: "1",
 			maxPrice: maxpri.toString(),
-			portfolioId: user.portfolioId,
+			portfolioId: user.portfolio,
 		});
 
 		return res.status(200).json('buyLimit order registered');
