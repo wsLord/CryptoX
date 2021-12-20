@@ -26,8 +26,13 @@ const Dashboard = (props) => {
 			setLoading(true);
 
 			try {
-				const { data } = await axios.get(
-					`${process.env.REACT_APP_SERVER_URL}/user/portfolio/emailverifybalance`,
+				const { data } = await axios.post(
+					`${process.env.REACT_APP_SERVER_URL}/user/data`,
+					{
+						name: true,
+						balance: true,
+						isEmailVerified: true,
+					},
 					{
 						headers: {
 							Authorization: "Bearer " + ctx.token,
@@ -35,13 +40,15 @@ const Dashboard = (props) => {
 					}
 				);
 
+				console.log(data);
+
 				let url = `https://newsapi.org/v2/everything?sortBy=popularity&q=crypto&page=1&pageSize=10&apiKey=${process.env.REACT_APP_NEWS_API_KEY}`;
 				const { data: parseData } = await axios.get(url);
 
-				setName(data.userName);
-				setBalanceRupees(data.balanceRupees);
-				setBalancePaise(data.balancePaise);
-				setIsEmailVerified(data.emailVerified);
+				setName(data.name);
+				setBalanceRupees(data.balance.Rupees);
+				setBalancePaise(data.balance.Paise);
+				setIsEmailVerified(data.isEmailVerified);
 				setArticles(parseData.articles);
 				setLoading(false);
 			} catch (err) {

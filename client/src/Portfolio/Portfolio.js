@@ -26,8 +26,11 @@ const Portfolio = () => {
 		// Getting Balance and Email Verification Info
 		const fetchData = async () => {
 			try {
-				const { data } = await axios.get(
-					`${process.env.REACT_APP_SERVER_URL}/user/portfolio/emailverifybalance`,
+				const { data } = await axios.post(
+					`${process.env.REACT_APP_SERVER_URL}/user/data`,
+					{
+						balance: true,
+					},
 					{
 						headers: {
 							Authorization: "Bearer " + ctx.token,
@@ -35,8 +38,8 @@ const Portfolio = () => {
 					}
 				);
 
-				setBalanceRupees(data.balanceRupees);
-				setBalancePaise(data.balancePaise);
+				setBalanceRupees(data.balance.Rupees);
+				setBalancePaise(data.balance.Paise);
 			} catch (err) {
 				// Error fetching Balance and Email Verification Info
 				console.log(err);
@@ -79,7 +82,9 @@ const Portfolio = () => {
 						<div className="card-body d-flex justify-content-around">
 							<div className="d-flex flex-column align-items-center justify-content-center">
 								<h1>Balance:</h1>
-								<h2 className="text-secondary">&#x20B9; {balanceRupees}.{balancePaise}</h2>
+								<h2 className="text-secondary">
+									&#x20B9; {balanceRupees}.{balancePaise}
+								</h2>
 							</div>
 							<div className="vr"></div>
 							<div className="d-flex flex-column">

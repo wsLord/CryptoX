@@ -4,6 +4,7 @@ const router = express.Router();
 
 const watchListController = require("../controllers/usersController/watchList");
 const login = require("../controllers/usersController/login");
+const getUserData = require("../controllers/usersController/getData");
 const portfolio = require("../controllers/usersController/portfolio");
 const resetPassword = require("../controllers/usersController/resetPassword");
 const resetPasswordRequest = require("../controllers/usersController/resetPasswordRequest");
@@ -42,10 +43,9 @@ router.post(
 
 router.use(authVerify);
 
-router.get("/portfolio/emailverifybalance", portfolio.getBalanceEmailVerify);
+router.post("/data", getUserData);
 
 router.get("/watchlist/add/:id", watchListController.addToWatchList);
 router.get("/watchlist/remove/:id", watchListController.removeFromWatchList);
-router.get("/watchlist", watchListController.getWatchList);
 
 module.exports = router;

@@ -1,19 +1,5 @@
 const User = require("../../models/user");
 
-const getWatchList = async (req, res, next) => {
-	let user;
-	try {
-		user = await User.findById(req.userData.id);
-	} catch (err) {
-		return next(new Error("ERR: Unable to load watchlist."));
-	}
-
-	// WatchList Data
-	return res.status(200).json(
-		user.watchList //["chicken"]
-	);
-};
-
 const addToWatchList = async (req, res, next) => {
 	let user;
 	try {
@@ -72,6 +58,5 @@ const removeFromWatchList = async (req, res, next) => {
 	});
 };
 
-module.exports.getWatchList = getWatchList;
 module.exports.addToWatchList = addToWatchList;
 module.exports.removeFromWatchList = removeFromWatchList;

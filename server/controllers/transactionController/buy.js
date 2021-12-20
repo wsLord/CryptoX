@@ -1,3 +1,4 @@
+const { validationResult } = require("express-validator");
 const CoinGecko = require("coingecko-api");
 const CoinGeckoClient = new CoinGecko();
 
@@ -6,6 +7,13 @@ const Transaction = require("../../models/transaction");
 const buyCoinTransaction = require("../../models/transactions/buyCoin");
 
 const buy = async (req, res, next) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return next(
+			new Error("ERR: Invalid inputs passed, please check your data.")
+		);
+	}
+
 	const coinid = req.body.coinid;
 
 	// Quantity precise to 7 places
@@ -111,7 +119,8 @@ const buy = async (req, res, next) => {
 			return false;
 		});
 
-		if (coinIndex) {
+		// coinIndex is -1 if not found
+		if (coinIndex >= 0) {
 			let newQuantity = oldQuantity + quantity;
 			let newAvgPrice = (oldAvgPrice + cost) / newQuantity;
 

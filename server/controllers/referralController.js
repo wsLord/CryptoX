@@ -42,19 +42,4 @@ const invite = async (req, res, next) => {
 	});
 };
 
-const getCode = async (req, res, next) => {
-	let user;
-	try {
-		user = await User.findById(req.userData.id).exec();
-	} catch {
-		return next(new Error("ERR: Unable to find user."));
-	}
-
-	res.status(200).json({
-		email: user.email,
-		refcode: user.referralID,
-	});
-};
-
 module.exports.invite = invite;
-module.exports.getCode = getCode;

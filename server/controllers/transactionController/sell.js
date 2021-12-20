@@ -1,3 +1,4 @@
+const { validationResult } = require("express-validator");
 const CoinGecko = require("coingecko-api");
 const CoinGeckoClient = new CoinGecko();
 
@@ -6,6 +7,12 @@ const Transaction = require("../../models/transaction");
 const sellCoinTransaction = require("../../models/transactions/sellCoin");
 
 const sell = async (req, res, next) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return next(
+			new Error("ERR: Invalid inputs passed, please check your data.")
+		);
+	}
 	const coinid = req.body.coinid;
 
 	// Quantity precise to 7 places
@@ -64,7 +71,7 @@ const sell = async (req, res, next) => {
 		});
 
 		// Declining transaction when coin doesn't exist
-		if (!coinIndex) {
+		if (coinIndex === -1) {
 			const error = new Error("TRANSACTION DECLINED! Quantity of coin is 0.");
 			error.code = 405;
 			return next(error);

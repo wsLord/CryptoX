@@ -19,12 +19,15 @@ const Watchlist = () => {
 
 	useEffect(() => {
 		const initialize = async () => {
-			let watchlist = [];
-
 			// Adding id of coins in watchlist from database
 			try {
-				const responseData = await axios.get(
-					`${process.env.REACT_APP_SERVER_URL}/user/watchlist`,
+				const {
+					data: { watchList: watchlist },
+				} = await axios.post(
+					`${process.env.REACT_APP_SERVER_URL}/user/data`,
+					{
+						watchList: true,
+					},
 					{
 						headers: {
 							Authorization: "Bearer " + ctx.token,
@@ -32,9 +35,7 @@ const Watchlist = () => {
 					}
 				);
 
-				console.log(responseData);
-
-				watchlist = responseData.data;
+				console.log(watchlist);
 
 				for (let coinid of watchlist) {
 					let { data } = await CoinGeckoClient.coins.fetch(coinid, {

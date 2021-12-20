@@ -9,7 +9,7 @@ const exchange = require("../controllers/transactionController/exchange");
 const sell = require("../controllers/transactionController/sell");
 const sellLimit = require("../controllers/transactionController/sellLimit");
 
-// router.use(authVerify);
+router.use(authVerify);
 
 router.post(
 	"/buy",
@@ -22,10 +22,8 @@ router.post(
 router.post(
 	"/sell",
 	[
-		check("name").not().isEmpty(),
-		check("email").normalizeEmail().isEmail(),
-		check("mobile").isLength({ min: 10, max: 10 }),
-		check("password").isLength({ min: 6 }),
+		check("quantity").not().isEmpty(),
+		check("coinid").isLength({ min: 3, max: 3 }),
 	],
 	sell
 );

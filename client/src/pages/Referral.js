@@ -19,7 +19,7 @@ import AuthContext from "../store/authContext";
 const Referral = (props) => {
 	const ctx = useContext(AuthContext);
 
-	// const [referralCode, setReferralCode] = useState("");
+	const [name, setName] = useState("");
 	const [link, setLink] = useState("Loading..."); //`${window.location.host}/signup/${referralCode}`
 	const [copyBtn, setCopyBtn] = useState({
 		copied: false,
@@ -31,8 +31,12 @@ const Referral = (props) => {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				let { data } = await axios.get(
-					`${process.env.REACT_APP_SERVER_URL}/referral/getcode`,
+				const { data } = await axios.post(
+					`${process.env.REACT_APP_SERVER_URL}/user/data`,
+					{
+						name: true,
+						referralID: true,
+					},
 					{
 						headers: {
 							Authorization: "Bearer " + ctx.token,
@@ -40,8 +44,8 @@ const Referral = (props) => {
 					}
 				);
 
-				// setReferralCode(data.refcode);
-				setLink(`${window.location.host}/signup/${data.refcode}`);
+				setName(data.name);
+				setLink(`${window.location.host}/signup/${data.referralID}`);
 			} catch (err) {
 				// Error fetching Refferal Code
 				console.log(err.response.data.message);
@@ -102,12 +106,26 @@ const Referral = (props) => {
 			{error && <Alert msg={error} onClose={clearError} />}
 			<div className="d-flex" id={Styles.body}>
 				<div className="w-100" id={Styles.left}>
-					<h1>Invite a friend to CryptoX and you'll both get ₹100</h1>
+					<h1>Hey {name}, invite a friend to CryptoX and you'll both get ₹100</h1>
 					<p className="text-secondary" id={Styles.text}>
 						The referral program lets you earn a bonus for each friend
 						(“invitee”) who signs up and makes a crypto trade using your
 						personal signup link.
 					</p>
+					<div id={Styles.send} className="input-group mb-3">
+						<input
+							id={Styles.link}
+							type="text"
+							value={link}
+							className="form-control"
+							readOnly
+						/>
+						<CopyToClipboard text={link} onCopy={copyHandler}>
+							<button className="btn btn-link" type="button">
+								<strong> {copyBtn.btntext} </strong>
+							</button>
+						</CopyToClipboard>
+					</div>
 					<form
 						className="input-group mb-3"
 						id={Styles.send}
@@ -124,20 +142,6 @@ const Referral = (props) => {
 							<strong> Send </strong>
 						</button>
 					</form>
-					<div id={Styles.send} className="input-group mb-3">
-						<input
-							id={Styles.link}
-							type="text"
-							value={link}
-							className="form-control"
-							readOnly
-						/>
-						<CopyToClipboard text={link} onCopy={copyHandler}>
-							<button className="btn btn-link" type="button">
-								<strong> {copyBtn.btntext} </strong>
-							</button>
-						</CopyToClipboard>
-					</div>
 					<div id={Styles.share} className="card text-dark mb-3">
 						<div className="card-header bg-white">Share your link</div>
 						<div className="card-body d-flex justify-content-center">
