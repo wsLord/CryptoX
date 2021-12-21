@@ -1,38 +1,37 @@
-import React, { Component, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import axios from "axios";
 
 import bitimg from "../shared/img/bit.jpg";
 import AuthContext from "../store/authContext";
 import Styles from "./Portfolio.module.css";
 
-const Assets = () => {
+const Assets = ({ onAlert }) => {
 	const ctx = useContext(AuthContext);
 
-	const [coins, setCoins] = useState([]);
+	const [coinsList, setCoinsList] = useState([]);
 
 	useEffect(() => {
 		const fetchData = async () => {
-			// Add id and amount of coins in assets from database
-			const data = [
-				{ id: "bitcoin", amount: 100, purchasedPrice: 4300000 },
-				{ id: "ethereum", amount: 500, purchasedPrice: 280000 },
-				{ id: "tether", amount: 30, purchasedPrice: 80 },
-				{ id: "binancecoin", amount: 10, purchasedPrice: 35000 },
-				{ id: "solana", amount: 300, purchasedPrice: 14000 },
-			];
-			for (var element in data) {
-				let url = `https://api.coingecko.com/api/v3/coins/${data[element].id}?tickers=false&community_data=false&developer_data=false&sparkline=false`;
-				let Data = await fetch(url);
-				let parseData = await Data.json();
-				parseData.amount = data[element].amount;
-				parseData.purchasedPrice = data[element].purchasedPrice;
-				parseData.sno = this.state.total + 1;
-				this.setState({
-					articles: this.state.articles.concat(parseData),
-					total: this.state.total + 1,
-				});
+			try {
+				// Add id and amount of coins in assets from database
+				let { data } = await axios.get(
+					`${process.env.REACT_APP_SERVER_URL}/user/assets`,
+					{
+						headers: {
+							Authorization: "Bearer " + ctx.token,
+						},
+					}
+				);
+
+				setCoinsList(data);
+			} catch (err) {
+				console.log(err.response.data.message);
+				onAlert(err.response.data.message);
 			}
 		};
-	}, [ctx]);
+
+		fetchData();
+	}, [ctx, onAlert]);
 
 	return (
 		<div>
@@ -41,7 +40,7 @@ const Assets = () => {
 					<h3>Your assets</h3>
 				</div>
 				<div className="card-body">
-					{this.state.total > 0 && (
+					{coinsList.length > 0 && (
 						<table className="table">
 							<thead>
 								<tr>
@@ -55,14 +54,10 @@ const Assets = () => {
 								</tr>
 							</thead>
 							<tbody>
-								{this.state.articles.map((element) => {
-									var change =
-										element.market_data.current_price.inr -
-										element.purchasedPrice;
-									change = (change / element.purchasedPrice) * 100;
+								{coinsList.map((element) => {
 									return (
-										<tr key={element.sno}>
-											<th scope="row">{element.sno}</th>
+										<tr key={element.sNo}>
+											<th scope="row">{element.sNo}</th>
 											<td>
 												<span>
 													<img src={element.image.small} alt="" />{" "}
@@ -71,20 +66,21 @@ const Assets = () => {
 											</td>
 											<td>
 												<p>
-													{element.amount} {element.symbol}
+													{element.quantity} {element.symbol}
 												</p>
 											</td>
-											<td>&#8377; {element.market_data.current_price.inr}</td>
-											<td>&#8377; {element.purchasedPrice}</td>
-											{change < 0 && (
+											<td>&#8377; {element.currentPrice.Rupees}.{element.currentPrice.Paise}</td>
+											<td>&#8377; {element.purchasePrice.Rupees}.{element.purchasePrice.Paise}</td>
+											{element.changePercentage < 0 && (
 												<td className="text-danger">
-													{change.toFixed(3)}{" "}
+													{element.changePercentage} %{" "}
 													<i className="fa fa-caret-down"></i>
 												</td>
 											)}
-											{change >= 0 && (
+											{element.changePercentage >= 0 && (
 												<td className="text-success">
-													{change.toFixed(3)} <i className="fa fa-caret-up"></i>
+													{element.changePercentage} %{" "}
+													<i className="fa fa-caret-up"></i>
 												</td>
 											)}
 											<td>
@@ -98,7 +94,7 @@ const Assets = () => {
 							</tbody>
 						</table>
 					)}
-					{this.state.total === 0 && (
+					{coinsList.length === 0 && (
 						<div className="d-flex flex-column justify-content-center align-items-center">
 							<img src={bitimg} className={Styles.bitcoin} alt="" />
 							<h4>Get started with crypto</h4>

@@ -1,11 +1,8 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import AuthContext from "../store/authContext";
 import Styles from "./WatchList.module.css";
 
 const WatchItem = ({ data, onRemove }) => {
-	const ctx = useContext(AuthContext);
-
 	let change_1h = data.market_data.price_change_percentage_1h_in_currency.inr;
 	let change_24h = data.market_data.price_change_percentage_24h;
 
@@ -40,7 +37,7 @@ const WatchItem = ({ data, onRemove }) => {
 			</td>
 			<td>
 				<strong>&#8377; </strong>
-				{data.market_data.current_price.inr}
+				{parseFloat(data.market_data.current_price.inr).toFixed(2)}
 			</td>
 			<td>
 				{change_1h < 0 && (

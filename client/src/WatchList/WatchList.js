@@ -34,8 +34,6 @@ const WatchList = () => {
 					}
 				);
 
-				console.log(watchlist);
-
 				for (let coinid of watchlist) {
 					let { data } = await CoinGeckoClient.coins.fetch(coinid, {
 						tickers: false,
@@ -43,8 +41,6 @@ const WatchList = () => {
 						developer_data: false,
 						sparkline: false,
 					});
-
-					console.log(coinid, data);
 
 					setCoins((oldList) => {
 						return [...oldList, data];

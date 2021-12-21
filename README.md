@@ -24,4 +24,11 @@ wallet [id, userid, list of references of "transaction"]
 
 each "transaction" has refernece to corresponding document and others are non-existent (not as null :*)
 
+NewsAPI
+CoinGecko Client:
+DisplayCrypto - Home/components
+Trade/CryptoList
+CoinDetail****
+WatchList**
+
 

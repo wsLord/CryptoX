@@ -13,18 +13,12 @@ router.use(authVerify);
 
 router.post(
 	"/buy",
-	[
-		check("quantity").not().isEmpty(),
-		check("coinid").not().isEmpty(),
-	],
+	[check("quantity").not().isEmpty(), check("coinid").not().isEmpty()],
 	buy
 );
 router.post(
 	"/sell",
-	[
-		check("quantity").not().isEmpty(),
-		check("coinid").not().isEmpty(),
-	],
+	[check("quantity").not().isEmpty(), check("coinid").not().isEmpty()],
 	sell
 );
 router.post(
@@ -35,14 +29,15 @@ router.post(
 		check("coinid").isLength({ min: 3, max: 3 }),
 	],
 	buyLimit
- );
-router.post("/sellLimit",
+);
+router.post(
+	"/sellLimit",
 	[
 		check("quantity").not().isEmpty(),
 		check("maxPrice").not().isEmpty(),
 		check("coinid").isLength({ min: 3, max: 3 }),
 	],
-	 sellLimit
+	sellLimit
 );
 router.post("/exchange", exchange);
 

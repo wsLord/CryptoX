@@ -8,8 +8,6 @@ import AuthContext from "../../store/authContext";
 const CryptoItem = (props) => {
 	const ctx = useContext(AuthContext);
 
-	console.log(props);
-
 	const addToWatchList = async () => {
 		const coinID = props.coinid;
 

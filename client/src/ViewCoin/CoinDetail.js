@@ -69,7 +69,7 @@ const CoinDetail = () => {
 		};
 
 		fetchData();
-	}, [ctx]);
+	}, [ctx, coinid]);
 
 	const onClickBuy = () => {
 		setModes({
