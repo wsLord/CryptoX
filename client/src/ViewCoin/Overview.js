@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Graph from "./Graph"
+import Candlestick from "./Candlestick";
 import line from "../shared/img/line.jpg";
 import bar from "../shared/img/bar.jpg";
 import candlestick from "../shared/img/candlestick.jpg";
@@ -121,7 +122,7 @@ export default function Overview(props) {
                         <Graph coin={props.coin} chart={chart.type} mode={mode.type}/>
                     }
                     {chart.type === "candle" &&
-                        <div>CandleStick</div>
+                        <Candlestick coin={props.coin} days={1}/>
                     }
                 </div>
             </div>
