@@ -9,7 +9,7 @@ import CryptoList from "../Trade/CryptoList";
 import Portfolio from "../Portfolio/Portfolio";
 import Watchlist from "../WatchList/WatchList";
 import Transactions from "../Transactions/TransactionsList";
-import Referral from "../pages/Referral"; 
+import Referral from "../ViewCoin/CoinDetail";  // Change it back to referral
 
 const DashboardRouter = () => {
 	return (
