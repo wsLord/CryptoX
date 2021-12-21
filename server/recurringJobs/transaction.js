@@ -5,6 +5,7 @@ const Wallet=require('../models/wallet');
 const Portfolio = require('../models/portfolio');
 const Transaction = require('../models/transaction');
 const buyRequest = require('../models/transactions/buyRequest');
+const sellRequest = require('../models/transactions/sellRequest');
 const buyCoinTransaction = require("../models/transactions/buyCoin");
 const executeOrders=async(coinData)=>{
     for(a of coinData){
@@ -88,6 +89,7 @@ const executeOrders2 = async (coinData)=>{
         })
         
          for(req of buyReqs){
+             
             if(req.maxPrice>=currentPrice){
                
                 let walletOfUser=await Wallet.findById(req.from);
@@ -162,9 +164,132 @@ const executeOrders2 = async (coinData)=>{
         console.log(err);
     }
 }
+
+const executeOrders3 = async (coinData)=>{
+    try{
+
+        for(coin of coinData){
+        
+        let currentPrice=BigInt(Math.floor(coin.current_price*100));
+        
+      
+        let sellReqs =await sellRequest.find({
+            coinId:coin.id,
+            mode:"1",           
+        })
+        
+         for(req of sellReqs){
+             console.log(coin);
+             console.log(req);
+            console.log(coin.id,req.coinId);
+            if(BigInt(req.minPrice)<=currentPrice){
+
+                let walletOfUser=await Wallet.findById(req.from);
+                let portfolioOfUser=await Portfolio.findById(req.portfolioId);
+                const quantity = BigInt(req.quantity);
+                console.log(walletOfUser);
+                console.log(portfolioOfUser);
+        
+        
+        
+                // Cost in BigInt with 7 extra precision digits
+                let tcost = currentPrice * quantity;
+                tcost = tcost.toString();
+                
+                // Length of tcost must be >= 10 so that transaction is worth Re. 1
+                if (tcost.length >= 10) 
+                {               
+                    
+                    // Trimming last 7 extra digits
+                    tcost = tcost.slice(0, -7);
+            
+                    // Cost in paise in BigInt
+                    const cost = BigInt(tcost);
+                    
+                    let oldQuantity;
+                    let avgPrice;
+                    // Checking if coin is already existent in Portfolio and getting its index
+                    console.log(coin.id);
+                    let coinIndex = portfolioOfUser.coinsOwned.findIndex((tcoin) => {
+                        if (tcoin.coinid === coin.id) {
+                            oldQuantity = BigInt(tcoin.quantity);
+                            avgPrice = BigInt(tcoin.priceOfBuy);
+                            return true;
+                        }
+                        return false;
+                    });
+                    
+                    // Declining transaction when coin doesn't exist
+                    console.log(coinIndex);
+                    if (coinIndex != -1&& oldQuantity >= quantity) {
+                        
+                    
+                            console.log('hahah');
+                            // Creating Transaction Instance
+                            let transactionInstance = await Transaction.create({
+                                category: "sell_request",
+                                wallet: walletOfUser.id,
+                                sellCoin: null,
+                            });
+                    
+                            // Creating Buy Coin Transaction Instance
+                            let sellCoinTransactionInstance = await sellCoinTransaction.create({
+                                wallet: walletOfUser.id,
+                                coinid: coin.id,
+                                amount: cost.toString(),
+                                price: currentPrice.toString(),
+                                quantity: quantity.toString(),
+                                status: "SUCCESS",
+                            });
+                    
+                            // Linking Transaction Instance to Add Money Transaction Instance
+                            transactionInstance.sellCoin = sellCoinTransactionInstance.id;
+                            await transactionInstance.save();
+                            await sellCoinTransactionInstance.save();
+                            
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                            let newBalance = BigInt(walletOfUser.balance) + cost;
+                            walletOfUser.balance = newBalance.toString();
+                            await walletOfUser.save();
+                    
+                            portfolioOfUser.coinsOwned.splice(coinIndex, 1);
+                            let newQuantity = oldQuantity - quantity;
+                            if (newQuantity > 0n) {
+                                portfolioOfUser.coinsOwned.push({
+                                    coinid: coinid,
+                                    quantity: newQuantity.toString(),
+                                    priceOfBuy: avgPrice,
+                                });
+                            }
+                            await portfolioOfUser.save();
+                    
+                            console.log('transaction done');
+                            
+                    
+                    
+
+                    
+                        }
+                }
+         }
+        }
+    }
+    }catch(err)
+    {
+        console.log(err);
+    }
+}
+
 module.exports.checkLimitBuy=async()=>{
     const mJob =schedule.scheduleJob('*/5 * * * * *',async ()=>{//my place
         let coinData =  await axios.get(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&order=market_cap_desc&per_page=100&page=1&sparkline=false`);
         executeOrders2(coinData.data);
+        executeOrders3(coinData.data);
     });
 }
