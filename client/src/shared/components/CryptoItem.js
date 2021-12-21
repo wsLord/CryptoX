@@ -11,7 +11,7 @@ const CryptoItem = (props) => {
 	console.log(props);
 
 	const addToWatchList = async () => {
-		const coinID = props.symbol;
+		const coinID = props.coinid;
 
 		try {
 			const res = await axios.get(

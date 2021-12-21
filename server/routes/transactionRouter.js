@@ -15,7 +15,7 @@ router.post(
 	"/buy",
 	[
 		check("quantity").not().isEmpty(),
-		check("coinid").isLength({ min: 3, max: 3 }),
+		check("coinid").not().isEmpty(),
 	],
 	buy
 );
@@ -23,7 +23,7 @@ router.post(
 	"/sell",
 	[
 		check("quantity").not().isEmpty(),
-		check("coinid").isLength({ min: 3, max: 3 }),
+		check("coinid").not().isEmpty(),
 	],
 	sell
 );

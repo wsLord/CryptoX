@@ -7,6 +7,18 @@ const Wallet = require("../../models/wallet");
 const Portfolio = require("../../models/portfolio");
 const Transaction = require("../../models/transaction");
 
+// const getAssetsData = async (req, res, next) => {
+
+// 	try {
+// 		let userData = await User.findById(req.userData.id).populate("portfolio");
+
+		
+// 	}
+// 	catch (err) {
+
+// 	}
+// });
+
 const getData = function (portfolioOfUser, coinData) {
 	return new Promise((resolve) => {
 		let arr = [];
@@ -27,10 +39,8 @@ const getData = function (portfolioOfUser, coinData) {
 };
 
 const portfoliotemp = async (req, res) => {
-	let user = await User.findById(req.userData);
-	if (!user) {
-		res.redirect("back");
-	}
+	
+
 	let coinData = await axios.get(
 		`https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&order=market_cap_desc&per_page=100&page=1&sparkline=false`
 	);

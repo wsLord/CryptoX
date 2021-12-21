@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext, Fragment } from "react";
 import axios from "axios";
 
 import bitimg from "../shared/img/bit.jpg";
-import Styles from "./Watchlist.module.css";
+import Styles from "./WatchList.module.css";
 import WatchItem from "./WatchItem";
 import Alert from "../shared/components/Alert";
 import AuthContext from "../store/authContext";
@@ -10,12 +10,11 @@ import AuthContext from "../store/authContext";
 const CoinGecko = require("coingecko-api");
 const CoinGeckoClient = new CoinGecko();
 
-const Watchlist = () => {
+const WatchList = () => {
 	const ctx = useContext(AuthContext);
 
 	const [error, setError] = useState(null);
 	const [coins, setCoins] = useState([]);
-	const [totalCoins, setTotalCoins] = useState(0);
 
 	useEffect(() => {
 		const initialize = async () => {
@@ -50,9 +49,6 @@ const Watchlist = () => {
 					setCoins((oldList) => {
 						return [...oldList, data];
 					});
-					setTotalCoins((oldCount) => {
-						return oldCount + 1;
-					});
 				}
 			} catch (err) {
 				console.log(err);
@@ -65,7 +61,6 @@ const Watchlist = () => {
 
 		return () => {
 			setCoins([]);
-			setTotalCoins(0);
 		};
 	}, [ctx]);
 
@@ -102,7 +97,7 @@ const Watchlist = () => {
 					<h3>Watchlist</h3>
 				</div>
 				<div className="card-body">
-					{totalCoins === 0 && (
+					{coins.length === 0 && (
 						<div className="d-flex flex-column justify-content-center align-items-center">
 							<img src={bitimg} className={Styles.bitcoin} alt="" />
 							<h4>Start building your watchlist!</h4>
@@ -115,7 +110,7 @@ const Watchlist = () => {
 							</a>
 						</div>
 					)}
-					{totalCoins > 0 && (
+					{coins.length > 0 && (
 						<table className="table">
 							<thead>
 								<tr>
@@ -133,7 +128,7 @@ const Watchlist = () => {
 									return (
 										<WatchItem
 											data={element}
-											key={element.symbol}
+											key={element.id}
 											onRemove={removeFromWatchList}
 										/>
 									);
@@ -147,4 +142,4 @@ const Watchlist = () => {
 	);
 };
 
-export default Watchlist;
+export default WatchList;

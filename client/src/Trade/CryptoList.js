@@ -127,6 +127,7 @@ export default class CryptoList extends Component {
 												<CryptoItem
 													name={element.name}
 													img={element.image}
+													coinid={element.id}
 													price={element.current_price}
 													symbol={element.symbol}
 													change={change.toPrecision(4)}

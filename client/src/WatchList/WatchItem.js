@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import AuthContext from "../store/authContext";
-import Styles from "./Watchlist.module.css";
+import Styles from "./WatchList.module.css";
 
 const WatchItem = ({ data, onRemove }) => {
 	const ctx = useContext(AuthContext);
@@ -9,33 +9,9 @@ const WatchItem = ({ data, onRemove }) => {
 	let change_1h = data.market_data.price_change_percentage_1h_in_currency.inr;
 	let change_24h = data.market_data.price_change_percentage_24h;
 
-	const removeFromWatchList = async (event) => {
+	const removeFromWatchList = (event) => {
 		event.preventDefault();
-
-		try {
-			const res = await fetch(
-				`${process.env.REACT_APP_SERVER_URL}/user/watchlist/remove/${data.id}`,
-				{
-					method: "GET",
-					headers: {
-						Authorization: "Bearer " + ctx.token
-					}
-				}
-			);
-
-			let responseData = await res.json();
-
-			if (res.ok) {
-				// Removal done
-				console.log(responseData.message);
-				onRemove(data.id);
-			} else {
-				// Error removing from watchlist
-				console.log(responseData.message);
-			}
-		} catch (err) {
-			console.log(err);
-		}
+		onRemove(data.id);
 	};
 
 	return (
