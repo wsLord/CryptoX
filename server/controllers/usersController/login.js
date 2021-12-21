@@ -7,6 +7,7 @@ const User = require("../../models/user");
 const emailVerifyTokenSender = require("../../middlewares/emailToken");
 
 const login = async (req, res, next) => {
+	console.log('hello');
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
 		return next(new Error("Invalid inputs passed, please check your data."));

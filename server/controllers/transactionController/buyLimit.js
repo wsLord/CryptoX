@@ -2,29 +2,31 @@ const User = require("../../models/user");
 const BuyRequest = require("../../models/transactions/buyRequest");
 
 const buyLimit = async (req, res) => {
+	
 	if (!req.userData) {
-		res.redirect("back");
+		return res.status(404).json('not authorized');
 	}
-	let user = await User.findById(req.userData);
-	if (!user) {
-		res.redirect("back");
-	}
-	let maxpri = BigInt(req.body.maxPrice * 10000000);
-	try {
+	try{
+		let user = await User.findById(req.userData.id);
+		
+		let maxpri = BigInt(req.body.maxPrice * 10000000);
+		
 		let newRequest = await BuyRequest.create({
 			coinId: req.body.coinId,
-			from: user.walletId,
+			from: user.wallet,
 			quantity: req.body.quantity,
 			mode: "1",
 			maxPrice: maxpri.toString(),
-			portfolioId: user.portfolioId,
+			portfolioId: user.portfolio,
 		});
 
-		return res.redirect("back");
-	} catch (err) {
-		console.log("error", err);
-		res.redirect("back");
+		return res.status(200).json('buyLimit order registered');
+		
+	}catch(err) {
+		console.log(err);
+		res.json('error in registering buyLimit request.Please retry with proper data');
 	}
+	
 };
 
 module.exports = buyLimit;
