@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Graph from "./Graph"
+import Overview from "./Overview"
 import Styles from './CoinDetail.module.css'
 
 const CoinDetail = () => {
@@ -71,7 +71,7 @@ const CoinDetail = () => {
                         Overview
                     </div>
                     <div class="card-body">
-                        <Graph coin="bitcoin"/>
+                        <Overview coin="bitcoin"/>
                     </div>
                 </div>
                 <div class="col-4 p-10">
