@@ -8,10 +8,8 @@ import AuthContext from "../../store/authContext";
 const CryptoItem = (props) => {
 	const ctx = useContext(AuthContext);
 
-	console.log(props);
-
 	const addToWatchList = async () => {
-		const coinID = props.symbol;
+		const coinID = props.coinid;
 
 		try {
 			const res = await axios.get(

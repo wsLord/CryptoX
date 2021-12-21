@@ -41,11 +41,16 @@ router.post(
 	resetPassword
 );
 
+// Verifying if Logged In
 router.use(authVerify);
 
 router.post("/data", getUserData);
 
 router.get("/watchlist/add/:id", watchListController.addToWatchList);
 router.get("/watchlist/remove/:id", watchListController.removeFromWatchList);
+
+router.get("/assets/:id", portfolio.getCoinAssetsData);
+router.get("/assets/report", portfolio.getReports);
+router.get("/assets", portfolio.getAssetsData);
 
 module.exports = router;

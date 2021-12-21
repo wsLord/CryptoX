@@ -1,4 +1,5 @@
 const User = require("../../models/user");
+const converter = require("../conversions");
 
 const getData = async (req, res, next) => {
 	try {
@@ -6,14 +7,7 @@ const getData = async (req, res, next) => {
 
 		let balance = null;
 		if (req.body.balance) {
-			const bal = user.wallet.balance;
-			let balanceRupees = bal.slice(0, -2);
-			let balancePaise = bal.slice(-2);
-
-			balance = {
-				Rupees: balanceRupees,
-				Paise: balancePaise,
-			};
+			balance = converter.amountToRupeesPaise(user.wallet.balance);
 		}
 
 		let isInWatchList;

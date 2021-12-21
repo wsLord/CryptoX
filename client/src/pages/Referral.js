@@ -19,7 +19,7 @@ import AuthContext from "../store/authContext";
 const Referral = (props) => {
 	const ctx = useContext(AuthContext);
 
-	const [name, setName] = useState("");
+	const [name, setName] = useState("User");
 	const [link, setLink] = useState("Loading..."); //`${window.location.host}/signup/${referralCode}`
 	const [copyBtn, setCopyBtn] = useState({
 		copied: false,
@@ -56,7 +56,7 @@ const Referral = (props) => {
 		fetchData();
 
 		return () => {
-			// setReferralCode("");
+			setName("");
 			setLink("");
 		};
 	}, [ctx]);

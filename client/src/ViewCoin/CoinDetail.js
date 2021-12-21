@@ -1,33 +1,118 @@
-import React, { useState } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+
+import Styles from "./CoinDetail.module.css";
 import Overview from "./Overview"
-import Styles from './CoinDetail.module.css'
+import Alert from "../shared/components/Alert";
+import AuthContext from "../store/authContext";
+import LoadingSpinner from "../shared/components/UIElements/LoadingSpinner";
+
+const CoinGecko = require("coingecko-api");
+const CoinGeckoClient = new CoinGecko();
 
 const CoinDetail = () => {
+	const ctx = useContext(AuthContext);
 
-    const [modes, setModes] = useState({
-        buy: "nav-link active",
-        sell: "nav-link",
-        order: "nav-link"
-    });
+	const { coinid } = useParams();
 
-    const [visibility, setVisibility] = useState({
-        buy: "d-block",
-        sell: "d-none",
-        order: "d-none"
-    });
+	const [modes, setModes] = useState({
+		buy: "nav-link active",
+		sell: "nav-link",
+		order: "nav-link",
+	});
+	const [visibility, setVisibility] = useState({
+		buy: "d-block",
+		sell: "d-none",
+		order: "d-none",
+	});
+	const [error, setError] = useState(null);
+	const [isLoading, setIsLoading] = useState(false);
+	const [coinData, setCoinData] = useState(null);
+	const [walletBalance, setWalletBalance] = useState({
+		Rupees: "...",
+		Paise: "..",
+	});
+	const [isInWatchList, setIsInWatchList] = useState(true);
 
-    const onClickBuy = () => {
-        setModes({
-            buy: "nav-link active",
-            sell: "nav-link",
-            order: "nav-link"
-        });
-        setVisibility({
-            buy: "d-block",
-            sell: "d-none",
-            order: "d-none"
-        });
-    }
+	useEffect(() => {
+		const fetchData = async () => {
+			setIsLoading(true);
+
+			try {
+				let { data: coinData } = await CoinGeckoClient.coins.fetch(coinid, {
+					tickers: false,
+					community_data: false,
+					developer_data: false,
+					sparkline: false,
+				});
+
+				let { data: userData } = await axios.post(
+					`${process.env.REACT_APP_SERVER_URL}/user/data`,
+					{
+						balance: true,
+						isInWatchList: coinid,
+					},
+					{
+						headers: {
+							Authorization: "Bearer " + ctx.token,
+						},
+					}
+				);
+
+				setCoinData(coinData);
+				setWalletBalance(userData.balance);
+				setIsInWatchList(userData.isInWatchList);
+			} catch (err) {
+				console.log(err);
+				setError("Something went wrong!");
+			}
+		};
+
+		fetchData();
+	}, [ctx, coinid]);
+
+	const onClickBuy = () => {
+		setModes({
+			buy: "nav-link active",
+			sell: "nav-link",
+			order: "nav-link",
+		});
+		setVisibility({
+			buy: "d-block",
+			sell: "d-none",
+			order: "d-none",
+		});
+	};
+
+	const onClickSell = () => {
+		setModes({
+			buy: "nav-link",
+			sell: "nav-link active",
+			order: "nav-link",
+		});
+		setVisibility({
+			buy: "d-none",
+			sell: "d-block",
+			order: "d-none",
+		});
+	};
+	const onClickOrder = () => {
+		setModes({
+			buy: "nav-link",
+			sell: "nav-link",
+			order: "nav-link active",
+		});
+		setVisibility({
+			buy: "d-none",
+			sell: "d-none",
+			order: "d-block",
+		});
+	};
+
+	const clearError = () => {
+		setError(null);
+	};
 
     const onClickSell = () => {
         setModes({
@@ -54,6 +139,8 @@ const CoinDetail = () => {
         });
     }
     return (
+      <Fragment>
+      {error && <Alert msg={error} onClose={clearError} />}
         <div>
             <div class="card m-3">
                 <div class="card-body d-flex justify-content-between">
@@ -133,6 +220,7 @@ const CoinDetail = () => {
                 </div>
             </div>
         </div>
+</Fragment>
     )
 }
 

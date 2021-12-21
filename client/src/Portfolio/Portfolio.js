@@ -9,6 +9,7 @@ import AddMoney from "./AddMoney";
 import Withdraw from "./Withdraw";
 import Transaction from "./Transaction";
 import Assets from "./Assets";
+import Alert from "../shared/components/Alert";
 import AuthContext from "../store/authContext";
 
 const Portfolio = () => {
@@ -21,6 +22,7 @@ const Portfolio = () => {
 	});
 	const [balanceRupees, setBalanceRupees] = useState("***");
 	const [balancePaise, setBalancePaise] = useState("**");
+	const [error, setError] = useState(null);
 
 	useEffect(() => {
 		// Getting Balance and Email Verification Info
@@ -71,8 +73,16 @@ const Portfolio = () => {
 		});
 	};
 
+	const setAlert = (msg) => {
+		setError(msg);
+	}
+	const clearAlert = () => {
+		setError(null);
+	};
+
 	return (
 		<Fragment>
+			{error && <Alert msg={error} onClose={clearAlert} />}
 			<div className="d-flex justify-content-around" id={Styles.top}>
 				<div className="w-100 h-100" id={Styles.cards}>
 					<div className="card">
@@ -116,7 +126,7 @@ const Portfolio = () => {
 						</div>
 					</div>
 					<br />
-					<Assets />
+					<Assets onAlert={setAlert}/>
 				</div>
 				<div className="w-100">
 					{windows.addMoney && <AddMoney />}
