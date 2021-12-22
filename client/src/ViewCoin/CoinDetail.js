@@ -113,7 +113,7 @@ const CoinDetail = () => {
 	const clearError = () => {
 		setError(null);
 	};
-
+  
 	return (
 		<Fragment>
 			{error && <Alert msg={error} onClose={clearError} />}

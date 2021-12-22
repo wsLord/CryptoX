@@ -10,9 +10,7 @@ export default function Candlestick(props) {
             xaxis: {
                 labels: {
                     formatter: function (value) {
-                        var date = new Date(value)
-                        console.log(date)
-                        return date.getFullYear();
+                        return value;
                     }
                 }
             }
@@ -40,8 +38,29 @@ export default function Candlestick(props) {
                             labels: {
                                 formatter: function (value) {
                                     var date = new Date(value)
-                                    date = date.toTimeString()
-                                    return date.substring(0,5);
+                                    const monthNameShort = date.toLocaleString("en-US", { month: "short" });
+                                    if (props.days === 365) {
+                                        date = monthNameShort + "," + date.getFullYear();
+                                        return date;
+                                    }
+                                    else if (props.days === 30) {
+                                        var time = date.toTimeString()
+                                        time = time.substring(0, 5);
+                                        date = date.getDate() + "," + monthNameShort;
+                                        time += "," + date
+                                        return time;
+                                    }
+                                    else if (props.days === 7) {
+                                        time = date.toTimeString()
+                                        time = time.substring(0, 5);
+                                        date = date.getDate() + "," + monthNameShort;
+                                        time += "," + date
+                                        return time;
+                                    }
+                                    else if (props.days === 1) {
+                                        date = date.toTimeString()
+                                        return date.substring(0, 5);
+                                    }
                                 }
                             }
                         }

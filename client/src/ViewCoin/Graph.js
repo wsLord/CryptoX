@@ -6,16 +6,14 @@ export default function Graph(props) {
     var date = new Date(timestamp);
     var interval = {
         start: 0,
-        end: 0,
-        divider:1,
+        end: 0
     };
     if (props.mode === "y") {
         date.setFullYear(date.getFullYear() - 1);
         var startTimestamp = date.getTime();
         interval={
             start:startTimestamp/1000,
-            end:timestamp/1000,
-            divider:30
+            end:timestamp/1000
         }
     }
     else if (props.mode === "m") {
@@ -23,8 +21,7 @@ export default function Graph(props) {
         startTimestamp = date.getTime();
         interval={
             start:startTimestamp/1000,
-            end:timestamp/1000,
-            divider:24
+            end:timestamp/1000
         }
     }
     else if (props.mode === "w") {
@@ -32,8 +29,7 @@ export default function Graph(props) {
         startTimestamp = date.getTime();
         interval={
             start:startTimestamp/1000,
-            end:timestamp/1000,
-            divider:24
+            end:timestamp/1000
         }
     }
     else if (props.mode === "d") {
@@ -41,8 +37,7 @@ export default function Graph(props) {
         startTimestamp = date.getTime();
         interval={
             start:startTimestamp/1000,
-            end:timestamp/1000,
-            divider:12
+            end:timestamp/1000
         }
     }
     else if (props.mode === "h") {
@@ -50,8 +45,7 @@ export default function Graph(props) {
         startTimestamp = date.getTime();
         interval={
             start:startTimestamp/1000,
-            end:timestamp/1000,
-            divider:1
+            end:timestamp/1000
         }
     }
     const plot = { x: [], y: [] };
@@ -79,7 +73,7 @@ export default function Graph(props) {
             let parseData = await data.json();
             parseData = parseData.prices;
             let i = 0;
-            let d = interval.divider;
+            let d = props.divider;
             parseData.forEach(element => {
                 if (i % d === 0) {
                     var xdate = new Date(element[0]);
