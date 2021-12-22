@@ -118,7 +118,7 @@ export default class CryptoList extends Component {
 							</ul>
 							{this.state.left &&
 								this.state.articles.map((element) => {
-									var change = element.price_change_percentage_1h_in_currency;
+									let change = element.price_change_percentage_1h_in_currency;
 									if (change === null) change = 0;
 									return (
 										<div key={element.symbol}>
@@ -128,7 +128,7 @@ export default class CryptoList extends Component {
 													name={element.name}
 													img={element.image}
 													coinid={element.id}
-													price={element.current_price}
+													price={parseFloat(element.current_price).toFixed(2)}
 													symbol={element.symbol}
 													change={change.toPrecision(4)}
 													onAlert={this.setError}

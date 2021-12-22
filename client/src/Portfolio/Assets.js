@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 import axios from "axios";
 
 import bitimg from "../shared/img/bit.jpg";
@@ -7,6 +8,7 @@ import Styles from "./Portfolio.module.css";
 
 const Assets = ({ onAlert }) => {
 	const ctx = useContext(AuthContext);
+	const history = useHistory();
 
 	const [coinsList, setCoinsList] = useState([]);
 
@@ -46,7 +48,7 @@ const Assets = ({ onAlert }) => {
 								<tr>
 									<th scope="col">#</th>
 									<th scope="col">Asset</th>
-									<th scope="col">Balance</th>
+									<th scope="col">Quantity</th>
 									<th scope="col">Current Price</th>
 									<th scope="col">Purchased Price</th>
 									<th scope="col">Change(%)</th>
@@ -69,8 +71,14 @@ const Assets = ({ onAlert }) => {
 													{element.quantity} {element.symbol}
 												</p>
 											</td>
-											<td>&#8377; {element.currentPrice.Rupees}.{element.currentPrice.Paise}</td>
-											<td>&#8377; {element.purchasePrice.Rupees}.{element.purchasePrice.Paise}</td>
+											<td>
+												&#8377; {element.currentPrice.Rupees}.
+												{element.currentPrice.Paise}
+											</td>
+											<td>
+												&#8377; {element.purchasePrice.Rupees}.
+												{element.purchasePrice.Paise}
+											</td>
 											{element.changePercentage < 0 && (
 												<td className="text-danger">
 													{element.changePercentage} %{" "}
@@ -84,7 +92,13 @@ const Assets = ({ onAlert }) => {
 												</td>
 											)}
 											<td>
-												<button type="button" className="btn btn-success">
+												<button
+													type="button"
+													className="btn btn-success"
+													onClick={() => {
+														history.push(`/coins/${element.id}`);
+													}}
+												>
 													Sell
 												</button>
 											</td>

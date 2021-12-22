@@ -6,6 +6,7 @@ require("dotenv").config();
 const Users = require("../models/user");
 const Transaction = require("../models/transaction");
 const addMoneyTransaction = require("../models/transactions/addMoney");
+const converter = require("./conversions");
 
 const razorInstance = new RazorPay({
 	key_id: process.env.RAZORPAY_KEY_ID,
@@ -86,9 +87,11 @@ const capturePayment = async (req, res, next) => {
 		);
 
 		// Verifying the payment
-		const hmac = crypto.createHmac('sha256', process.env.RAZORPAY_SECRET);
-		hmac.update(addMoneyInstance.razorpay_order_id + "|" + response.razorpay_payment_id);
-		const generated_signature = hmac.digest('hex');
+		const hmac = crypto.createHmac("sha256", process.env.RAZORPAY_SECRET);
+		hmac.update(
+			addMoneyInstance.razorpay_order_id + "|" + response.razorpay_payment_id
+		);
+		const generated_signature = hmac.digest("hex");
 
 		let verified_payment = generated_signature == response.razorpay_signature;
 
@@ -100,10 +103,16 @@ const capturePayment = async (req, res, next) => {
 			verified_payment: verified_payment,
 		});
 
+		// Unverifed Payment
 		if (!verified_payment) {
 			return res.status(200).json({
+				is_verified: false,
 				message: "Payment may be tampered! Balance not updated",
-				// maybe other info for failed msg
+				amount: converter.amountToDecimalString(addMoneyInstance.amount),
+				// balance: converter.amountToDecimalString(newBalance),
+				transaction_id: response.transaction_id,
+				razorpay_order_id: response.razorpay_order_id,
+				error_message: "Payment may be tampered! Balance not updated",
 			});
 		}
 
@@ -118,8 +127,10 @@ const capturePayment = async (req, res, next) => {
 		await userDetails.wallet.save();
 
 		return res.status(200).json({
+			is_verified: true,
 			message: "Payment Successful! Balance Updated.",
-			balance: newBalance,
+			amount: converter.amountToDecimalString(addMoneyInstance.amount),
+			balance: converter.amountToDecimalString(newBalance),
 			transaction_id: response.transaction_id,
 			razorpay_order_id: response.razorpay_order_id,
 		});
@@ -130,7 +141,12 @@ const capturePayment = async (req, res, next) => {
 };
 
 const failedPayment = async (req, res, next) => {
-	const { transaction_id, razorpay_payment_id, razorpay_order_id } = req.body;
+	const {
+		transaction_id,
+		razorpay_payment_id,
+		razorpay_order_id,
+		status_message,
+	} = req.body;
 
 	try {
 		const addMoneyInstance = await addMoneyTransaction.findByIdAndUpdate(
@@ -138,18 +154,20 @@ const failedPayment = async (req, res, next) => {
 			{
 				razorpay_payment_id: razorpay_payment_id,
 				status: "FAILED",
+				statusMessage: status_message,
 			}
 		);
 	} catch (err) {
 		console.log(err);
-		return next(
-			new Error("ERR: Unable to loguserDetails.wallet. failed Transaction")
-		);
+		return next(new Error("ERR: Unable to log failed Transaction."));
 	}
 
+	// Sending info for failed msg
 	return res.status(200).json({
 		message: "Payment status updated to 'FAILED'",
-		// maybe other info for failed msg
+		transaction_id,
+		razorpay_order_id,
+		error_message: status_message,
 	});
 };
 

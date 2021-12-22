@@ -1,8 +1,27 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import Styles from "./WatchList.module.css";
 
+const convertToInternationalCurrencySystem = (labelValue) => {
+	// Twelve Zeroes for Trillions
+	return Math.abs(Number(labelValue)) >= 1.0e12
+		? (Math.abs(Number(labelValue)) / 1.0e12).toFixed(2) + "T"
+		: // Nine Zeroes for Billions
+		Math.abs(Number(labelValue)) >= 1.0e9
+		? (Math.abs(Number(labelValue)) / 1.0e9).toFixed(2) + "B"
+		: // Six Zeroes for Millions
+		Math.abs(Number(labelValue)) >= 1.0e6
+		? (Math.abs(Number(labelValue)) / 1.0e6).toFixed(2) + "M"
+		: // Three Zeroes for Thousands
+		Math.abs(Number(labelValue)) >= 1.0e3
+		? (Math.abs(Number(labelValue)) / 1.0e3).toFixed(2) + "K"
+		: Math.abs(Number(labelValue));
+};
+
 const WatchItem = ({ data, onRemove }) => {
+	const history = useHistory();
+
+	let newPath = `/coins/${data.id}`;
 	let change_1h = data.market_data.price_change_percentage_1h_in_currency.inr;
 	let change_24h = data.market_data.price_change_percentage_24h;
 
@@ -69,10 +88,16 @@ const WatchItem = ({ data, onRemove }) => {
 			</td>
 			<td>
 				<strong>&#8377; </strong>
-				{data.market_data.market_cap.inr}
+				{convertToInternationalCurrencySystem(data.market_data.market_cap.inr)}
 			</td>
 			<td>
-				<button type="button" className="btn btn-success">
+				<button
+					type="button"
+					className="btn btn-success"
+					onClick={() => {
+						history.push(newPath);
+					}}
+				>
 					Buy
 				</button>
 			</td>
