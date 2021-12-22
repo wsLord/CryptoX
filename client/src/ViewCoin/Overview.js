@@ -119,10 +119,42 @@ export default function Overview(props) {
                 </div>
                 <div className="col-11">
                     {chart.type !== "candle" &&
-                        <Graph coin={props.coin} chart={chart.type} mode={mode.type}/>
+                        <div>
+                            {mode.type==='y' && 
+                                <Graph coin={props.coin} chart={chart.type} mode={mode.type} divider={30}/>
+                            }
+                            {mode.type==='m' && 
+                                <Graph coin={props.coin} chart={chart.type} mode={mode.type}  divider={24}/>
+                            }
+                            {mode.type==='w' && 
+                                <Graph coin={props.coin} chart={chart.type} mode={mode.type} divider={24}/>
+                            }
+                            {mode.type==='d' && 
+                                <Graph coin={props.coin} chart={chart.type} mode={mode.type} divider={12}/>
+                            }
+                            {mode.type==='h' && 
+                                <Graph coin={props.coin} chart={chart.type} mode={mode.type} divider={1}/>
+                            }
+                        </div>
                     }
                     {chart.type === "candle" &&
-                        <Candlestick coin={props.coin} days={1}/>
+                        <div>
+                            {mode.type==='y' && 
+                                <Candlestick coin={props.coin} days={365}/>
+                            }
+                            {mode.type==='m' && 
+                                <Candlestick coin={props.coin} days={30}/>
+                            }
+                            {mode.type==='w' && 
+                                <Candlestick coin={props.coin} days={7}/>
+                            }
+                            {mode.type==='d' && 
+                                <Candlestick coin={props.coin} days={1}/>
+                            }
+                            {mode.type==='h' && 
+                                <div className="fs-4">Not Available</div>
+                            }
+                        </div>
                     }
                 </div>
             </div>

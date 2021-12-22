@@ -113,31 +113,6 @@ const CoinDetail = () => {
 	const clearError = () => {
 		setError(null);
 	};
-
-    const onClickSell = () => {
-        setModes({
-            buy: "nav-link",
-            sell: "nav-link active",
-            order: "nav-link"
-        });
-        setVisibility({
-            buy: "d-none",
-            sell: "d-block",
-            order: "d-none"
-        });
-    }
-    const onClickOrder = () => {
-        setModes({
-            buy: "nav-link",
-            sell: "nav-link",
-            order: "nav-link active"
-        });
-        setVisibility({
-            buy: "d-none",
-            sell: "d-none",
-            order: "d-block"
-        });
-    }
     return (
       <Fragment>
       {error && <Alert msg={error} onClose={clearError} />}
