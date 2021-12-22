@@ -2,6 +2,7 @@ import React, { Fragment, useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
+import Order from "./Order"
 import Styles from "./CoinDetail.module.css";
 import Overview from "./Overview";
 import Alert from "../shared/components/Alert";
@@ -113,13 +114,13 @@ const CoinDetail = () => {
 	const clearError = () => {
 		setError(null);
 	};
-  
+
 	return (
 		<Fragment>
 			{error && <Alert msg={error} onClose={clearError} />}
 			<div>
-				<div class="card m-3">
-					<div class="card-body d-flex justify-content-between">
+				<div className="card m-3">
+					<div className="card-body d-flex justify-content-between">
 						<div className="title d-flex align-items-center">
 							<img
 								className={Styles.logo}
@@ -129,48 +130,49 @@ const CoinDetail = () => {
 							<h1>Bitcoin </h1>
 							<p className="sym text-secondary h3"> (BTC)</p>
 						</div>
-						<button type="button" class="btn btn-outline-secondary">
+						<button type="button" className="btn btn-outline-secondary">
 							{isInWatchList && (
-								<p class="fa fa-star-o h4"> Remove from Watchlist</p>
+								<p className="fa fa-star-o h4"> Remove from Watchlist</p>
 							)}
 							{!isInWatchList && (
-								<p class="fa fa-star-o h4"> Add to Watchlist</p>
+								<p className="fa fa-star-o h4"> Add to Watchlist</p>
 							)}
 						</button>
 					</div>
 				</div>
 				<div className="main m-3 p-1 d-flex justify-content-between">
-					<div class="card col-8" id={Styles.overview}>
-						<div class="card-header h3 text-start">Overview</div>
-						<div class="card-body">
+					<div className="card col-8" id={Styles.overview}>
+						<div className="card-header h3 text-start">Overview</div>
+						<div className="card-body">
 							<Overview coin="bitcoin" />
 						</div>
 					</div>
-					<div class="col-4 p-10">
-						<div class="card">
-							<div class="card-header h3 text-start">Assets</div>
-							<div class="card-body">
+					<div className="col-4 p-10">
+						<div className="card">
+							<div className="card-header h3 text-start">Assets</div>
+							<div className="card-body">
 								<p className="text-secondary h3">Total BTC:100</p>
 								<p className="text-secondary h3">
 									Total price :&#x20B9; 22939.1991
 								</p>
+								<p className="text-secondary h3">Profit/Loss :10%</p>
 							</div>
 						</div>
-						<div class="card" id={Styles.options}>
-							<div class="card-body">
-								<ul class="nav nav-tabs d-flex" id={Styles.tabs}>
-									<li class="nav-item h3">
-										<button class={modes.buy} onClick={onClickBuy}>
+						<div className="card" id={Styles.options}>
+							<div className="card-body">
+								<ul className="nav nav-tabs d-flex" id={Styles.tabs}>
+									<li className="nav-item h3">
+										<button className={modes.buy} onClick={onClickBuy}>
 											Buy
 										</button>
 									</li>
-									<li class="nav-item h3">
-										<button class={modes.sell} onClick={onClickSell}>
+									<li className="nav-item h3">
+										<button className={modes.sell} onClick={onClickSell}>
 											Sell
 										</button>
 									</li>
-									<li class="nav-item h3">
-										<button class={modes.order} onClick={onClickOrder}>
+									<li className="nav-item h3">
+										<button className={modes.order} onClick={onClickOrder}>
 											Order
 										</button>
 									</li>
@@ -186,38 +188,38 @@ const CoinDetail = () => {
 										method="get"
 										id={Styles.buyform}
 									>
-										<label for="amount" class="form-label h4 text-start">
+										<label htmlFor="amount" className="form-label h4 text-start">
 											Pay(&#x20B9;)
 										</label>
-										<div class="input-group mb-3">
+										<div className="input-group mb-3">
 											<input
 												type="number"
-												class="form-control"
+												className="form-control w-75"
 												id="amount"
 												min={0}
 											/>
-											<span class="input-group-text">
-												<p className="h4">.</p>
+											<span className="input-group-text">
+												<p className="h6">.</p>
 											</span>
 											<input
 												type="number"
-												class="form-control"
+												className="form-control"
 												id="decimal"
 												min={0}
 											/>
 										</div>
-										<label for="coin" class="form-label h4 text-start">
+										<label htmlFor="coin" className="form-label h4 text-start">
 											Coins
 										</label>
 										<input
 											type="number"
-											class="form-control"
+											className="form-control"
 											id="coin"
 											min={0}
 										/>
 										<button
 											type="button"
-											class="btn btn-success"
+											className="btn btn-success"
 											id={Styles.submit}
 										>
 											Buy BTC
@@ -234,38 +236,40 @@ const CoinDetail = () => {
 										method="get"
 										id={Styles.sellform}
 									>
-										<label for="coin" class="form-label h4 text-start">
+										<label htmlFor="coin" className="form-label h4 text-start">
 											Coins
 										</label>
 										<input
 											type="number"
-											class="form-control"
+											className="form-control"
 											id="coin"
 											min={0}
 										/>
-										<label class="form-label h4 text-start">
+										<label className="form-label h4 mt-3 text-start">
 											Eqivalent currency amount
 										</label>
-										<div class="input-group mb-3">
-											<span class="input-group-text">&#x20B9;</span>
+										<div className="input-group mb-3">
+											<span className="input-group-text">&#x20B9;</span>
 											<input
 												type="text"
-												class="form-control"
+												className="form-control"
 												value={1233}
 												readOnly
 											/>
-											<span class="input-group-text">.56</span>
+											<span className="input-group-text">.56</span>
 										</div>
 										<button
 											type="button"
-											class="btn btn-success"
+											className="btn btn-success"
 											id={Styles.submit}
 										>
 											Sell BTC
 										</button>
 									</form>
 								</div>
-								<div className={visibility.order}>order</div>
+								<div className={visibility.order}>
+									<Order />
+								</div>
 							</div>
 						</div>
 					</div>
