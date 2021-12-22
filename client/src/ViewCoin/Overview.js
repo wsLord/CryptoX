@@ -141,24 +141,43 @@ export default function Overview(props) {
                     }
 
                 </div>
-                <div class="btn-group h-100" role="group">
-                    <button type="button" class={mode.y} onClick={setYear}>1Y</button>
-                    <button type="button" class={mode.m} onClick={setMonth}>1M</button>
-                    <button type="button" class={mode.w} onClick={setWeek}>1W</button>
-                    <button type="button" class={mode.d} onClick={setDay}>1D</button>
-                    <button type="button" class={mode.h} onClick={setHour}>1H</button>
+                <div className="btn-group h-100" role="group">
+                    <button type="button" className={mode.y} onClick={setYear}>1Y</button>
+                    <button type="button" className={mode.m} onClick={setMonth}>1M</button>
+                    <button type="button" className={mode.w} onClick={setWeek}>1W</button>
+                    <button type="button" className={mode.d} onClick={setDay}>1D</button>
+                    <button type="button" className={mode.h} onClick={setHour}>1H</button>
                 </div>
             </div>
             <div className="d-flex">
                 <div className="col-1">
-                    <div class="btn-group-vertical" role="group">
-                        <button type="button" class={chart.line} onClick={selectLine}><img className={Styles.img} src={line} alt="" /></button>
-                        <button type="button" class={chart.bar} onClick={selectBar}><img className={Styles.img} src={bar} alt="" /></button>
-                        <button type="button" class={chart.candle} onClick={selectCandle}><img className={Styles.img} src={candlestick} alt="" /></button>
+                    <div className="btn-group-vertical" role="group">
+                        <button type="button" className={chart.line} onClick={selectLine}><img className={Styles.img} src={line} alt="" /></button>
+                        <button type="button" className={chart.bar} onClick={selectBar}><img className={Styles.img} src={bar} alt="" /></button>
+                        <button type="button" className={chart.candle} onClick={selectCandle}><img className={Styles.img} src={candlestick} alt="" /></button>
                     </div>
                 </div>
                 <div className="col-11">
-                    {chart.type !== "candle" &&
+                    {chart.type === "line" &&
+                        <div>
+                            {mode.type === 'y' &&
+                                <Graph coin={props.coin} chart={chart.type} mode={mode.type} divider={30} />
+                            }
+                            {mode.type === 'm' &&
+                                <Graph coin={props.coin} chart={chart.type} mode={mode.type} divider={24} />
+                            }
+                            {mode.type === 'w' &&
+                                <Graph coin={props.coin} chart={chart.type} mode={mode.type} divider={24} />
+                            }
+                            {mode.type === 'd' &&
+                                <Graph coin={props.coin} chart={chart.type} mode={mode.type} divider={12} />
+                            }
+                            {mode.type === 'h' &&
+                                <Graph coin={props.coin} chart={chart.type} mode={mode.type} divider={1} />
+                            }
+                        </div>
+                    }
+                    {chart.type === "bar" &&
                         <div>
                             {mode.type === 'y' &&
                                 <Graph coin={props.coin} chart={chart.type} mode={mode.type} divider={30} />
@@ -192,7 +211,7 @@ export default function Overview(props) {
                                 <Candlestick coin={props.coin} days={1} />
                             }
                             {mode.type === 'h' &&
-                                <div className="fs-4">Not Available</div>
+                                <div className="fs-4 mt-5">Not Available</div>
                             }
                         </div>
                     }
@@ -208,14 +227,14 @@ export default function Overview(props) {
                             <div className="h5 text-secondary">#{coinData.data.market_cap_rank}</div>
                         }
                     </div>
-                    <div class="vr"></div>
+                    <div className="vr"></div>
                     <div className="d-flex flex-column">
                         <div className="h5">Market cap</div>
                         {coinData.flag &&
                             <div className="h5 text-secondary">&#x20B9; {coinData.data.market_data.market_cap.inr}</div>
                         }
                     </div>
-                    <div class="vr"></div>
+                    <div className="vr"></div>
                     <div className="d-flex flex-column">
                         <div className="h5">Total volume</div>
                         {coinData.flag &&
