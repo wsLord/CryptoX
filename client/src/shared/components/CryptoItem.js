@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
 
 import Styles from "./crypto.module.css";
@@ -7,6 +7,9 @@ import AuthContext from "../../store/authContext";
 
 const CryptoItem = (props) => {
 	const ctx = useContext(AuthContext);
+	const history = useHistory();
+
+	let newPath = `/coins/${props.coinid}`;
 
 	const addToWatchList = async () => {
 		const coinID = props.coinid;
@@ -43,7 +46,7 @@ const CryptoItem = (props) => {
 					>
 						<i className="fa fa-star-o" id={Styles.star}></i>
 					</button>
-					<Link to="/viewdetails" className="text-dark text-decoration-none">
+					<Link to={newPath} className="text-dark text-decoration-none">
 						<h5>
 							{props.name} <img src={props.img} alt=""></img>
 						</h5>
@@ -56,7 +59,7 @@ const CryptoItem = (props) => {
 				</li>
 				{props.change < 0 && (
 					<li className="list-group-item text-danger" id={Styles.cryptoid}>
-						{props.change}
+						{props.change} % {" "}
 						<strong>
 							<i className="fa fa-caret-down"></i>
 						</strong>
@@ -64,14 +67,20 @@ const CryptoItem = (props) => {
 				)}
 				{props.change >= 0 && (
 					<li className="list-group-item text-success" id={Styles.cryptoid}>
-						{props.change}
+						{props.change} % {" "}
 						<strong>
 							<i className="fa fa-caret-up"></i>
 						</strong>
 					</li>
 				)}
 				<li className="list-group-item" id={Styles.cryptoid}>
-					<button type="button" className="btn btn-success">
+					<button
+						type="button"
+						className="btn btn-success"
+						onClick={() => {
+							history.push(newPath);
+						}}
+					>
 						Buy
 					</button>
 				</li>

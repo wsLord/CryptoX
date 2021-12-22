@@ -10,6 +10,8 @@ import Portfolio from "../Portfolio/Portfolio";
 import Watchlist from "../WatchList/WatchList";
 import Transactions from "../Transactions/TransactionsList";
 import Referral from "../pages/Referral";
+import PaymentConfirmation from "../pages/PaymentConfirmation";
+import ErrorPage from "../pages/ErrorPage";
 
 const DashboardRouter = () => {
 	return (
@@ -31,12 +33,14 @@ const DashboardRouter = () => {
 				<Route exact path="/transactions">
 					<Transactions />
 				</Route>
+				<Route exact path="/payment" render={(props) => <PaymentConfirmation {...props}/>} />
 				<Route exact path="/referral">
 					<Referral />
 				</Route>
 				<Route path="/coins/:coinid">
 					<CoinDetail />
 				</Route>
+				<Route exact path="/error" render={(props) => <ErrorPage {...props}/>} />
 				<Route path='*'>
 					<Redirect to="/" />
 				</Route>

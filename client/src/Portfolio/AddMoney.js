@@ -1,4 +1,5 @@
 import React, { Fragment, useContext, useEffect, useRef } from "react";
+import { useHistory } from "react-router-dom";
 import axios from "axios";
 
 import AuthContext from "../store/authContext";
@@ -7,6 +8,7 @@ import Logo from "../shared/img/icon.png";
 
 const AddMoney = (props) => {
 	const ctx = useContext(AuthContext);
+	const history = useHistory();
 
 	const inputRefAmount = useRef();
 
@@ -23,10 +25,8 @@ const AddMoney = (props) => {
 	}, []);
 
 	const checkoutHandler = async (response, transactionID) => {
-		console.log("TID: "+ transactionID);
+		console.log("TID: " + transactionID);
 		if (response.error) {
-			console.log("Payment Failed ", response.error.description);
-
 			try {
 				const { data } = await axios.post(
 					`${process.env.REACT_APP_SERVER_URL}/payment/failed`,
@@ -34,6 +34,7 @@ const AddMoney = (props) => {
 						transaction_id: transactionID,
 						razorpay_payment_id: response.error.metadata.payment_id,
 						razorpay_order_id: response.error.metadata.order_id,
+						status_message: response.description,
 					},
 					{
 						headers: {
@@ -42,15 +43,26 @@ const AddMoney = (props) => {
 					}
 				);
 
-				// Show error and others
 				console.log(data);
+				console.log("Payment Failed ", response.error.description);
+				// Show Payment Failed page with details
+				return history.push({
+					pathname: "/payment",
+					state: {
+						success: false,
+						...data,
+					},
+				});
 			} catch (err) {
-				// Unable to log info
+				// Unable to log info. Show error and others
 				console.log(err);
+				return history.push({
+					pathname: "/error",
+					state: {
+						error: err,
+					},
+				});
 			}
-
-			// show message also
-			return;
 		}
 
 		try {
@@ -67,18 +79,36 @@ const AddMoney = (props) => {
 				}
 			);
 
-			// Show new payment page with deatils
-			console.log(data);
-
+			// Show Payment Success page with details
+			if (data.is_verified) {
+				// Success if verified
+				return history.push({
+					pathname: "/payment",
+					state: {
+						success: true,
+						...data,
+					},
+				});
+			} else {
+				// Unverified Success if not verified
+				return history.push({
+					pathname: "/payment",
+					state: {
+						success: false,
+						...data,
+					},
+				});
+			}
 		} catch (err) {
 			// Something went wrong! 400/500 Response
 			console.log(err.response);
+			return history.push({
+				pathname: "/error",
+				state: {
+					error: err.response.data.message,
+				},
+			});
 		}
-
-		// console.log(response);
-		alert(response.razorpay_payment_id);
-		alert(response.razorpay_order_id);
-		alert(response.razorpay_signature);
 	};
 
 	const razorpayPaymentHandler = async (event) => {
@@ -108,7 +138,9 @@ const AddMoney = (props) => {
 				description: "Adding money to Wallet",
 				image: Logo,
 				order_id: data.id,
-				handler: (response) => {checkoutHandler(response, data.receipt)},
+				handler: (response) => {
+					checkoutHandler(response, data.receipt);
+				},
 				prefill: {
 					name: data.userDetails.name,
 					email: data.userDetails.email,
@@ -124,6 +156,12 @@ const AddMoney = (props) => {
 		} catch (err) {
 			// Something went wrong! 400/500 Response
 			console.log(err);
+			return history.push({
+				pathname: "/error",
+				state: {
+					error: err,
+				},
+			});
 		}
 	};
 

@@ -15,6 +15,9 @@ const addMoneySchema = new mongoose.Schema(
 			required: true,
 			enum: ["SUCCESS", "UNVERIFIED_SUCCESS", "PENDING", "FAILED"],
 		},
+		statusMessage: {
+			type: String,
+		},
 		razorpay_payment_id: {
 			type: String,
 			required: true,
@@ -32,7 +35,7 @@ const addMoneySchema = new mongoose.Schema(
 			type: Boolean,
 			required: true,
 			default: false,
-		}
+		},
 	},
 	{
 		timestamps: true,
@@ -44,3 +47,5 @@ module.exports = mongoose.model("addMoney", addMoneySchema);
 // STATUS CODE
 // 1: SUCCESS/CAPTURED
 // 2: PENDING
+
+// One RazorPay_order_id has many RazorPay_payment_ids for each attempt.
