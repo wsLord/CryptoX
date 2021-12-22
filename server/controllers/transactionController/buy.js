@@ -80,6 +80,9 @@ const buy = async (req, res, next) => {
 		transactionInstance.buyCoin = buyCoinTransactionInstance.id;
 		await transactionInstance.save();
 
+		walletOfUser.transactionList.push(transactionInstance.id);
+		await walletOfUser.save();
+
 		console.log(BigInt(walletOfUser.balance));
 
 		if (BigInt(walletOfUser.balance) < cost) {

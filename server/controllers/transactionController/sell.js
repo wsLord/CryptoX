@@ -98,6 +98,9 @@ const sell = async (req, res, next) => {
 		transactionInstance.sellCoin = sellCoinTransactionInstance.id;
 		await transactionInstance.save();
 
+		walletOfUser.transactionList.push(transactionInstance.id);
+		await walletOfUser.save();
+
 		if (oldQuantity < quantity) {
 			console.log("Insufficient Coins");
 

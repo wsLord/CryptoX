@@ -26,8 +26,9 @@ const createOrder = async (req, res, next) => {
 
 	try {
 		// Getting walletID
-		const userDetails = await Users.findById(req.userData.id);
-		const walletID = userDetails.wallet;
+		const userDetails = await Users.findById(req.userData.id).populate("wallet");
+		const walletOfUser = userDetails.wallet;
+		const walletID = userDetails.wallet.id;
 
 		// Creating Transaction Instance
 		let transactionInstance = await Transaction.create({
@@ -46,6 +47,9 @@ const createOrder = async (req, res, next) => {
 		// Linking  Transaction Instance to Add Money Transaction Instance
 		transactionInstance.addMoney = addMoneyTransactionInstance.id;
 		await transactionInstance.save();
+
+		walletOfUser.transactionList.push(transactionInstance.id);
+		await walletOfUser.save();
 
 		const options = {
 			amount,
