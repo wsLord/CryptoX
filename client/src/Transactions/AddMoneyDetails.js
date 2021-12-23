@@ -1,5 +1,6 @@
 import React, { Fragment, useContext, useEffect, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 import Styles from "./Transaction.module.css";
 import success from "../shared/img/success.png";
@@ -75,10 +76,11 @@ const AddMoneyDetails = (props) => {
 									</p>
 									<p className="h5">Verified Payment: </p>
 									<p className="fs-6 text-secondary">
-										{transaction.verified_payment} - Yha pe tick lagado pls
+										{transaction.verified_payment} <i class="fa fa-check text-success"></i>
 									</p>
 								</div>
 							</div>
+							<Link className="btn btn-success mt-2 fs-5" to="/transactions">Back to transaction list</Link>
 						</div>
 					)}
 					{!transaction.isSuccess && (
@@ -114,6 +116,7 @@ const AddMoneyDetails = (props) => {
 									</p>
 								</div>
 							</div>
+							<Link className="btn btn-danger mt-2 fs-5" to="/transactions">Back to transaction list</Link>
 						</div>
 					)}
 				</div>
