@@ -78,11 +78,9 @@ const executeOrders=async(coinData)=>{
 
     }
 }
-const executeOrders2 = async (coinData)=>{
+const executeOrders2 = async (coin)=>{
     try{
 
-        for(coin of coinData){
-        
         let currentPrice=BigInt(Math.floor(coin.current_price*100));
         let buyReqs =await buyRequest.find({
             coinId:coin.id,
@@ -168,17 +166,17 @@ const executeOrders2 = async (coinData)=>{
                 }
             }
          }
-        }
+        
     }catch(err)
     {
         console.log(err);
     }
 }
 
-const executeOrders3 = async (coinData)=>{
+const executeOrders3 = async (coin)=>{
     try{
 
-        for(coin of coinData){
+        
         
         let currentPrice=BigInt(Math.floor(coin.current_price*100));
         
@@ -187,15 +185,11 @@ const executeOrders3 = async (coinData)=>{
             coinId:coin.id,
             mode:"1"             
         }).exec();
-        //  if(coin.id=='binancecoin'){
-        //     console.log(sellReqs);
-        //     console.log(coin);
+        
             
         //  }
          for(req of sellReqs){
-            // console.log(req);
-            // console.log(coin.id,req.coinId);
-            // console.log(req.minPrice,currentPrice);
+            
             if(BigInt(req.minPrice)<=currentPrice){
 
                 let walletOfUser=await Wallet.findById(req.from);
@@ -208,7 +202,7 @@ const executeOrders3 = async (coinData)=>{
                 // Cost in BigInt with 7 extra precision digits
                 let tcost = currentPrice * quantity;
                 tcost = tcost.toString();
-                // console.log(tcost);
+                
                 // Length of tcost must be >= 10 so that transaction is worth Re. 1
                 if (tcost.length >= 10) 
                 {               
@@ -230,9 +224,9 @@ const executeOrders3 = async (coinData)=>{
                         }
                         return false;
                     });
-                    // console.log(portfolioOfUser.coinsOwned);
+                   
                     // Declining transaction when coin doesn't exist
-                //    console.log(coinIndex,oldQuantity);
+               
                     if (coinIndex != -1&& oldQuantity >= quantity) {
                         
                     
@@ -291,7 +285,7 @@ const executeOrders3 = async (coinData)=>{
                 }
          }
         }
-    }
+    
     }catch(err)
     {
         console.log(err);
@@ -301,7 +295,9 @@ const executeOrders3 = async (coinData)=>{
 module.exports.checkLimitBuy=async()=>{
     const mJob =schedule.scheduleJob('*/5 * * * * *',async ()=>{//my place
         let coinData =  await axios.get(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&order=market_cap_desc&per_page=100&page=1&sparkline=false`);
-        executeOrders2(coinData.data);
-        executeOrders3(coinData.data);
+        for(coin of coinData.data){
+        executeOrders2(coin);
+        executeOrders3(coin);
+        }
     });
 }
