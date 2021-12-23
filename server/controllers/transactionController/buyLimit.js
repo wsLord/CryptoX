@@ -9,12 +9,12 @@ const buyLimit = async (req, res) => {
 	try{
 		let user = await User.findById(req.userData.id);
 		
-		let maxpri = BigInt(req.body.maxPrice * 10000000);
-		
+		let maxpri = BigInt(req.body.maxPrice * 100);
+		let quantity = BigInt(Math.floor(req.body.quantity*10000000));
 		let newRequest = await BuyRequest.create({
 			coinId: req.body.coinId,
 			from: user.wallet,
-			quantity: req.body.quantity,
+			quantity: quantity.toString(),
 			mode: "1",
 			maxPrice: maxpri.toString(),
 			portfolioId: user.portfolio,

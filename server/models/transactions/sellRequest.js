@@ -17,9 +17,14 @@ const sellRequestSchema=new mongoose.Schema({
     type:String,
     required :true
     },
-    price: {
-
-    }
+    minPrice: {
+        type:String,
+        required :true
+    },
+    portfolioId: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "Portfolio",
+	}
 
   
 

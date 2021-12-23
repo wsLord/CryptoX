@@ -7,17 +7,19 @@ const sellLimit = async (req, res) => {
 	try{
 		let user = await User.findById(req.userData.id);
 		
-		let minpri = BigInt(req.body.minPrice * 10000000);
-		
+		let minpri = BigInt(req.body.minPrice * 100);
+		console.log(minpri.toString());
+		console.log(user);
+		let quantity=BigInt(Math.floor(req.body.quantity*10000000));
 		let newRequest = await SellRequest.create({
 			coinId: req.body.coinId,
-			from: user.walletId,
-			quantity: req.body.quantity,
+			from: user.wallet,
+			quantity: quantity.toString(),
 			mode: "1",
 			minPrice: minpri.toString(),
-			portfolioId: user.portfolioId,
+			portfolioId:user.portfolio,
 		});
-
+		console.log(newRequest);
 		return res.status(200).json('sellLimit order registered');
 		
 	}catch(err) {
