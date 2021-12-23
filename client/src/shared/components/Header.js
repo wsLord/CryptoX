@@ -70,7 +70,7 @@ const Header = () => {
 									<img src={profile} id={Styles.profile} alt="" />
 								</button>
 								<ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-									<li><a className="dropdown-item" href="/">Setting</a></li>
+									<li><Link className="dropdown-item" to="/settings">Setting</Link></li>
 									<li><button className="dropdown-item" onClick={ctx.logout}>Sign out</button></li>
 								</ul>
 							</div>

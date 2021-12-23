@@ -14,6 +14,7 @@ import PaymentConfirmation from "../pages/PaymentConfirmation";
 import ErrorPage from "../pages/ErrorPage";
 import AddMoneyDetails from "../Transactions/AddMoneyDetails";
 import BuySellDetails from "../Transactions/BuySellDetails";
+import Settings from "../Settings/Settings";
 
 const DashboardRouter = () => {
 	return (
@@ -43,6 +44,9 @@ const DashboardRouter = () => {
 				</Route>
 				<Route path="/coins/:coinid">
 					<CoinDetail />
+				</Route>
+				<Route path="/settings">
+					<Settings />
 				</Route>
 				<Route exact path="/error" render={(props) => <ErrorPage {...props}/>} />
 				<Route path='*'>

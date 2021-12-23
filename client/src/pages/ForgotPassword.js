@@ -19,7 +19,7 @@ const ForgotPassword = (props) => {
 
 		try {
 			const res = await fetch(
-				`${process.env.REACT_APP_SERVER_URL}/forgotpassword`,
+				`${process.env.REACT_APP_SERVER_URL}/user/forgotpassword/request`,
 				{
 					method: "POST",
 					body: JSON.stringify({

@@ -1,3 +1,5 @@
+const { validationResult } = require("express-validator");
+
 const User = require("../../models/user");
 const converter = require("../conversions");
 
@@ -35,4 +37,28 @@ const getData = async (req, res, next) => {
 	}
 };
 
-module.exports = getData;
+const updateData = async (req, res, next) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return next(new Error("Invalid input provided!"));
+	}
+
+	const { name, mobile } = req.body;
+
+	try {
+		const userData = await User.findById(req.userData.id);
+
+		userData.name = name;
+		userData.mobile = mobile;
+		await userData.save();
+
+		return res.status(200).json({
+			message: "User Info updated Successfully!",
+		});
+	} catch (err) {
+		return next(new Error("ERR: Unable to update user data."));
+	}
+};
+
+module.exports.getData = getData;
+module.exports.updateData = updateData;
