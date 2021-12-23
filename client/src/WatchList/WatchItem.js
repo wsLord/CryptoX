@@ -46,7 +46,7 @@ const WatchItem = ({ data, onRemove }) => {
 				</button>
 			</td>
 			<td>
-				<Link to="/" className="text-dark text-decoration-none">
+				<Link to={newPath} className="text-dark text-decoration-none">
 					<h5>
 						{data.name}
 						<img className={Styles.coins} src={data.image.small} alt=""></img>

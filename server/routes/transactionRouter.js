@@ -12,7 +12,8 @@ const sellLimit = require("../controllers/transactionController/sellLimit");
 
 router.use(authVerify);
 
-router.get("/data", dataController.getTransactionList);
+router.get("/data/list", dataController.getTransactionList);
+router.post("/data", dataController.getTransactionData);
 
 router.post(
 	"/buy",

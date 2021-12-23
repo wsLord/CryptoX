@@ -97,15 +97,17 @@ const capturePayment = async (req, res, next) => {
 		);
 		const generated_signature = hmac.digest("hex");
 
-		let verified_payment = generated_signature == response.razorpay_signature;
+		let verified_payment = false; //generated_signature == response.razorpay_signature;
 
-		// Updating
-		await addMoneyTransaction.findByIdAndUpdate(response.transaction_id, {
+		// Updating Add Money Transaction Info
+		let AMTData = {
 			razorpay_payment_id: response.razorpay_payment_id,
 			razorpay_signature: response.razorpay_signature,
 			status: verified_payment ? "SUCCESS" : "UNVERIFIED_SUCCESS",
 			verified_payment: verified_payment,
-		});
+			...(!verified_payment) && {statusMessage: "Payment was tampered! Signature unverified."},
+		};
+		await addMoneyTransaction.findByIdAndUpdate(response.transaction_id, AMTData);
 
 		// Unverifed Payment
 		if (!verified_payment) {
@@ -116,7 +118,7 @@ const capturePayment = async (req, res, next) => {
 				// balance: converter.amountToDecimalString(newBalance),
 				transaction_id: response.transaction_id,
 				razorpay_order_id: response.razorpay_order_id,
-				error_message: "Payment may be tampered! Balance not updated",
+				error_message: "Payment may be tampered! Signature unverified.",
 			});
 		}
 

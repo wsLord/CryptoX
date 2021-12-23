@@ -1,61 +1,125 @@
-import React from "react";
-import Styles from './Transaction.module.css'
-import success from '../shared/img/success.png'
-import failed from '../shared/img/failed.png'
-export default function AddMoneyDetails() {
-    const data = {
-        category: "addMoney", transactionID: "18shhs72474774", status: true, razorPayID: "B7272bbsb", amount: "2800", date: "18 Dec 21", time: "23:12", balance: "61600"
-    };
-    return (
-        <div>
-            <div class="card m-5 shadow p-3 mb-5 bg-body rounded">
-                <div class="card-body">
-                    {data.status &&
-                        <div>
-                            <img src={success} alt="" id={Styles.simg} />
-                            {data.category === "addMoney" &&
-                                <p className="text-primary h5">Added Amount</p>
-                            }
-                            {data.category === "sell" &&
-                                <p className="text-primary h5">Withdrawal Amount</p>
-                            }
-                            <p className="h3">&#8377; {data.amount}</p>
-                            <p className="mx-auto h5" id={Styles.tid}>Transaction ID <span className="text-secondary">{data.transactionID}</span></p>
-                            <p className="text-secondary h6">{data.date}, {data.time}</p>
-                            <div class="card" id={Styles.details}>
-                                <div class="card-body d-flex flex-column align-items-start">
-                                    <p className="h5">RazorPay ID</p>
-                                    <p className='fs-6 text-secondary'>{data.razorPayID}</p>
-                                    <p className="h5">Balance in wallet after transaction</p>
-                                    <p className='fs-6 text-secondary'>&#8377; {data.balance}</p>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                    {!data.status &&
-                        <div>
-                            <img src={failed} alt="" id={Styles.simg} />
-                            {data.category === "addMoney" &&
-                                <p className="text-primary h5">Add Amount</p>
-                            }
-                            {data.category === "sell" &&
-                                <p className="text-primary h5">Withdraw Amount</p>
-                            }
-                            <p className="h3">&#8377; {data.amount}</p>
-                            <p className="mx-auto h5" id={Styles.tid}>Transaction ID <span className="text-secondary">{data.transactionID}</span></p>
-                            <p className="text-secondary h6">{data.date}, {data.time}</p>
-                            <div class="card" id={Styles.details}>
-                                <div class="card-body d-flex flex-column align-items-start">
-                                    <p className="h5">RazorPay ID</p>
-                                    <p className='fs-6 text-secondary'>{data.razorPayID}</p>
-                                    <p className="h5">Error Message</p>
-                                    <p className='fs-6 text-secondary'>Transaction failed due to techinical error</p>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-    )
-}
+import React, { Fragment, useContext, useEffect, useState } from "react";
+import axios from "axios";
+
+import Styles from "./Transaction.module.css";
+import success from "../shared/img/success.png";
+import failed from "../shared/img/failed.png";
+import Alert from "../shared/components/Alert";
+import AuthContext from "../store/authContext";
+
+const AddMoneyDetails = (props) => {
+	const ctx = useContext(AuthContext);
+	const tid = props.location.state.tid;
+
+	const [error, setError] = useState(null);
+	const [transaction, setTransaction] = useState([]);
+
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const { data } = await axios.post(
+					`${process.env.REACT_APP_SERVER_URL}/transaction/data`,
+					{
+						tid,
+					},
+					{
+						headers: {
+							Authorization: "Bearer " + ctx.token,
+						},
+					}
+				);
+
+				setTransaction(data);
+			} catch (err) {
+				console.log(err.response.data);
+				setError("Something went wrong!");
+			}
+		};
+
+		fetchData();
+	}, [ctx]);
+
+	const clearError = () => {
+		setError(null);
+	};
+
+	return (
+		<Fragment>
+			{error && <Alert msg={error} onClose={clearError} />}
+			<div class="card m-5 shadow p-3 mb-5 bg-body rounded">
+				<div class="card-body">
+					{transaction.isSuccess && (
+						<div>
+							<img src={success} alt="" id={Styles.simg} />
+							{transaction.category === "add_money" && (
+								<p className="text-primary h5">Added Amount</p>
+							)}
+							{transaction.category === "withdraw_money" && (
+								<p className="text-primary h5">Withdrawal Amount</p>
+							)}
+							<p className="h3">&#8377; {transaction.amount}</p>
+							<p className="mx-auto h5" id={Styles.tid}>
+								Transaction ID:{" "}
+								<span className="text-secondary">{transaction.id}</span>
+							</p>
+							<p className="text-secondary h6">
+								{new Date(transaction.updatedAt).toString().slice(0, -31)}
+							</p>
+							<div class="card" id={Styles.details}>
+								<div class="card-body d-flex flex-column align-items-start">
+									<p className="h5">Status: </p>
+									<p className="fs-6 text-secondary">{transaction.status}</p>
+									<p className="h5">RazorPay Order ID: </p>
+									<p className="fs-6 text-secondary">
+										{transaction.razorpay_order_id}
+									</p>
+									<p className="h5">Verified Payment: </p>
+									<p className="fs-6 text-secondary">
+										{transaction.verified_payment} - Yha pe tick lagado pls
+									</p>
+								</div>
+							</div>
+						</div>
+					)}
+					{!transaction.isSuccess && (
+						<div>
+							<img src={failed} alt="" id={Styles.simg} />
+							{transaction.category === "add_money" && (
+								<p className="text-primary h5">Added Amount</p>
+							)}
+							{transaction.category === "withdraw_money" && (
+								<p className="text-primary h5">Withdrawal Amount</p>
+							)}
+							<p className="h3">&#8377; {transaction.amount}</p>
+							<p className="mx-auto h5" id={Styles.tid}>
+								Transaction ID:{" "}
+								<span className="text-secondary">
+									{transaction.id}
+								</span>
+							</p>
+							<p className="text-secondary h6">
+							{new Date(transaction.updatedAt).toString().slice(0, -31)}
+							</p>
+							<div class="card" id={Styles.details}>
+								<div class="card-body d-flex flex-column align-items-start">
+								<p className="h5">Status: </p>
+									<p className="fs-6 text-secondary">{transaction.status}</p>
+									<p className="h5">RazorPay Order ID: </p>
+									<p className="fs-6 text-secondary">
+										{transaction.razorpay_order_id}
+									</p>
+									<p className="h5">Other Info: </p>
+									<p className="fs-6 text-secondary">
+										{transaction.statusMessage}
+									</p>
+								</div>
+							</div>
+						</div>
+					)}
+				</div>
+			</div>
+		</Fragment>
+	);
+};
+
+export default AddMoneyDetails;
