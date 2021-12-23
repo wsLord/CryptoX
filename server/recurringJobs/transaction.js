@@ -7,6 +7,7 @@ const Transaction = require('../models/transaction');
 const buyRequest = require('../models/transactions/buyRequest');
 const sellRequest = require('../models/transactions/sellRequest');
 const buyCoinTransaction = require("../models/transactions/buyCoin");
+const sellCoinTransaction = require("../models/transactions/sellCoin");
 const executeOrders=async(coinData)=>{
     for(a of coinData){
         let buyReqs =await buyRequest.find({
@@ -82,14 +83,15 @@ const executeOrders2 = async (coinData)=>{
 
         for(coin of coinData){
         
-        let currentPrice=BigInt(Math.floor(coin.current_price*10000000));
+        let currentPrice=BigInt(Math.floor(coin.current_price*100));
         let buyReqs =await buyRequest.find({
             coinId:coin.id,
             mode:"1"           
-        })
+        }).exec();
         
-         for(req of buyReqs){
-             
+         for(req of buyReqs){                   //iterating over the request for the current coin
+        //    console.log(req.maxPrice,currentPrice);
+            // console.log(req.coinId,coin.id);
             if(req.maxPrice>=currentPrice){
                
                 let walletOfUser=await Wallet.findById(req.from);
@@ -97,8 +99,14 @@ const executeOrders2 = async (coinData)=>{
                 let portfolioOfUser=await Portfolio.findById(req.portfolioId);
                 
                 let quantity = BigInt(req.quantity);
-                let cost = currentPrice * quantity;
-                if(BigInt(walletOfUser.balance) >= cost){
+                let tcost = currentPrice * quantity;
+                tcost = tcost.toString();     // convert the cost of proper format
+                tcost = tcost.slice(0, -7);
+                const cost = BigInt(tcost);
+
+                // console.log(cost,walletOfUser.balance);
+                // console.log(coin.id);
+                if(BigInt(walletOfUser.balance) >= cost){           //check for proper balance
                 
                 let transactionInstance = await Transaction.create({
                     category: "buy_request",
@@ -137,6 +145,7 @@ const executeOrders2 = async (coinData)=>{
                     }
                     return false;
                 });
+                //updating the portfolio
                 if (coinIndex!=-1) {
                     let newQuantity = BigInt(oldQuantity) + quantity;
                     let newAvgPrice = (oldAvgPrice*oldQuantity + cost) / newQuantity;
@@ -144,6 +153,7 @@ const executeOrders2 = async (coinData)=>{
                     portfolioOfUser.coinsOwned[coinIndex].quantity = newQuantity.toString();
                     portfolioOfUser.coinsOwned[coinIndex].priceOfBuy = newAvgPrice.toString();
                 } else {
+                   
                     portfolioOfUser.coinsOwned.push({
                         coinid: coin.id,
                         quantity: quantity.toString(),
@@ -151,10 +161,10 @@ const executeOrders2 = async (coinData)=>{
                     });
                 }
                 await portfolioOfUser.save();
-                await buyRequest.findByIdAndDelete(req._id);
+                await buyRequest.findByIdAndDelete(req._id);                //deleting the buy Request when request is processed
                 buyCoinTransactionInstance.status = "SUCCESS";
                 await buyCoinTransactionInstance.save();
-
+                console.log('transaction done');
                 }
             }
          }
@@ -175,27 +185,30 @@ const executeOrders3 = async (coinData)=>{
       
         let sellReqs =await sellRequest.find({
             coinId:coin.id,
-            mode:"1",           
-        })
-        
+            mode:"1"             
+        }).exec();
+        //  if(coin.id=='binancecoin'){
+        //     console.log(sellReqs);
+        //     console.log(coin);
+            
+        //  }
          for(req of sellReqs){
-             console.log(coin);
-             console.log(req);
-            console.log(coin.id,req.coinId);
+            // console.log(req);
+            // console.log(coin.id,req.coinId);
+            // console.log(req.minPrice,currentPrice);
             if(BigInt(req.minPrice)<=currentPrice){
 
                 let walletOfUser=await Wallet.findById(req.from);
                 let portfolioOfUser=await Portfolio.findById(req.portfolioId);
                 const quantity = BigInt(req.quantity);
-                console.log(walletOfUser);
-                console.log(portfolioOfUser);
+               
         
         
         
                 // Cost in BigInt with 7 extra precision digits
                 let tcost = currentPrice * quantity;
                 tcost = tcost.toString();
-                
+                // console.log(tcost);
                 // Length of tcost must be >= 10 so that transaction is worth Re. 1
                 if (tcost.length >= 10) 
                 {               
@@ -205,26 +218,25 @@ const executeOrders3 = async (coinData)=>{
             
                     // Cost in paise in BigInt
                     const cost = BigInt(tcost);
-                    
                     let oldQuantity;
                     let avgPrice;
                     // Checking if coin is already existent in Portfolio and getting its index
-                    console.log(coin.id);
+                    
                     let coinIndex = portfolioOfUser.coinsOwned.findIndex((tcoin) => {
-                        if (tcoin.coinid === coin.id) {
+                        if (tcoin.coinid ==req.coinId) {
                             oldQuantity = BigInt(tcoin.quantity);
                             avgPrice = BigInt(tcoin.priceOfBuy);
                             return true;
                         }
                         return false;
                     });
-                    
+                    // console.log(portfolioOfUser.coinsOwned);
                     // Declining transaction when coin doesn't exist
-                    console.log(coinIndex);
+                //    console.log(coinIndex,oldQuantity);
                     if (coinIndex != -1&& oldQuantity >= quantity) {
                         
                     
-                            console.log('hahah');
+                            
                             // Creating Transaction Instance
                             let transactionInstance = await Transaction.create({
                                 category: "sell_request",
@@ -262,13 +274,13 @@ const executeOrders3 = async (coinData)=>{
                             let newQuantity = oldQuantity - quantity;
                             if (newQuantity > 0n) {
                                 portfolioOfUser.coinsOwned.push({
-                                    coinid: coinid,
+                                    coinid: coin.id,
                                     quantity: newQuantity.toString(),
                                     priceOfBuy: avgPrice,
                                 });
                             }
                             await portfolioOfUser.save();
-                    
+                            await sellRequest.findByIdAndDelete(req._id);
                             console.log('transaction done');
                             
                     
