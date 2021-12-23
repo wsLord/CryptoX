@@ -120,7 +120,7 @@ const Portfolio = () => {
 									className="btn btn-outline-dark m-2"
 								>
 									<img className={Styles.icon} src={Transactionimg} alt="" />
-									<span className={Styles.text}> Your Transactions</span>
+									<span className={Styles.text}> Recent Transactions</span>
 								</button>
 							</div>
 						</div>

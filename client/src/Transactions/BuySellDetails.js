@@ -1,5 +1,6 @@
 import React, { Fragment, useContext, useEffect, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 import Styles from "./Transaction.module.css";
 import success from "../shared/img/success.png";
@@ -88,6 +89,7 @@ const BuySellDetails = (props) => {
 									</p>
 								</div>
 							</div>
+							<Link className="btn btn-success mt-2 fs-5" to="/transactions">Back to transaction list</Link>
 						</div>
 					)}
 					{!transaction.isSuccess && (
@@ -123,6 +125,7 @@ const BuySellDetails = (props) => {
 									</p>
 								</div>
 							</div>
+							<Link className="btn btn-danger mt-2 fs-5" to="/transactions">Back to transaction list</Link>
 						</div>
 					)}
 				</div>

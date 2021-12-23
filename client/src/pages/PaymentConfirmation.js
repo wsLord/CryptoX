@@ -23,17 +23,17 @@ const PaymentConfirmation = (props) => {
 							</p>
 							<hr />
 							<div className="d-flex justify-content-between">
-								<p className="h5">Transaction ID: </p>
+								<p className="h5 me-5">Transaction ID: </p>
 								<p className="h5">{data.transaction_id}</p>
 							</div>
 							<hr />
 							<div className="d-flex justify-content-between">
-								<p className="h5">RazorPay Order ID: </p>
+								<p className="h5 me-5">RazorPay Order ID: </p>
 								<p className="h5">{data.razorpay_order_id}</p>
 							</div>
 							<hr />
 							<div className="d-flex justify-content-between">
-								<p className="h5">Updated Balance: </p>
+								<p className="h5 me-5">Updated Balance: </p>
 								<p className="h5">&#x20B9; {data.balance}</p>
 							</div>
 							<hr />
@@ -60,17 +60,17 @@ const PaymentConfirmation = (props) => {
 							<p className="h4 text-primary">Here's what we know</p>
 							<hr />
 							<div className="d-flex justify-content-between">
-								<p className="h5">Transaction ID: </p>
+								<p className="h5 me-5">Transaction ID: </p>
 								<p className="h5">{data.transaction_id}</p>
 							</div>
 							<hr />
 							<div className="d-flex justify-content-between">
-								<p className="h5">RazorPay Order ID: </p>
+								<p className="h5 me-5">RazorPay Order ID: </p>
 								<p className="h5">{data.razorpay_order_id}</p>
 							</div>
 							<hr />
 							<div className="d-flex justify-content-between">
-								<p className="h5">Error: </p>
+								<p className="h5 me-5">Error: </p>
 								<p className="h5">{data.error_message}</p>
 							</div>
 							<hr />
