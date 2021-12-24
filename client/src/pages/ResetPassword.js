@@ -4,6 +4,7 @@ import { useParams, useHistory } from "react-router-dom";
 import Styles from "./ResetPassword.module.css";
 import Alert from "../shared/components/Alert";
 import LoadingSpinner from "../shared/components/UIElements/LoadingSpinner";
+import axios from "axios";
 
 const ResetPassword = () => {
 	const { token } = useParams();
@@ -48,39 +49,27 @@ const ResetPassword = () => {
 		}
 
 		try {
-			const res = await fetch(
-				`${process.env.REACT_APP_SERVER_URL}/forgotpassword/reset`,
+			const responseData = await axios.post(
+				`${process.env.REACT_APP_SERVER_URL}/user/forgotpassword/reset`,
 				{
-					method: "POST",
-					body: JSON.stringify({
-						newPassword: enteredPassword,
-						token: token,
-					}),
-					headers: {
-						"Content-Type": "application/json",
-					},
+					newPassword: enteredPassword,
+					token: token,
 				}
 			);
 
-			const responseData = await res.json();
-
 			setIsLoading(false);
-			if (res.ok) {
-				// Registered and Email Verification Sent
-				setSeconds(5);
-				console.log(responseData);
+			
+			// Registered and Email Verification Sent
+			setSeconds(5);
+			console.log(responseData);
 
-				// Clearing the form
-				setEnteredPassword("");
-				setConfirmPassword("");
-			} else {
-				// Something went wrong!
-				setMessage(responseData.message);
-				console.log(responseData.message);
-			}
+			// Clearing the form
+			setEnteredPassword("");
+			setConfirmPassword("");
 		} catch (err) {
+			// Something went wrong!
 			setIsLoading(false);
-			setMessage(err.message);
+			// setMessage(err.response.data.message);
 			console.log(err);
 		}
 	};

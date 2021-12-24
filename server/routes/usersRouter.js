@@ -4,11 +4,11 @@ const router = express.Router();
 
 const watchListController = require("../controllers/usersController/watchList");
 const login = require("../controllers/usersController/login");
-const getUserData = require("../controllers/usersController/getData");
+const userDataController = require("../controllers/usersController/dataController");
 const portfolio = require("../controllers/usersController/portfolio");
-const resetPassword = require("../controllers/usersController/resetPassword");
-const resetPasswordRequest = require("../controllers/usersController/resetPasswordRequest");
+const forgotPasswordController = require("../controllers/usersController/forgotPassword");
 const signup = require("../controllers/usersController/signup");
+const changePassword = require("../controllers/usersController/changePassword");
 
 const authVerify = require("../middlewares/authVerify");
 
@@ -23,28 +23,41 @@ router.post(
 	signup
 );
 
-router.post(
-	"/login",
-	[check("email").normalizeEmail().isEmail()],
-	login
-);
+router.post("/login", [check("email").normalizeEmail().isEmail()], login);
 
 router.post(
-	"/resetPasswordReq",
+	"/forgotpassword/request",
 	body("email").normalizeEmail().isEmail(),
-	resetPasswordRequest
+	forgotPasswordController.forgotPasswordRequest
 );
 
 router.post(
-	"/reset",
+	"/forgotpassword/reset",
 	body("newPassword").isLength({ min: 6 }),
-	resetPassword
+	forgotPasswordController.forgotPassword
 );
 
 // Verifying if Logged In
 router.use(authVerify);
 
-router.post("/data", getUserData);
+router.post("/data", userDataController.getData);
+router.post(
+	"/data/update",
+	[
+		check("name").not().isEmpty(),
+		check("mobile").isLength({ min: 10, max: 10 }),
+	],
+	userDataController.updateData
+);
+
+router.post(
+	"/changepassword",
+	[
+		check("newPassword").isLength({ min: 6 }),
+		check("oldPassword").isLength({ min: 6 }),
+	],
+	changePassword
+);
 
 router.get("/watchlist/add/:id", watchListController.addToWatchList);
 router.get("/watchlist/remove/:id", watchListController.removeFromWatchList);

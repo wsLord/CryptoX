@@ -44,4 +44,5 @@ const verification = async (req, res, next) => {
 		message: "The account has been verified. Please log in.",
 	});
 };
+
 module.exports.verification = verification;

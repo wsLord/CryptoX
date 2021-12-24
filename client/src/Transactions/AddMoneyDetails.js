@@ -38,7 +38,7 @@ const AddMoneyDetails = (props) => {
 		};
 
 		fetchData();
-	}, [ctx]);
+	}, [ctx, tid]);
 
 	const clearError = () => {
 		setError(null);
@@ -80,7 +80,7 @@ const AddMoneyDetails = (props) => {
 									</p>
 								</div>
 							</div>
-							<Link className="btn btn-success mt-2 fs-5" to="/transactions">Back to transaction list</Link>
+							<Link className="btn btn-success mt-2 fs-5" to="/transactions">Back to Transactions</Link>
 						</div>
 					)}
 					{!transaction.isSuccess && (
@@ -116,7 +116,7 @@ const AddMoneyDetails = (props) => {
 									</p>
 								</div>
 							</div>
-							<Link className="btn btn-danger mt-2 fs-5" to="/transactions">Back to transaction list</Link>
+							<Link className="btn btn-danger mt-2 fs-5" to="/transactions">Back to Transactions</Link>
 						</div>
 					)}
 				</div>

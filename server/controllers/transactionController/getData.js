@@ -1,4 +1,3 @@
-const { validationResult } = require("express-validator");
 const CoinGecko = require("coingecko-api");
 const CoinGeckoClient = new CoinGecko();
 
@@ -182,17 +181,22 @@ const getTransactionData = async (req, res, next) => {
 				isSuccess: innerData.status === "SUCCESS",
 				...innerData,
 			};
-			transactionElement.amount = converter.amountToDecimalString(innerData.amount);
+			transactionElement.amount = converter.amountToDecimalString(
+				innerData.amount
+			);
 		} else if (transactionData.category === "buy_coin") {
 			let innerData = transactionData.buyCoin.toJSON();
-			const { data: coinData } = await CoinGeckoClient.coins.fetch(innerData.coinid, {
-				tickers: false,
-				market_data: false,
-				community_data: false,
-				developer_data: false,
-				localization: false,
-				sparkline: false,
-			});
+			const { data: coinData } = await CoinGeckoClient.coins.fetch(
+				innerData.coinid,
+				{
+					tickers: false,
+					market_data: false,
+					community_data: false,
+					developer_data: false,
+					localization: false,
+					sparkline: false,
+				}
+			);
 
 			transactionElement = {
 				id: transactionData.id,
@@ -200,22 +204,31 @@ const getTransactionData = async (req, res, next) => {
 				isSuccess: innerData.status === "SUCCESS",
 				coinName: coinData.name,
 				coinSymbol: coinData.symbol.toUpperCase(),
-				...innerData
+				...innerData,
 			};
 
-			transactionElement.amount = converter.amountToDecimalString(innerData.amount);
-			transactionElement.quantity = converter.quantityToDecimalString(innerData.quantity);
-			transactionElement.price = converter.amountToDecimalString(innerData.price);
+			transactionElement.amount = converter.amountToDecimalString(
+				innerData.amount
+			);
+			transactionElement.quantity = converter.quantityToDecimalString(
+				innerData.quantity
+			);
+			transactionElement.price = converter.amountToDecimalString(
+				innerData.price
+			);
 		} else if (transactionData.category === "sell_coin") {
 			let innerData = transactionData.sellCoin.toJSON();
-			const { data: coinData } = await CoinGeckoClient.coins.fetch(innerData.coinid, {
-				tickers: false,
-				market_data: false,
-				community_data: false,
-				developer_data: false,
-				localization: false,
-				sparkline: false,
-			});
+			const { data: coinData } = await CoinGeckoClient.coins.fetch(
+				innerData.coinid,
+				{
+					tickers: false,
+					market_data: false,
+					community_data: false,
+					developer_data: false,
+					localization: false,
+					sparkline: false,
+				}
+			);
 
 			transactionElement = {
 				id: transactionData.id,
@@ -223,32 +236,38 @@ const getTransactionData = async (req, res, next) => {
 				isSuccess: innerData.status === "SUCCESS",
 				coinName: coinData.name,
 				coinSymbol: coinData.symbol.toUpperCase(),
-				...innerData
+				...innerData,
 			};
 
-			transactionElement.amount = converter.amountToDecimalString(innerData.amount);
-			transactionElement.quantity = converter.quantityToDecimalString(innerData.quantity);
-			transactionElement.price = converter.amountToDecimalString(innerData.price);
+			transactionElement.amount = converter.amountToDecimalString(
+				innerData.amount
+			);
+			transactionElement.quantity = converter.quantityToDecimalString(
+				innerData.quantity
+			);
+			transactionElement.price = converter.amountToDecimalString(
+				innerData.price
+			);
 		} else if (transactionData.category === "buy_request") {
-			tType = "Buy Request";
-			tDate = transactionData.buyRequest.updatedAt;
-			isPlus = true;
-			isSuccess = transactionData.buyRequest.status === "SUCCESS";
-			tStatus = transactionData.buyRequest.status;
-			tStatus = tStatus.charAt(0) + tStatus.toLowerCase().slice(1);
-			tAmount = "-"; // transactionData.buyRequest.amount.slice(0, -2) + "." + transactionData.buyRequest.amount.slice(-2);
-			tCoinID = transactionData.buyRequest.coinid;
-			tNextPath = "order";
+			// tType = "Buy Request";
+			// tDate = transactionData.buyRequest.updatedAt;
+			// isPlus = true;
+			// isSuccess = transactionData.buyRequest.status === "SUCCESS";
+			// tStatus = transactionData.buyRequest.status;
+			// tStatus = tStatus.charAt(0) + tStatus.toLowerCase().slice(1);
+			// tAmount = "-"; // transactionData.buyRequest.amount.slice(0, -2) + "." + transactionData.buyRequest.amount.slice(-2);
+			// tCoinID = transactionData.buyRequest.coinid;
+			// tNextPath = "order";
 		} else if (transactionData.category === "sell_request") {
-			tType = "Sell Request";
-			tDate = transactionData.sellRequest.updatedAt;
-			isPlus = true;
-			isSuccess = transactionData.sellRequest.status === "SUCCESS";
-			tStatus = transactionData.sellRequest.status;
-			tStatus = tStatus.charAt(0) + tStatus.toLowerCase().slice(1);
-			tAmount = "-"; // transactionData.sellRequest.amount.slice(0, -2) + "." + transactionData.sellRequest.amount.slice(-2);
-			tCoinID = transactionData.sellRequest.coinid;
-			tNextPath = "order";
+			// tType = "Sell Request";
+			// tDate = transactionData.sellRequest.updatedAt;
+			// isPlus = true;
+			// isSuccess = transactionData.sellRequest.status === "SUCCESS";
+			// tStatus = transactionData.sellRequest.status;
+			// tStatus = tStatus.charAt(0) + tStatus.toLowerCase().slice(1);
+			// tAmount = "-"; // transactionData.sellRequest.amount.slice(0, -2) + "." + transactionData.sellRequest.amount.slice(-2);
+			// tCoinID = transactionData.sellRequest.coinid;
+			// tNextPath = "order";
 		} else if (transactionData.category === "withdraw_money") {
 			let innerData = transactionData.withdrawMoney;
 			transactionElement = {
@@ -257,8 +276,7 @@ const getTransactionData = async (req, res, next) => {
 				isSuccess: innerData.status === "SUCCESS",
 				...innerData,
 			};
-			transactionElement.amount =
-				innerData.amount.slice(0, -2) + "." + innerData.amount.slice(-2);
+			transactionElement.amount = converter.amountToDecimalString(innerData.amount);
 		}
 
 		console.log(transactionElement);

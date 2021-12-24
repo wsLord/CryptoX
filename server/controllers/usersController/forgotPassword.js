@@ -1,12 +1,13 @@
 const { validationResult } = require("express-validator");
 const crypto = require("crypto");
+const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 
 const User = require("../../models/user");
 const passResetToken = require("../../models/passResetToken");
 
-const resetPasswordRequest = async (req, res, next) => {
+const forgotPasswordRequest = async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
 		return next(new Error("Invalid email, please check your input."));
@@ -57,8 +58,8 @@ const resetPasswordRequest = async (req, res, next) => {
 			bhulakkadUser.name +
 			",\n\n" +
 			"You can reset your account's password by clicking the link: \n" +
-			req.header('Referer') +
-			"/user/reset/" +
+			req.header("Referer") +
+			"/resetpassword/" +
 			token.token +
 			"\n\nThis link will expire in 10 mins. Ignore the mail if not requested." +
 			"\n\n\n\nRegards,\nCryptoX\n\nKeep Minting! :)",
@@ -76,6 +77,52 @@ const resetPasswordRequest = async (req, res, next) => {
 		message: "Password Reset Email sent!",
 		mailinfo: info.messageId,
 	});
-}
+};
 
-module.exports = resetPasswordRequest;
+const forgotPassword = async (req, res, next) => {
+	const { newPassword, token } = req.body;
+
+	// Find a matching token
+	let tokenData;
+	try {
+		tokenData = await passResetToken
+			.findOne({ token: token })
+			.populate("userId")
+			.exec();
+	} catch (err) {
+		console.log(err);
+		return next(new Error(err.message));
+	}
+
+	if (tokenData == null) {
+		return next(new Error("Invalid token. Your token may have expired."));
+	}
+
+	// If we found a token, accessing the populated matching user
+	const user = tokenData.userId;
+
+	let hashedPassword;
+	try {
+		hashedPassword = await bcrypt.hash(newPassword, 12);
+	} catch (err) {
+		return next(
+			new Error("Could not reset password, please try again. " + err.message)
+		);
+	}
+
+	// Updating password and saving the user
+	user.password = hashedPassword;
+	try {
+		await user.save();
+	} catch (err) {
+		console.log(err);
+		return next(new Error("Unable to reset. Please try later."));
+	}
+
+	res.status(201).json({
+		message: "Password reset successfull.",
+	});
+};
+
+module.exports.forgotPassword = forgotPassword;
+module.exports.forgotPasswordRequest = forgotPasswordRequest;

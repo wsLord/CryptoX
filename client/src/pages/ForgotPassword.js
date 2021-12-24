@@ -1,9 +1,10 @@
-import { Fragment, useState, useRef } from "react";
+import React, { Fragment, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 
 import "./ForgotPassword.css";
 import Alert from "../shared/components/Alert";
 import LoadingSpinner from "../shared/components/UIElements/LoadingSpinner";
+import axios from "axios";
 
 const ForgotPassword = (props) => {
 	const inputRefEmail = useRef();
@@ -18,36 +19,24 @@ const ForgotPassword = (props) => {
 		const enteredEmail = inputRefEmail.current.value;
 
 		try {
-			const res = await fetch(
-				`${process.env.REACT_APP_SERVER_URL}/forgotpassword`,
+			const { data } = await axios.post(
+				`${process.env.REACT_APP_SERVER_URL}/user/forgotpassword/request`,
 				{
-					method: "POST",
-					body: JSON.stringify({
-						email: enteredEmail,
-					}),
-					headers: {
-						"Content-Type": "application/json",
-					},
+					email: enteredEmail,
 				}
 			);
 
-			const responseData = await res.json();
+			console.log(data);
 
 			setIsLoading(false);
-			if (res.ok) {
-				// Reset mail sent
-				setMessage(responseData.message);
-				inputRefEmail.current.value = "";
-				console.log(responseData);
-			} else {
-				// Something went wrong!
-				setMessage(responseData.message);
-				console.log(responseData.message);
-			}
+			// Reset mail sent
+			setMessage(data.message);
+			inputRefEmail.current.value = "";
 		} catch (err) {
+			// Something went wrong!
 			setIsLoading(false);
-			console.log(err);
-			setMessage(err.message);
+			console.log(err.response.data.message);
+			setMessage(err.response.data.message);
 		}
 	};
 
