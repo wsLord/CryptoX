@@ -58,7 +58,7 @@ const forgotPasswordRequest = async (req, res, next) => {
 			bhulakkadUser.name +
 			",\n\n" +
 			"You can reset your account's password by clicking the link: \n" +
-			req.header("Referer") +
+			process.env.CLIENT_URL +
 			"/resetpassword/" +
 			token.token +
 			"\n\nThis link will expire in 10 mins. Ignore the mail if not requested." +

@@ -131,7 +131,7 @@ const Portfolio = () => {
 				<div className="w-100">
 					{windows.addMoney && <AddMoney />}
 					{windows.withdraw && <Withdraw />}
-					{windows.transaction && <Transaction />}
+					{windows.transaction && <Transaction onAlert={setAlert}/>}
 					<div className="card w-100">
 						<div className="card-header ">
 							<h3>Daily Report</h3>

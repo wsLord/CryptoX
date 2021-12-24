@@ -61,57 +61,56 @@ const TransactionsList = () => {
 								</tr>
 							</thead>
 							<tbody>
-								{transactionList
-									.slice(0)
-									.reverse()
-									.map((element) => {
-										return (
-											<tr>
-												<td className="fw-bold">{element.tType}</td>
-												<td>{new Date(element.tDate).toString().slice(0, -31)}</td>
-												{element.isSuccess && (
-													<td className="text-success fw-bold">
-														{element.tStatus}
-													</td>
-												)}
-												{!element.isSuccess && (
-													<td className="text-danger fw-bold">
-														{element.tStatus}
-													</td>
-												)}
-												<td>{element.tCoinID}</td>
-												{(element.tAmount === "-" || !element.isSuccess) ? (
-													<td className="fw-bold">&#8377; {element.tAmount}</td>
-												) : element.isPlus ? (
-													<td className="text-success fw-bold">
-														+ &#8377; {element.tAmount}
-													</td>
-												) : (
-													<td className="text-danger fw-bold">
-														- &#8377; {element.tAmount}
-													</td>
-												)}
-												<td>
-													<button
-														type="button"
-														className="btn btn-light bg-transparent"
-														onClick={() => {
-															let path = "/transactions/" + element.tNextPath;
-															console.log(path);
-															history.push({
-																pathname: "/transactions/" + element.tNextPath,
-																state: {
-																	tid: element.tID,
-																},
-															});
-														}}
-													>
-														<i className="fa fa-chevron-right"></i>
-													</button>
+								{transactionList.map((element) => {
+									return (
+										<tr>
+											<td className="fw-bold">{element.tType}</td>
+											<td>
+												{new Date(element.tDate).toString().slice(0, -31)}
+											</td>
+											{element.isSuccess && (
+												<td className="text-success fw-bold">
+													{element.tStatus}
 												</td>
-											</tr>
-										);
-									})}
+											)}
+											{!element.isSuccess && (
+												<td className="text-danger fw-bold">
+													{element.tStatus}
+												</td>
+											)}
+											<td className="text-center">{element.tCoinID}</td>
+											{element.tAmount === "-" || !element.isSuccess ? (
+												<td className="fw-bold">&#8377; {element.tAmount}</td>
+											) : element.isPlus ? (
+												<td className="text-success fw-bold">
+													+ &#8377; {element.tAmount}
+												</td>
+											) : (
+												<td className="text-danger fw-bold">
+													- &#8377; {element.tAmount}
+												</td>
+											)}
+											<td>
+												<button
+													type="button"
+													className="btn btn-light bg-transparent"
+													onClick={() => {
+														let path = "/transactions/" + element.tNextPath;
+														console.log(path);
+														history.push({
+															pathname: "/transactions/" + element.tNextPath,
+															state: {
+																tid: element.tID,
+															},
+														});
+													}}
+												>
+													<i className="fa fa-chevron-right"></i>
+												</button>
+											</td>
+										</tr>
+									);
+								})}
 							</tbody>
 						</table>
 					)}

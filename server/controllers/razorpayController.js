@@ -97,7 +97,7 @@ const capturePayment = async (req, res, next) => {
 		);
 		const generated_signature = hmac.digest("hex");
 
-		let verified_payment = false; //generated_signature == response.razorpay_signature;
+		let verified_payment = generated_signature == response.razorpay_signature;
 
 		// Updating Add Money Transaction Info
 		let AMTData = {

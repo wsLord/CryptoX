@@ -6,6 +6,8 @@ const Transaction = require("../../models/transaction");
 const converter = require("../conversions");
 
 const getTransactionList = async (req, res, next) => {
+	const count = req.query.count;
+
 	try {
 		const user = await User.findById(req.userData.id)
 			.populate({
@@ -46,8 +48,13 @@ const getTransactionList = async (req, res, next) => {
 		const transactionDataArray = user.wallet.transactionList;
 		let transactionDataList = [];
 
-		for (transItem of transactionDataArray) {
+		// Reverse loop so that recent transaction is shown first
+		let size = transactionDataArray.length;
+		let limit = count ? ((size > count) ? size - count : 0) : 0;
+		for (let i = size - 1; i >= limit; i--) {
+			let transItem = transactionDataArray[i];
 			let tType, tDate, isPlus, tAmount, isSuccess, tStatus, tCoinID, tNextPath;
+
 			if (transItem.category === "add_money") {
 				tType = "Add Money";
 				tDate = transItem.addMoney.updatedAt;
@@ -276,7 +283,9 @@ const getTransactionData = async (req, res, next) => {
 				isSuccess: innerData.status === "SUCCESS",
 				...innerData,
 			};
-			transactionElement.amount = converter.amountToDecimalString(innerData.amount);
+			transactionElement.amount = converter.amountToDecimalString(
+				innerData.amount
+			);
 		}
 
 		console.log(transactionElement);

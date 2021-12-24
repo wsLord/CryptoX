@@ -1,61 +1,120 @@
-import React from 'react'
-import { Link } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { Link, useHistory } from "react-router-dom";
+import axios from "axios";
 
-export default function Transaction() {
+import AuthContext from "../store/authContext";
 
-    const data = [{ type: "Add money", date: "Thu Dec 23 2021", time: "10:39:41", status: true, coinID: "-", amount: 100 },
-    { type: "Buy", date: "Thu Dec 23 2021", time: "10:39:41", status: true, coinID: "bitcoin", amount: 12200 },
-    { type: "Sell", date: "Thu Dec 23 2021", time: "10:39:41", status: true, coinID: "-", amount: -27100 }
-    ];
+const Transaction = ({ onAlert }) => {
+	const ctx = useContext(AuthContext);
+	const history = useHistory();
 
-    return (
-        <div>
-            <div className="card w-100">
-                <div className="card-header"><h3>Recent Transactions</h3></div>
-                <div className="card-body">
-                    {data.length === 0 && <h4>Very lonely here...</h4>}
-                    {data.length > 0 &&
-                        <dir>
-                            <table className="table fs-6">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Type</th>
-                                        <th scope="col">Date/Time</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col">Coin ID</th>
-                                        <th scope="col">Amount (&#8377;)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {data.map((element) => {
-                                        return (
-                                            <tr>
-                                                <td className="fw-bold">{element.type}</td>
-                                                <td>{element.date} {element.time}</td>
-                                                {element.status &&
-                                                    <td className="fw-bold text-success">Success</td>
-                                                }
-                                                {!element.status &&
-                                                    <td className="fw-bold text-danger">Fail</td>
-                                                }
-                                                <td className="text-center">{element.coinID}</td>
-                                                {element.amount > 0 &&
-                                                    <td className="fw-bold text-success">&#8377; +{element.amount}</td>
-                                                }
-                                                {element.amount < 0 &&
-                                                    <td className="fw-bold text-danger">&#8377; {element.amount}</td>
-                                                }
-                                                <button type="button" className="btn btn-light bg-transparent"><i className="fa fa-chevron-right"></i></button>
-                                            </tr>
-                                        )
-                                    })}
-                                </tbody>
-                            </table>
-                            <Link className="btn btn-success d-inline" to="/transactions">View more <i className="fa fa-angle-double-right"></i></Link>
-                        </dir>
-                    }
-                </div>
-            </div><br />
-        </div>
-    )
-}
+	const [transactionList, setTransactionList] = useState([]);
+
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const { data } = await axios.get(
+					`${process.env.REACT_APP_SERVER_URL}/transaction/data/list?count=5`,
+					{
+						headers: {
+							Authorization: "Bearer " + ctx.token,
+						},
+					}
+				);
+
+				setTransactionList(data);
+			} catch (err) {
+				console.log(err);
+				onAlert("Something went wrong!");
+			}
+		};
+
+		fetchData();
+	}, [ctx, onAlert]);
+
+	return (
+		<div>
+			<div className="card w-100">
+				<div className="card-header">
+					<h3>Recent Transactions</h3>
+				</div>
+				<div className="card-body">
+					{transactionList.length === 0 && <h4>Very lonely here...</h4>}
+					{transactionList.length > 0 && (
+						<dir>
+							<table className="table fs-6">
+								<thead>
+									<tr>
+										<th scope="col">Type</th>
+										<th scope="col">Date/Time</th>
+										<th scope="col">Status</th>
+										<th scope="col">Coin ID</th>
+										<th scope="col">Amount (&#8377;)</th>
+									</tr>
+								</thead>
+								<tbody>
+									{transactionList.map((element) => {
+										return (
+											<tr>
+												<td className="fw-bold">{element.tType}</td>
+												<td>
+													{new Date(element.tDate).toString().slice(0, -31)}
+												</td>
+												{element.isSuccess && (
+													<td className="text-success fw-bold">
+														{element.tStatus}
+													</td>
+												)}
+												{!element.isSuccess && (
+													<td className="text-danger fw-bold">
+														{element.tStatus}
+													</td>
+												)}
+												<td className="text-center">{element.tCoinID}</td>
+												{element.tAmount === "-" || !element.isSuccess ? (
+													<td className="fw-bold">&#8377; {element.tAmount}</td>
+												) : element.isPlus ? (
+													<td className="text-success fw-bold">
+														+ &#8377; {element.tAmount}
+													</td>
+												) : (
+													<td className="text-danger fw-bold">
+														- &#8377; {element.tAmount}
+													</td>
+												)}
+												<td>
+													<button
+														type="button"
+														className="btn btn-light bg-transparent"
+														onClick={() => {
+															let path = "/transactions/" + element.tNextPath;
+															console.log(path);
+															history.push({
+																pathname: "/transactions/" + element.tNextPath,
+																state: {
+																	tid: element.tID,
+																},
+															});
+														}}
+													>
+														<i className="fa fa-chevron-right"></i>
+													</button>
+												</td>
+											</tr>
+										);
+									})}
+								</tbody>
+							</table>
+							<Link className="btn btn-success d-inline" to="/transactions">
+								View more <i className="fa fa-angle-double-right"></i>
+							</Link>
+						</dir>
+					)}
+				</div>
+			</div>
+			<br />
+		</div>
+	);
+};
+
+export default Transaction;
