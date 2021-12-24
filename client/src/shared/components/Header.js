@@ -59,6 +59,11 @@ const Header = () => {
 								</Link>
 							</li>
 							<li className="nav-item">
+								<Link className="nav-link active" id={Styles.toplink} to="/exchange">
+									Exchange
+								</Link>
+							</li>
+							<li className="nav-item">
 								<Link className="nav-link active" id={Styles.toplink} to="/referral">
 									Invite Friend
 								</Link>
