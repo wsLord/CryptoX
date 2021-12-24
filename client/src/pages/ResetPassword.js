@@ -50,15 +50,10 @@ const ResetPassword = () => {
 
 		try {
 			const responseData = await axios.post(
-				`${process.env.REACT_APP_SERVER_URL}/forgotpassword/reset`,
+				`${process.env.REACT_APP_SERVER_URL}/user/forgotpassword/reset`,
 				{
 					newPassword: enteredPassword,
 					token: token,
-				},
-				{
-					headers: {
-						"Content-Type": "application/json",
-					},
 				}
 			);
 
@@ -74,7 +69,7 @@ const ResetPassword = () => {
 		} catch (err) {
 			// Something went wrong!
 			setIsLoading(false);
-			setMessage(err.response.data.message);
+			// setMessage(err.response.data.message);
 			console.log(err);
 		}
 	};

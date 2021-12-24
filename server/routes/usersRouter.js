@@ -32,7 +32,7 @@ router.post(
 );
 
 router.post(
-	"/forgotpassword",
+	"/forgotpassword/reset",
 	body("newPassword").isLength({ min: 6 }),
 	forgotPasswordController.forgotPassword
 );
