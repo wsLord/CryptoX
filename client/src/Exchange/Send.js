@@ -28,7 +28,7 @@ export default function Send() {
                     })}
                 </select>
                 {Selected !== "" &&
-                    <p className="text-primary mt-4">{Selected} available in assets : {Limit}</p>
+                    <p className="text-primary mt-3">Available : <span className="h5">{Limit}</span> {Selected} in assets</p>
                 }
                 <div className="input-group mt-3 fs-3">
                     <span className="input-group-text fs-4 bg-white" id="basic-addon3">Amount</span>
@@ -42,7 +42,7 @@ export default function Send() {
                     <span className="input-group-text fs-4 bg-white" id="basic-addon3">Note</span>
                     <textarea className="form-control" id="msg" placeholder="Optional message" />
                 </div>
-                <button type="button" className="btn btn-success fs-4 mt-3 w-100">Send</button>
+                <button type="submit" className="btn btn-success fs-4 mt-3 w-100">Send</button>
             </form>
         </div>
     )
