@@ -1,7 +1,7 @@
 const axios = require("axios");
 const User = require("../../models/user");
 const Portfolio = require("../../models/portfolio");
-const Exchange = require("../../models/exchange");
+const Exchange = require("../../models/transactions/exchange");
 const CoinGecko = require("coingecko-api");
 const CoinGeckoClient = new CoinGecko();
 const senderTransaction = require("../../models/transactions/sender");
