@@ -2,19 +2,21 @@ import React, { Fragment, useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
-import Order from "./Order";
+import OrderCoin from "./OrderCoin";
 import Styles from "./CoinDetail.module.css";
 import Overview from "./Overview";
 import Alert from "../shared/components/Alert";
 import AuthContext from "../store/authContext";
 import Logo from "../shared/img/icon.png";
 import LoadingSpinner from "../shared/components/UIElements/LoadingSpinner";
+import BuyCoin from "./BuyCoin";
 
 const CoinDetail = () => {
 	const ctx = useContext(AuthContext);
 
 	const { coinid } = useParams();
 
+	// View States Defined
 	const [modes, setModes] = useState({
 		buy: "nav-link active",
 		sell: "nav-link",
@@ -25,12 +27,26 @@ const CoinDetail = () => {
 		sell: "d-none",
 		order: "d-none",
 	});
-	const [error, setError] = useState(null);
+
+	const [sellMode, setSellMode] = useState({
+		inrValue: "",
+		coinValue: "",
+		inr: true,
+		coin: false,
+	});
 	const [isLoading, setIsLoading] = useState(false);
+
+	// Data States Defined
+	const [error, setError] = useState(null);
+	const [isCoinDataLoaded, setIsCoinDataLoaded] = useState(false);
 	const [coinData, setCoinData] = useState({
-		coinName: "Coin",
-		coinSymbol: "CPX",
-		coinIcon: Logo,
+		name: "Coin",
+		symbol: "CPX",
+		market_data: {
+			current_price: { inr: 100 },
+			price_change_percentage_24h: 0,
+		},
+		image: { large: Logo },
 	});
 	const [assetData, setAssetData] = useState({
 		isAvailable: false,
@@ -42,141 +58,24 @@ const CoinDetail = () => {
 	});
 	const [isInWatchList, setIsInWatchList] = useState(true);
 
-	const [buyMode, setbuyMode] = useState({
-		inrValue: "",
-		coinValue: "",
-		inr: true,
-		coin: false
-	})
-	const handlebuyValue = (event) => {
-		if (buyMode.inr) {
-			setbuyMode({
+	// UI Functions
+	const onClickSellValue = (event) => {
+		if (sellMode.inr) {
+			setSellMode({
 				inrValue: event.target.value,
 				coinValue: "",
 				inr: true,
-				coin: false
+				coin: false,
 			});
-		}
-		else {
-			setbuyMode({
+		} else {
+			setSellMode({
 				inrValue: "",
 				coinValue: event.target.value,
 				inr: false,
-				coin: true
+				coin: true,
 			});
 		}
-	}
-
-	const convertBuy = () => {
-		const price = 12;   // set real price here peleanshu bhai
-		if (buyMode.inr) {
-			const coinvalue = buyMode.inrValue / price;
-			setbuyMode({
-				inrValue: "",
-				coinValue: coinvalue,
-				inr: false,
-				coin: true
-			});
-		}
-		else {
-			const inrvalue = buyMode.coinValue * price;
-			setbuyMode({
-				inrValue: inrvalue,
-				coinValue: "",
-				inr: true,
-				coin: false
-			});
-		}
-	}
-
-	const [sellMode, setsellMode] = useState({
-		inrValue: "",
-		coinValue: "",
-		inr: true,
-		coin: false
-	})
-	const handlesellValue = (event) => {
-		if (sellMode.inr) {
-			setsellMode({
-				inrValue: event.target.value,
-				coinValue: "",
-				inr: true,
-				coin: false
-			});
-		}
-		else {
-			setsellMode({
-				inrValue: "",
-				coinValue: event.target.value,
-				inr: false,
-				coin: true
-			});
-		}
-	}
-
-	const convertSell = () => {
-		const price = 12;   // set real price here peleanshu bhai
-		if (sellMode.inr) {
-			const coinvalue = sellMode.inrValue / price;
-			setsellMode({
-				inrValue: "",
-				coinValue: coinvalue,
-				inr: false,
-				coin: true
-			});
-		}
-		else {
-			const inrvalue = sellMode.coinValue * price;
-			setsellMode({
-				inrValue: inrvalue,
-				coinValue: "",
-				inr: true,
-				coin: false
-			});
-		}
-	}
-
-	useEffect(() => {
-		const fetchData = async () => {
-			setIsLoading(true);
-
-			try {
-				let { data: assetData } = await axios.get(
-					`${process.env.REACT_APP_SERVER_URL}/user/assets/${coinid}`,
-					{
-						headers: {
-							Authorization: "Bearer " + ctx.token,
-						},
-					}
-				);
-
-				let { data: userData } = await axios.post(
-					`${process.env.REACT_APP_SERVER_URL}/user/data`,
-					{
-						balance: true,
-						isInWatchList: coinid,
-					},
-					{
-						headers: {
-							Authorization: "Bearer " + ctx.token,
-						},
-					}
-				);
-
-				console.log(assetData, userData);
-
-				setAssetData(assetData);
-				setWalletBalance(userData.balance);
-				setIsInWatchList(userData.isInWatchList);
-			} catch (err) {
-				console.log(err);
-				setError("Something went wrong!");
-			}
-		};
-
-		fetchData();
-	}, [ctx, coinid]);
-
+	};
 	const onClickBuy = () => {
 		setModes({
 			buy: "nav-link active",
@@ -213,9 +112,73 @@ const CoinDetail = () => {
 			order: "d-block",
 		});
 	};
-	const setCoinDetails = (data) => {
-		setCoinData(data);
-	}
+
+	// Load on first time page render
+	useEffect(() => {
+		const fetchData = async () => {
+			setIsLoading(true);
+
+			try {
+				let { data: assetData } = await axios.get(
+					`${process.env.REACT_APP_SERVER_URL}/user/assets/${coinid}`,
+					{
+						headers: {
+							Authorization: "Bearer " + ctx.token,
+						},
+					}
+				);
+
+				let { data: userData } = await axios.post(
+					`${process.env.REACT_APP_SERVER_URL}/user/data`,
+					{
+						balance: true,
+						isInWatchList: coinid,
+					},
+					{
+						headers: {
+							Authorization: "Bearer " + ctx.token,
+						},
+					}
+				);
+
+				console.log(assetData, userData);
+
+				setCoinData(assetData.coinData);
+				setIsCoinDataLoaded(true);
+				setAssetData(assetData);
+				setWalletBalance(userData.balance);
+				setIsInWatchList(userData.isInWatchList);
+			} catch (err) {
+				console.log(err.response);
+				setError("Something went wrong!");
+			}
+		};
+
+		fetchData();
+	}, [ctx, coinid]);
+
+	// Data Handling Functions
+
+	const convertSell = () => {
+		const price = coinData.market_data.current_price.inr;
+		if (sellMode.inr) {
+			const coinvalue = sellMode.inrValue / price;
+			setSellMode({
+				inrValue: "",
+				coinValue: coinvalue,
+				inr: false,
+				coin: true,
+			});
+		} else {
+			const inrvalue = sellMode.coinValue * price;
+			setSellMode({
+				inrValue: inrvalue,
+				coinValue: "",
+				inr: true,
+				coin: false,
+			});
+		}
+	};
 
 	const addToWatchList = async () => {
 		try {
@@ -252,7 +215,9 @@ const CoinDetail = () => {
 		}
 	};
 
-	const buyCoinHandler = async () => { };
+	const onError = (msg) => {
+		setError(msg);
+	};
 
 	const clearError = () => {
 		setError(null);
@@ -265,9 +230,11 @@ const CoinDetail = () => {
 				<div className="card m-3">
 					<div className="card-body d-flex justify-content-between">
 						<div className="title d-flex align-items-center">
-							<img className={Styles.logo} src={coinData.Icon} alt="" />
-							<h1>{coinData.name}</h1>
-							<p className="sym text-secondary h3">{coinData.symbol}</p>
+							<img className={Styles.logo} src={coinData.image.large} alt="" />
+							<h1>{coinData.name} </h1>
+							<p className="sym text-secondary h3">
+								{coinData.symbol.toUpperCase()}
+							</p>
 						</div>
 						{isInWatchList && (
 							<button
@@ -293,7 +260,10 @@ const CoinDetail = () => {
 					<div className="card col-8" id={Styles.overview}>
 						<div className="card-header h3 text-start">Overview</div>
 						<div className="card-body">
-							<Overview coin={coinid} setCoinDetails={setCoinDetails} />
+							<Overview
+								id={coinid}
+								coinData={isCoinDataLoaded ? coinData : null}
+							/>
 						</div>
 					</div>
 					<div className="col-4 p-10">
@@ -303,15 +273,21 @@ const CoinDetail = () => {
 								<div className="card-body m-3">
 									<div className="d-flex justify-content-between">
 										<h4>Quantity Available:</h4>
-										<p className="text-secondary fs-4">{assetData.quantity} {coinData.symbol}</p>
+										<p className="text-secondary fs-4">
+											{assetData.quantity} {coinData.symbol.toUpperCase()}
+										</p>
 									</div>
 									<div className="d-flex justify-content-between">
 										<h4>Purchase Price:</h4>
-										<p className="text-secondary fs-4">&#x20B9; {assetData.purchasePrice}</p>
+										<p className="text-secondary fs-4">
+											&#x20B9; {assetData.purchasePrice}
+										</p>
 									</div>
 									<div className="d-flex justify-content-between">
 										<h4>Profit/Loss:</h4>
-										<p className="text-secondary fs-4">{assetData.changePercentage}%</p>
+										<p className="text-secondary fs-4">
+											{assetData.changePercentage}%
+										</p>
 									</div>
 								</div>
 							)}
@@ -320,10 +296,9 @@ const CoinDetail = () => {
 									<p className="text-dark h4">No Assets</p>
 
 									<p className="text-secondary fs-5">
-										Looks like there isn't any <b>{coinData.symbol}</b> in your
-										account yet.
-									</p>
-									<p className="text-secondary fs-5">
+										Looks like there isn't any{" "}
+										<b>{coinData.symbol.toUpperCase()}</b> in your account yet.
+										<br />
 										CryptoX is the easiest place to get started.
 									</p>
 								</div>
@@ -349,30 +324,11 @@ const CoinDetail = () => {
 									</li>
 								</ul>
 								<div className={visibility.buy}>
-									<p className="text-end text-primary">
-										Wallet Balance: &#x20B9; {walletBalance.Rupees}.
-										{walletBalance.Paise}
-									</p>
-									<form className="d-flex flex-column" action="" method="get" id={Styles.buyform} >
-										<div class="input-group mb-3">
-											{buyMode.inr &&
-												<>
-													<span class="input-group-text border-0 bg-white fs-3">&#x20B9;</span>
-													<input type="text" class="form-control border-0 fs-3" placeholder="INR" value={buyMode.inrValue} onChange={handlebuyValue} />
-												</>
-											}
-											{buyMode.coin &&
-												<>
-													<input type="text" class="form-control border-0 fs-3" placeholder={coinData.name} value={buyMode.coinValue} onChange={handlebuyValue} />
-													<span class="input-group-text border-0 bg-white fs-3">{coinData.symbol}</span>
-												</>
-											}
-											<button class="btn btn-outline-white" type="button" id="button-addon2" onClick={convertBuy}><i class="fa fa-exchange fs-4"></i></button>
-										</div>
-										<button type="submit" className="btn btn-success" id={Styles.submit} onClick={buyCoinHandler}>
-											Buy {coinData.symbol}
-										</button>
-									</form>
+									<BuyCoin
+										walletBalance={walletBalance}
+										coinData={coinData}
+										onError={onError}
+									/>
 								</div>
 								<div className={visibility.sell}>
 									<p className="text-end text-primary">
@@ -385,19 +341,42 @@ const CoinDetail = () => {
 										id={Styles.sellform}
 									>
 										<div class="input-group mb-3">
-											{sellMode.inr &&
+											{sellMode.inr && (
 												<>
-													<span class="input-group-text border-0 bg-white fs-3">&#x20B9;</span>
-													<input type="text" class="form-control border-0 fs-3" placeholder="INR" value={sellMode.inrValue} onChange={handlesellValue} />
+													<span class="input-group-text border-0 bg-white fs-3">
+														&#x20B9;
+													</span>
+													<input
+														type="text"
+														class="form-control border-0 fs-3"
+														placeholder="INR"
+														value={sellMode.inrValue}
+														onChange={onClickSellValue}
+													/>
 												</>
-											}
-											{sellMode.coin &&
+											)}
+											{sellMode.coin && (
 												<>
-													<input type="text" class="form-control border-0 fs-3" placeholder={coinData.name} value={sellMode.coinValue} onChange={handlesellValue} />
-													<span class="input-group-text border-0 bg-white fs-3">{coinData.symbol}</span>
+													<input
+														type="text"
+														class="form-control border-0 fs-3"
+														placeholder={coinData.name}
+														value={sellMode.coinValue}
+														onChange={onClickSellValue}
+													/>
+													<span class="input-group-text border-0 bg-white fs-3">
+														{coinData.symbol.toUpperCase()}
+													</span>
 												</>
-											}
-											<button class="btn btn-outline-white" type="button" id="button-addon2" onClick={convertSell}><i class="fa fa-exchange fs-4"></i></button>
+											)}
+											<button
+												class="btn btn-outline-white"
+												type="button"
+												id="button-addon2"
+												onClick={convertSell}
+											>
+												<i class="fa fa-exchange fs-4"></i>
+											</button>
 										</div>
 										<button
 											type="button"
@@ -409,7 +388,7 @@ const CoinDetail = () => {
 									</form>
 								</div>
 								<div className={visibility.order}>
-									<Order />
+									<OrderCoin />
 								</div>
 							</div>
 						</div>

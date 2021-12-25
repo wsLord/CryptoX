@@ -10,10 +10,11 @@ import Portfolio from "../Portfolio/Portfolio";
 import Watchlist from "../WatchList/WatchList";
 import Transactions from "../Transactions/TransactionsList";
 import Referral from "../pages/Referral";
-import PaymentConfirmation from "../pages/PaymentConfirmation";
+import PaymentConfirmation from "../Confirmations/PaymentConfirmation";
 import ErrorPage from "../pages/ErrorPage";
 import AddMoneyDetails from "../Transactions/AddMoneyDetails";
 import BuySellDetails from "../Transactions/BuySellDetails";
+import BuySellConfirmation from "../Confirmations/BuySellConfirmation";
 import Exchange from "../Exchange/Exchange"
 import Settings from "../Settings/Settings";
 
@@ -39,7 +40,8 @@ const DashboardRouter = () => {
 				</Route>
 				<Route exact path="/transactions/add" render={(props) => <AddMoneyDetails {...props}/>} />
 				<Route exact path="/transactions/buysell" render={(props) => <BuySellDetails {...props}/>} />
-				<Route exact path="/payment" render={(props) => <PaymentConfirmation {...props}/>} />
+				<Route exact path="/confirm/payment" render={(props) => <PaymentConfirmation {...props}/>} />
+				<Route exact path="/confirm/buysell" render={(props) => <BuySellConfirmation {...props}/>} />
 				<Route exact path="/exchange">
 					<Exchange />
 				</Route>

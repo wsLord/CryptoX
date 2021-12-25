@@ -5,6 +5,7 @@ const CoinGeckoClient = new CoinGecko();
 const User = require("../../models/user");
 const Transaction = require("../../models/transaction");
 const buyCoinTransaction = require("../../models/transactions/buyCoin");
+const converter = require("../conversions");
 
 const buyQuantity = async (req, res, next) => {
 	const errors = validationResult(req);
@@ -145,6 +146,9 @@ const buyQuantity = async (req, res, next) => {
 			success: true,
 			message: "Transaction complete",
 			transactionID: transactionInstance.id,
+			quantity: converter.quantityToDecimalString(buyCoinTransactionInstance.quantity),
+			amount: converter.amountToDecimalString(buyCoinTransactionInstance.amount),
+			coinSymbol: coinData.symbol,
 		});
 	} catch (err) {
 		const error = new Error("Some error occured. Details: " + err.message);
@@ -164,7 +168,7 @@ const buyAmount = async (req, res, next) => {
 	const coinid = req.body.coinid;
 
 	// Amount in paise in BigInt
-	const amount = BigInt(req.body.amount * 100);
+	const amount = BigInt(parseFloat(req.body.amount).toFixed(2) * 100);
 
 	try {
 		const user = await User.findById(req.userData.id)
@@ -265,7 +269,7 @@ const buyAmount = async (req, res, next) => {
 		// coinIndex is -1 if not found
 		if (coinIndex >= 0) {
 			let newQuantity = oldQuantity + quantity;
-			let newAvgPrice = (oldAvgPrice * oldQuantity + cost) / newQuantity;
+			let newAvgPrice = (oldAvgPrice * oldQuantity + amount) / newQuantity;
 
 			portfolioOfUser.coinsOwned[coinIndex].quantity = newQuantity.toString();
 			portfolioOfUser.coinsOwned[coinIndex].priceOfBuy = newAvgPrice.toString();
@@ -285,6 +289,9 @@ const buyAmount = async (req, res, next) => {
 			success: true,
 			message: "Transaction complete",
 			transactionID: transactionInstance.id,
+			quantity: converter.quantityToDecimalString(buyCoinTransactionInstance.quantity),
+			amount: converter.amountToDecimalString(buyCoinTransactionInstance.amount),
+			coinSymbol: coinData.symbol,
 		});
 	} catch (err) {
 		const error = new Error("Some error occured. Details: " + err.message);
