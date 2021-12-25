@@ -8,7 +8,7 @@ import Overview from "./Overview";
 import Alert from "../shared/components/Alert";
 import AuthContext from "../store/authContext";
 import Logo from "../shared/img/icon.png";
-import LoadingSpinner from "../shared/components/UIElements/LoadingSpinner";
+import LoadingSpinner from "./loader";
 import BuyCoin from "./BuyCoin";
 import SellCoin from "./SellCoin";
 
@@ -94,7 +94,6 @@ const CoinDetail = () => {
 	useEffect(() => {
 		const fetchData = async () => {
 			setIsLoading(true);
-
 			try {
 				let { data: assetData } = await axios.get(
 					`${process.env.REACT_APP_SERVER_URL}/user/assets/${coinid}`,
@@ -129,6 +128,9 @@ const CoinDetail = () => {
 				console.log(err.response);
 				setError("Something went wrong!");
 			}
+			setTimeout(() => {
+				setIsLoading(false);
+			}, 2000);
 		};
 
 		fetchData();
@@ -181,125 +183,128 @@ const CoinDetail = () => {
 	return (
 		<Fragment>
 			{error && <Alert msg={error} onClose={clearError} />}
-			<div>
-				<div className="card m-3">
-					<div className="card-body d-flex justify-content-between">
-						<div className="title d-flex align-items-center">
-							<img className={Styles.logo} src={coinData.image.large} alt="" />
-							<h1>{coinData.name} </h1>
-							<p className="sym text-secondary h3">
-								{coinData.symbol.toUpperCase()}
-							</p>
-						</div>
-						{isInWatchList && (
-							<button
-								type="button"
-								className="btn btn-secondary"
-								onClick={removeFromWatchList}
-							>
-								<p className="fa fa-star h4"> Remove from Watchlist</p>
-							</button>
-						)}
-						{!isInWatchList && (
-							<button
-								type="button"
-								className="btn btn-outline-secondary"
-								onClick={addToWatchList}
-							>
-								<p className="fa fa-star-o h4"> Add to Watchlist</p>
-							</button>
-						)}
-					</div>
-				</div>
-				<div className="main m-3 p-1 d-flex justify-content-between">
-					<div className="card col-8" id={Styles.overview}>
-						<div className="card-header h3 text-start">Overview</div>
-						<div className="card-body">
-							<Overview
-								id={coinid}
-								coinData={isCoinDataLoaded ? coinData : null}
-							/>
-						</div>
-					</div>
-					<div className="col-4 p-10">
-						<div className="card">
-							<div className="card-header h3 text-start">Assets</div>
-							{assetData.isAvailable && (
-								<div className="card-body m-3">
-									<div className="d-flex justify-content-between">
-										<h4>Quantity Available:</h4>
-										<p className="text-secondary fs-4">
-											{assetData.quantity} {coinData.symbol.toUpperCase()}
-										</p>
-									</div>
-									<div className="d-flex justify-content-between">
-										<h4>Purchase Price:</h4>
-										<p className="text-secondary fs-4">
-											&#x20B9; {assetData.purchasePrice}
-										</p>
-									</div>
-									<div className="d-flex justify-content-between">
-										<h4>Profit/Loss:</h4>
-										<p className="text-secondary fs-4">
-											{assetData.changePercentage}%
-										</p>
-									</div>
-								</div>
+			{isLoading && <LoadingSpinner />}
+			{!isLoading &&
+				<div>
+					<div className="card m-3">
+						<div className="card-body d-flex justify-content-between">
+							<div className="title d-flex align-items-center">
+								<img className={Styles.logo} src={coinData.image.large} alt="" />
+								<h1>{coinData.name} </h1>
+								<p className="sym text-secondary h3">
+									{coinData.symbol.toUpperCase()}
+								</p>
+							</div>
+							{isInWatchList && (
+								<button
+									type="button"
+									className="btn btn-success"
+									onClick={removeFromWatchList}
+								>
+									<p className="fa fa-star h4"> Remove from Watchlist</p>
+								</button>
 							)}
-							{!assetData.isAvailable && (
-								<div className="card-body text-start">
-									<p className="text-dark h4">No Assets</p>
-
-									<p className="text-secondary fs-5">
-										Looks like there isn't any{" "}
-										<b>{coinData.symbol.toUpperCase()}</b> in your account yet.
-										<br />
-										CryptoX is the easiest place to get started.
-									</p>
-								</div>
+							{!isInWatchList && (
+								<button
+									type="button"
+									className="btn btn-outline-success"
+									onClick={addToWatchList}
+								>
+									<p className="fa fa-star-o h4"> Add to Watchlist</p>
+								</button>
 							)}
 						</div>
-						<div className="card" id={Styles.options}>
+					</div>
+					<div className="main m-3 p-1 d-flex justify-content-between">
+						<div className="card col-8" id={Styles.overview}>
+							<div className="card-header h3 text-start">Overview</div>
 							<div className="card-body">
-								<ul className="nav nav-tabs d-flex" id={Styles.tabs}>
-									<li className="nav-item h3">
-										<button className={modes.buy} onClick={onClickBuy}>
-											Buy
-										</button>
-									</li>
-									<li className="nav-item h3">
-										<button className={modes.sell} onClick={onClickSell}>
-											Sell
-										</button>
-									</li>
-									<li className="nav-item h3">
-										<button className={modes.order} onClick={onClickOrder}>
-											Order
-										</button>
-									</li>
-								</ul>
-								<div className={visibility.buy}>
-									<BuyCoin
-										walletBalance={walletBalance}
-										coinData={coinData}
-										onError={onError}
-									/>
-								</div>
-								<div className={visibility.sell}>
-									<SellCoin
-										walletBalance={walletBalance}
-										coinData={coinData}
-										onError={onError}
-									/>
-								</div>
-								<div className={visibility.order}>
-									<OrderCoin />
+								<Overview
+									id={coinid}
+									coinData={isCoinDataLoaded ? coinData : null}
+								/>
+							</div>
+						</div>
+						<div className="col-4 p-10">
+							<div className="card">
+								<div className="card-header h3 text-start">Assets</div>
+								{assetData.isAvailable && (
+									<div className="card-body m-3">
+										<div className="d-flex justify-content-between">
+											<h4>Quantity Available:</h4>
+											<p className="text-secondary fs-4">
+												{assetData.quantity} {coinData.symbol.toUpperCase()}
+											</p>
+										</div>
+										<div className="d-flex justify-content-between">
+											<h4>Purchase Price:</h4>
+											<p className="text-secondary fs-4">
+												&#x20B9; {assetData.purchasePrice}
+											</p>
+										</div>
+										<div className="d-flex justify-content-between">
+											<h4>Profit/Loss:</h4>
+											<p className="text-secondary fs-4">
+												{assetData.changePercentage}%
+											</p>
+										</div>
+									</div>
+								)}
+								{!assetData.isAvailable && (
+									<div className="card-body text-start">
+										<p className="text-dark h4">No Assets</p>
+
+										<p className="text-secondary fs-5">
+											Looks like there isn't any{" "}
+											<b>{coinData.symbol.toUpperCase()}</b> in your account yet.
+											<br />
+											CryptoX is the easiest place to get started.
+										</p>
+									</div>
+								)}
+							</div>
+							<div className="card" id={Styles.options}>
+								<div className="card-body">
+									<ul className="nav nav-tabs d-flex" id={Styles.tabs}>
+										<li className="nav-item h3">
+											<button className={modes.buy} onClick={onClickBuy}>
+												Buy
+											</button>
+										</li>
+										<li className="nav-item h3">
+											<button className={modes.sell} onClick={onClickSell}>
+												Sell
+											</button>
+										</li>
+										<li className="nav-item h3">
+											<button className={modes.order} onClick={onClickOrder}>
+												Order
+											</button>
+										</li>
+									</ul>
+									<div className={visibility.buy}>
+										<BuyCoin
+											walletBalance={walletBalance}
+											coinData={coinData}
+											onError={onError}
+										/>
+									</div>
+									<div className={visibility.sell}>
+										<SellCoin
+											walletBalance={walletBalance}
+											coinData={coinData}
+											onError={onError}
+										/>
+									</div>
+									<div className={visibility.order}>
+										<OrderCoin />
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
+			}
 		</Fragment>
 	);
 };
