@@ -29,6 +29,8 @@ const exchangePrice = async (req, res) => {
 		// });
 		// Price in Paise
         const Prices = {
+            coinId1:coinId1,
+            coinId2:coinId2,
             price1:coinData.market_data.current_price.inr,
             price2:coinData2.market_data.current_price.inr
         };
