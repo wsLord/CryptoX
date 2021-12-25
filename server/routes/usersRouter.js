@@ -9,7 +9,7 @@ const portfolio = require("../controllers/usersController/portfolio");
 const resetPassword = require("../controllers/usersController/resetPassword");
 const resetPasswordRequest = require("../controllers/usersController/resetPasswordRequest");
 const signup = require("../controllers/usersController/signup");
-
+const dailyReport = require("../controllers/usersController/DailyReport");
 const authVerify = require("../middlewares/authVerify");
 
 router.post(
@@ -52,5 +52,5 @@ router.get("/watchlist/remove/:id", watchListController.removeFromWatchList);
 router.get("/assets/:id", portfolio.getCoinAssetsData);
 router.get("/assets/report", portfolio.getReports);
 router.get("/assets", portfolio.getAssetsData);
-
+router.get("/dailyReport",dailyReport);
 module.exports = router;
