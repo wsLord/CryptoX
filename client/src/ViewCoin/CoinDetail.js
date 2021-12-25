@@ -42,6 +42,100 @@ const CoinDetail = () => {
 	});
 	const [isInWatchList, setIsInWatchList] = useState(true);
 
+	const [buyMode, setbuyMode] = useState({
+		inrValue: "",
+		coinValue: "",
+		inr: true,
+		coin: false
+	})
+	const handlebuyValue = (event) => {
+		if (buyMode.inr) {
+			setbuyMode({
+				inrValue: event.target.value,
+				coinValue: "",
+				inr: true,
+				coin: false
+			});
+		}
+		else {
+			setbuyMode({
+				inrValue: "",
+				coinValue: event.target.value,
+				inr: false,
+				coin: true
+			});
+		}
+	}
+
+	const convertBuy = () => {
+		const price = 12;   // set real price here peleanshu bhai
+		if (buyMode.inr) {
+			const coinvalue = buyMode.inrValue / price;
+			setbuyMode({
+				inrValue: "",
+				coinValue: coinvalue,
+				inr: false,
+				coin: true
+			});
+		}
+		else {
+			const inrvalue = buyMode.coinValue * price;
+			setbuyMode({
+				inrValue: inrvalue,
+				coinValue: "",
+				inr: true,
+				coin: false
+			});
+		}
+	}
+
+	const [sellMode, setsellMode] = useState({
+		inrValue: "",
+		coinValue: "",
+		inr: true,
+		coin: false
+	})
+	const handlesellValue = (event) => {
+		if (sellMode.inr) {
+			setsellMode({
+				inrValue: event.target.value,
+				coinValue: "",
+				inr: true,
+				coin: false
+			});
+		}
+		else {
+			setsellMode({
+				inrValue: "",
+				coinValue: event.target.value,
+				inr: false,
+				coin: true
+			});
+		}
+	}
+
+	const convertSell = () => {
+		const price = 12;   // set real price here peleanshu bhai
+		if (sellMode.inr) {
+			const coinvalue = sellMode.inrValue / price;
+			setsellMode({
+				inrValue: "",
+				coinValue: coinvalue,
+				inr: false,
+				coin: true
+			});
+		}
+		else {
+			const inrvalue = sellMode.coinValue * price;
+			setsellMode({
+				inrValue: inrvalue,
+				coinValue: "",
+				inr: true,
+				coin: false
+			});
+		}
+	}
+
 	useEffect(() => {
 		const fetchData = async () => {
 			setIsLoading(true);
@@ -158,7 +252,7 @@ const CoinDetail = () => {
 		}
 	};
 
-	const buyCoinHandler = async () => {};
+	const buyCoinHandler = async () => { };
 
 	const clearError = () => {
 		setError(null);
@@ -178,10 +272,10 @@ const CoinDetail = () => {
 						{isInWatchList && (
 							<button
 								type="button"
-								className="btn btn-outline-secondary"
+								className="btn btn-secondary"
 								onClick={removeFromWatchList}
 							>
-								<p className="fa fa-star-o h4"> Remove from Watchlist</p>
+								<p className="fa fa-star h4"> Remove from Watchlist</p>
 							</button>
 						)}
 						{!isInWatchList && (
@@ -199,35 +293,37 @@ const CoinDetail = () => {
 					<div className="card col-8" id={Styles.overview}>
 						<div className="card-header h3 text-start">Overview</div>
 						<div className="card-body">
-							<Overview coin={coinid} setCoinDetails={setCoinDetails}/>
+							<Overview coin={coinid} setCoinDetails={setCoinDetails} />
 						</div>
 					</div>
 					<div className="col-4 p-10">
 						<div className="card">
 							<div className="card-header h3 text-start">Assets</div>
 							{assetData.isAvailable && (
-								<div className="card-body">
-									<p className="text-secondary h3">
-										Quantity Available: {assetData.quantity}
-										{coinData.symbol}
-									</p>
-									<p className="text-secondary h3">
-										Purchase Price: &#x20B9; {assetData.purchasePrice}
-									</p>
-									<p className="text-secondary h3">
-										Profit/Loss: {assetData.changePercentage}%
-									</p>
+								<div className="card-body m-3">
+									<div className="d-flex justify-content-between">
+										<h4>Quantity Available:</h4>
+										<p className="text-secondary fs-4">{assetData.quantity} {coinData.symbol}</p>
+									</div>
+									<div className="d-flex justify-content-between">
+										<h4>Purchase Price:</h4>
+										<p className="text-secondary fs-4">&#x20B9; {assetData.purchasePrice}</p>
+									</div>
+									<div className="d-flex justify-content-between">
+										<h4>Profit/Loss:</h4>
+										<p className="text-secondary fs-4">{assetData.changePercentage}%</p>
+									</div>
 								</div>
 							)}
 							{!assetData.isAvailable && (
-								<div className="card-body">
-									<p className="text-secondary h3">No Assets</p>
+								<div className="card-body text-start">
+									<p className="text-dark h4">No Assets</p>
 
-									<p className="text-secondary h5">
-										Looks like there isn't any {coinData.symbol} in your
+									<p className="text-secondary fs-5">
+										Looks like there isn't any <b>{coinData.symbol}</b> in your
 										account yet.
 									</p>
-									<p className="text-secondary h5">
+									<p className="text-secondary fs-5">
 										CryptoX is the easiest place to get started.
 									</p>
 								</div>
@@ -257,50 +353,23 @@ const CoinDetail = () => {
 										Wallet Balance: &#x20B9; {walletBalance.Rupees}.
 										{walletBalance.Paise}
 									</p>
-									<form
-										className="d-flex flex-column"
-										action=""
-										method="get"
-										id={Styles.buyform}
-									>
-										<label
-											htmlFor="amount"
-											className="form-label h4 text-start"
-										>
-											Amount(&#x20B9;)
-										</label>
-										<div className="input-group mb-3">
-											<input
-												type="number"
-												className="form-control w-75"
-												id="amount"
-												min={100}
-											/>
-											<span className="input-group-text">
-												<p className="h6">.</p>
-											</span>
-											<input
-												type="number"
-												className="form-control"
-												id="decimal"
-												min={0}
-											/>
+									<form className="d-flex flex-column" action="" method="get" id={Styles.buyform} >
+										<div class="input-group mb-3">
+											{buyMode.inr &&
+												<>
+													<span class="input-group-text border-0 bg-white fs-3">&#x20B9;</span>
+													<input type="text" class="form-control border-0 fs-3" placeholder="INR" value={buyMode.inrValue} onChange={handlebuyValue} />
+												</>
+											}
+											{buyMode.coin &&
+												<>
+													<input type="text" class="form-control border-0 fs-3" placeholder={coinData.name} value={buyMode.coinValue} onChange={handlebuyValue} />
+													<span class="input-group-text border-0 bg-white fs-3">{coinData.symbol}</span>
+												</>
+											}
+											<button class="btn btn-outline-white" type="button" id="button-addon2" onClick={convertBuy}><i class="fa fa-exchange fs-4"></i></button>
 										</div>
-										<label htmlFor="coin" className="form-label h4 text-start">
-											Coins
-										</label>
-										<input
-											type="number"
-											className="form-control"
-											id="coin"
-											min={0}
-										/>
-										<button
-											type="button"
-											className="btn btn-success"
-											id={Styles.submit}
-											onClick={buyCoinHandler}
-										>
+										<button type="submit" className="btn btn-success" id={Styles.submit} onClick={buyCoinHandler}>
 											Buy {coinData.symbol}
 										</button>
 									</form>
@@ -315,27 +384,20 @@ const CoinDetail = () => {
 										method="get"
 										id={Styles.sellform}
 									>
-										<label htmlFor="coin" className="form-label h4 text-start">
-											Coins
-										</label>
-										<input
-											type="number"
-											className="form-control"
-											id="coin"
-											min={0}
-										/>
-										<label className="form-label h4 mt-3 text-start">
-											Eqivalent currency amount
-										</label>
-										<div className="input-group mb-3">
-											<span className="input-group-text">&#x20B9;</span>
-											<input
-												type="text"
-												className="form-control"
-												value={1233}
-												readOnly
-											/>
-											<span className="input-group-text">.56</span>
+										<div class="input-group mb-3">
+											{sellMode.inr &&
+												<>
+													<span class="input-group-text border-0 bg-white fs-3">&#x20B9;</span>
+													<input type="text" class="form-control border-0 fs-3" placeholder="INR" value={sellMode.inrValue} onChange={handlesellValue} />
+												</>
+											}
+											{sellMode.coin &&
+												<>
+													<input type="text" class="form-control border-0 fs-3" placeholder={coinData.name} value={sellMode.coinValue} onChange={handlesellValue} />
+													<span class="input-group-text border-0 bg-white fs-3">{coinData.symbol}</span>
+												</>
+											}
+											<button class="btn btn-outline-white" type="button" id="button-addon2" onClick={convertSell}><i class="fa fa-exchange fs-4"></i></button>
 										</div>
 										<button
 											type="button"
