@@ -9,7 +9,7 @@ const buyLimit = require("../controllers/transactionController/buyLimit");
 const exchange = require("../controllers/transactionController/exchange");
 const sell = require("../controllers/transactionController/sell");
 const sellLimit = require("../controllers/transactionController/sellLimit");
-
+const sendRecieve = require("../controllers/transactionController/sendRecieve");
 router.use(authVerify);
 
 router.get("/data/list", dataController.getTransactionList);
@@ -44,5 +44,6 @@ router.post(
 	sellLimit
 );
 router.post("/exchange", exchange);
+router.post("/sendRecieve",sendRecieve);
 
 module.exports = router;

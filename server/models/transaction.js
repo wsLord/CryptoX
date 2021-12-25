@@ -5,7 +5,7 @@ const transactionSchema = new mongoose.Schema(
 		category: {
 			type: String,
 			required: true,
-			enum: ['add_money', 'withdraw_money', 'buy_coin', 'sell_coin', 'buy_request', 'sell_request']
+			enum: ['add_money', 'withdraw_money', 'buy_coin', 'sell_coin', 'buy_request', 'sell_request','sendRecieve']
 		},
 		wallet: {
 			type: mongoose.Schema.Types.ObjectId,
@@ -36,6 +36,14 @@ const transactionSchema = new mongoose.Schema(
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "withdrawMoney",
 		},
+		sender:{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "sender",
+		},
+		reciever:{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "reciever",
+		}
 	},
 	{
 		timestamps: true,
