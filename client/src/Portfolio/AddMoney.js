@@ -47,7 +47,7 @@ const AddMoney = (props) => {
 				console.log("Payment Failed ", response.error.description);
 				// Show Payment Failed page with details
 				return history.push({
-					pathname: "/payment",
+					pathname: "/confirm/payment",
 					state: {
 						success: false,
 						...data,
@@ -83,7 +83,7 @@ const AddMoney = (props) => {
 			if (data.is_verified) {
 				// Success if verified
 				return history.push({
-					pathname: "/payment",
+					pathname: "/confirm/payment",
 					state: {
 						success: true,
 						...data,
@@ -92,7 +92,7 @@ const AddMoney = (props) => {
 			} else {
 				// Unverified Success if not verified
 				return history.push({
-					pathname: "/payment",
+					pathname: "/confirm/payment",
 					state: {
 						success: false,
 						...data,

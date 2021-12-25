@@ -7,14 +7,16 @@ const dataController = require("../controllers/transactionController/getData");
 const buyController = require("../controllers/transactionController/buy");
 const buyLimit = require("../controllers/transactionController/buyLimit");
 const exchange = require("../controllers/transactionController/exchange");
-const sell = require("../controllers/transactionController/sell");
+const sellController = require("../controllers/transactionController/sell");
 const sellLimit = require("../controllers/transactionController/sellLimit");
 
 router.use(authVerify);
 
+// Transaction Details
 router.get("/data/list", dataController.getTransactionList);
 router.post("/data", dataController.getTransactionData);
 
+// Buy Coin Normally
 router.post(
 	"/buy/quantity",
 	[check("quantity").not().isEmpty(), check("coinid").not().isEmpty()],
@@ -22,14 +24,22 @@ router.post(
 );
 router.post(
 	"/buy/amount",
-	[check("amount").isInt({ min: 100, max: 100000 }), check("coinid").not().isEmpty()],
+	[check("amount").isFloat({ min: 100, max: 100000 }), check("coinid").not().isEmpty()],
 	buyController.buyAmount
 );
+
+// Sell Coin Normally
 router.post(
-	"/sell",
+	"/sell/quantity",
 	[check("quantity").not().isEmpty(), check("coinid").not().isEmpty()],
-	sell
+	sellController.sellQuantity
 );
+router.post(
+	"/sell/amount",
+	[check("amount").isFloat({ min: 100, max: 100000 }), check("coinid").not().isEmpty()],
+	sellController.sellAmount
+);
+
 router.post(
 	"/buyLimit",
 	[

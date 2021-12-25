@@ -13,6 +13,7 @@ const getCoinAssetsData = async (req, res, next) => {
 	try {
 		let { data: coinData } = await CoinGeckoClient.coins.fetch(coinid, {
 			tickers: false,
+			market_data: true,
 			community_data: false,
 			developer_data: false,
 			sparkline: false,
@@ -24,30 +25,23 @@ const getCoinAssetsData = async (req, res, next) => {
 			return tcoin.coinid === coinid;
 		});
 
-		console.log(coinData.image);
-
 		if (!coinAsset) {
 			return res.status(201).json({
 				isAvailable: false,
-				coinName: coinData.name,
-				coinSymbol: coinData.symbol.toUpperCase(),
-				coinIcon: coinData.image.large,
+				coinData: coinData,
 				quantity: "0.00",
 			});
 		} else {
 			// Calculating change Percentage
 			let buyPrice = BigInt(coinAsset.priceOfBuy);
 			let changePercentage =
-				BigInt(
-					parseFloat(coinData.market_data.current_price.inr).toFixed(2) * 100
-				) - buyPrice;
+				BigInt(Math.trunc(coinData.market_data.current_price.inr * 100)) -
+				buyPrice;
 			changePercentage = Number((changePercentage * 10000n) / buyPrice) / 100;
 
 			return res.status(201).json({
 				isAvailable: true,
-				coinName: coinData.name,
-				coinSymbol: coinData.symbol.toUpperCase(),
-				coinIcon: coinData.image.large,
+				coinData: coinData,
 				quantity: converter.quantityToDecimalString(coinAsset.quantity),
 				purchasePrice: converter.amountToDecimalString(coinAsset.priceOfBuy),
 				changePercentage,
@@ -85,9 +79,8 @@ const getAssetsData = async (req, res, next) => {
 			// Calculating change Percentage
 			let buyPrice = BigInt(coinArray[index].priceOfBuy);
 			let changePercentage =
-				BigInt(
-					parseFloat(tcoinData.market_data.current_price.inr).toFixed(2) * 100
-				) - buyPrice;
+				BigInt(Math.trunc(tcoinData.market_data.current_price.inr * 100)) -
+				buyPrice;
 			changePercentage = Number((changePercentage * 10000n) / buyPrice) / 100;
 
 			tcoinData.sNo = sNo;
