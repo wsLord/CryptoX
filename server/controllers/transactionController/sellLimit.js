@@ -15,7 +15,7 @@ const sellLimit = async (req, res) => {
 			coinId: req.body.coinId,
 			from: user.wallet,
 			quantity: quantity.toString(),
-			mode: "1",
+			mode: req.body.mode,
 			minPrice: minpri.toString(),
 			portfolioId:user.portfolio,
 		});

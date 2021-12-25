@@ -8,77 +8,30 @@ const buyRequest = require('../models/transactions/buyRequest');
 const sellRequest = require('../models/transactions/sellRequest');
 const buyCoinTransaction = require("../models/transactions/buyCoin");
 const sellCoinTransaction = require("../models/transactions/sellCoin");
+// export {queue};
+const {
+    PriorityQueue,
+    MinPriorityQueue,
+    MaxPriorityQueue
+  } = require('@datastructures-js/priority-queue');
+  let count =0;
+  let queue = new PriorityQueue({ compare: function(a, b) { return b - a; }});
+  exports.queue;
+module.exports.entryBuyRequest=async(newRequestId)=>{
+    console.log(newRequestId);
+    queue.enqueue(7);
+}
 const executeOrders=async(coinData)=>{
-    for(a of coinData){
-        let buyReqs =await buyRequest.find({
-            coinId:a.id,
-            // maxPrice:{$gte:a.price}
-        })
-        let price=BigInt(a.price*10000000);
-        buyReqs.forEach(async (buyReq)=>{
-            let WalletOfUser=await Wallet.findById(buyReq.from);//finding wallet
-            if(BigInt(buyReq.quantity)*price<=BigInt(WalletOfUser.balance)){//if sufficient balance in wallet
-                try{
-                    //complete the transaction
-                    let transac = await Transaction.create({
-                        category: 'buy',
-                        walletId: buyRed.from,
-                        quantity: buyReq.quantity,
-                        price:price.toString(),
-                        // user:user._id,
-                        // portfolioId:portfolioOfUser._id,
-                        coinId:buyReq.coinId
-            
-                    });
-                    let quantity = BigInt(buyReq.quantity)
-                    let newBalance = BigInt(WalletOfUser.balance)-BigInt(buyReq.quantity)*price;
-                    WalletOfUser.balance=newBalance.toString();
-                    await WalletOfUser.save();//balance updated in wallet update
-                    
-                    let portfolioOfUser=await Portfolio.findById(buyReq.portfolioId);
-                    var quantityBought;
-                    var avgPrice;
-                    var index;
-                    for(coin of portfolioOfUser.coinsOwned){
-                        if(coin.coidId==coinId){
-                            quantityBought=coins.quantity;
-                            avgPrice=a.priceOfBuy;
-                            index=portfolioOfUser.coinsOwned.findIndex(coin);
-                        }
-                    }
-                    if(index){
-                        portfolioOfUser.coinsOwned.slice(index, 1);
-                        let newAvgPrice=(avgPrice*quantityBought+price*quantity)/(quantityBought+quantity);
-                        let newQuantity=quantityBought+quantity;
-                        portfolioOfUser.coinsOwned.push({
-                            coidId: coinId,
-                            quantity: newQuantity.toString(),
-                            priceOfBuy:newAvgPrice.toString()
-                        })
-                    }
-                    else{
-                        portfolioOfUser.coinsOwned.push({
-                            coidId: coinId,
-                            quantity: quantity.toString(),
-                            priceOfBuy:price.toString()
-                        })
-                    }
-                    await portfolioOfUser.save()//portfolio is updated
-                    buyReq.remove();
-                }
-                catch(err) {
-                    console.log('error',err);
-                }
-            }
-            else{
-
-            }
-            
-        })
-
-    }
+    
+   
+    queue.enqueue(5);
+    queue.enqueue(3);
+    queue.enqueue(2);
+    var lowest = queue.front(); // returns 5
+    console.log(lowest,count++);
 }
 const executeOrders2 = async (coin)=>{
+    
     try{
 
         let currentPrice=BigInt(Math.floor(coin.current_price*100));
@@ -298,6 +251,7 @@ module.exports.checkLimitBuy=async()=>{
         for(coin of coinData.data){
         executeOrders2(coin);
         executeOrders3(coin);
+        // executeOrders();
         }
     });
 }

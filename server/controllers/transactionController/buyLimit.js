@@ -1,6 +1,11 @@
 const User = require("../../models/user");
 const BuyRequest = require("../../models/transactions/buyRequest");
-
+const mySchedule = require("../../recurringJobs/transaction");
+const {
+    PriorityQueue,
+    MinPriorityQueue,
+    MaxPriorityQueue
+  } = require('@datastructures-js/priority-queue');
 const buyLimit = async (req, res) => {
 	
 	if (!req.userData) {
@@ -15,10 +20,12 @@ const buyLimit = async (req, res) => {
 			coinId: req.body.coinId,
 			from: user.wallet,
 			quantity: quantity.toString(),
-			mode: "1",
+			mode: req.body.mode,
 			maxPrice: maxpri.toString(),
 			portfolioId: user.portfolio,
 		});
+		console.log(mySchedule);
+		mySchedule.entryBuyRequest(newRequest.id);
 
 		return res.status(200).json('buyLimit order registered');
 		

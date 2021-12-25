@@ -13,12 +13,14 @@
     "nodemon": "^2.0.13"
   },
   "dependencies": {
+    "@datastructures-js/priority-queue": "^5.3.0",
     "axios": "^0.23.0",
     "bcryptjs": "^2.4.3",
     "coingecko-api": "^1.0.10",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "express-validator": "^6.13.0",
+    "js-priority-queue": "^0.1.5",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.0.11",
     "node-schedule": "^2.0.0",
