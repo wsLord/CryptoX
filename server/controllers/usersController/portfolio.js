@@ -35,9 +35,8 @@ const getCoinAssetsData = async (req, res, next) => {
 			// Calculating change Percentage
 			let buyPrice = BigInt(coinAsset.priceOfBuy);
 			let changePercentage =
-				BigInt(
-					parseFloat(coinData.market_data.current_price.inr).toFixed(2) * 100
-				) - buyPrice;
+				BigInt(Math.trunc(coinData.market_data.current_price.inr * 100)) -
+				buyPrice;
 			changePercentage = Number((changePercentage * 10000n) / buyPrice) / 100;
 
 			return res.status(201).json({
@@ -80,9 +79,8 @@ const getAssetsData = async (req, res, next) => {
 			// Calculating change Percentage
 			let buyPrice = BigInt(coinArray[index].priceOfBuy);
 			let changePercentage =
-				BigInt(
-					parseFloat(tcoinData.market_data.current_price.inr).toFixed(2) * 100
-				) - buyPrice;
+				BigInt(Math.trunc(tcoinData.market_data.current_price.inr * 100)) -
+				buyPrice;
 			changePercentage = Number((changePercentage * 10000n) / buyPrice) / 100;
 
 			tcoinData.sNo = sNo;

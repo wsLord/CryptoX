@@ -10,7 +10,7 @@ const amountToRupeesPaise = (amt) => {
 };
 
 const marketPriceToRupeesPaise = (price) => {
-	price = parseFloat(price).toFixed(2) * 100;
+	price = Math.trunc(price * 100);
 	price = price.toString();
 
 	return {

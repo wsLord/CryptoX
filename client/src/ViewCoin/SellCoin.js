@@ -5,27 +5,27 @@ import axios from "axios";
 import Styles from "./CoinDetail.module.css";
 import AuthContext from "../store/authContext";
 
-const BuyCoin = ({ coinData, walletBalance, onError }) => {
+const SellCoin = ({ coinData, walletBalance, onError }) => {
 	const ctx = useContext(AuthContext);
 	const history = useHistory();
 
-	const [buyMode, setBuyMode] = useState({
+	const [sellMode, setSellMode] = useState({
 		inrValue: "0",
 		coinValue: "0",
 		inr: true,
 		coin: false,
 	});
 
-	const onClickBuyValue = (event) => {
-		if (buyMode.inr) {
-			setBuyMode({
+	const onClickSellValue = (event) => {
+		if (sellMode.inr) {
+			setSellMode({
 				inrValue: event.target.value,
 				coinValue: "",
 				inr: true,
 				coin: false,
 			});
 		} else {
-			setBuyMode({
+			setSellMode({
 				inrValue: "",
 				coinValue: event.target.value,
 				inr: false,
@@ -34,24 +34,24 @@ const BuyCoin = ({ coinData, walletBalance, onError }) => {
 		}
 	};
 
-	const convertBuy = () => {
+	const convertSell = () => {
 		const price = coinData.market_data.current_price.inr;
-		if (buyMode.inr) {
-			const coinvalue = buyMode.inrValue / price;
-			setBuyMode((oldBuyMode) => {
+		if (sellMode.inr) {
+			const coinvalue = sellMode.inrValue / price;
+			setSellMode((oldSellMode) => {
 				return {
-					inrValue: oldBuyMode.inrValue,
+					inrValue: oldSellMode.inrValue,
 					coinValue: coinvalue,
 					inr: false,
 					coin: true,
 				};
 			});
 		} else {
-			const inrvalue = buyMode.coinValue * price;
-			setBuyMode((oldBuyMode) => {
+			const inrvalue = sellMode.coinValue * price;
+			setSellMode((oldSellMode) => {
 				return {
 					inrValue: inrvalue,
-					coinValue: oldBuyMode.coinValue,
+					coinValue: oldSellMode.coinValue,
 					inr: true,
 					coin: false,
 				};
@@ -59,15 +59,17 @@ const BuyCoin = ({ coinData, walletBalance, onError }) => {
 		}
 	};
 
-	const buyCoinHandler = async (event) => {
+	const sellCoinHandler = async (event) => {
 		event.preventDefault();
+
+		console.log("calle");
 		try {
 			let data;
-			if (buyMode.inr) {
+			if (sellMode.inr) {
 				const res = await axios.post(
-					`${process.env.REACT_APP_SERVER_URL}/transaction/buy/amount`,
+					`${process.env.REACT_APP_SERVER_URL}/transaction/sell/amount`,
 					{
-						amount: buyMode.inrValue,
+						amount: sellMode.inrValue,
 						coinid: coinData.id,
 					},
 					{
@@ -80,9 +82,9 @@ const BuyCoin = ({ coinData, walletBalance, onError }) => {
 				data = res.data;
 			} else {
 				const res = await axios.post(
-					`${process.env.REACT_APP_SERVER_URL}/transaction/buy/quantity`,
+					`${process.env.REACT_APP_SERVER_URL}/transaction/sell/quantity`,
 					{
-						quantity: buyMode.coinValue,
+						quantity: sellMode.coinValue,
 						coinid: coinData.id,
 					},
 					{
@@ -112,18 +114,16 @@ const BuyCoin = ({ coinData, walletBalance, onError }) => {
 
 	return (
 		<Fragment>
-			<p className="text-end text-primary">
-				Wallet Balance: &#x20B9; {walletBalance.Rupees}.{walletBalance.Paise}
-			</p>
+			<p className="text-end text-primary">Available 100 BTC in Assets</p>
 			<form
 				className="d-flex flex-column"
 				action=""
 				method="get"
-				id={Styles.buyform}
-				onSubmit={buyCoinHandler}
+				id={Styles.sellform}
+				onSubmit={sellCoinHandler}
 			>
 				<div class="input-group mb-3">
-					{buyMode.inr && (
+					{sellMode.inr && (
 						<>
 							<span class="input-group-text border-0 bg-white fs-3">
 								&#x20B9;
@@ -132,19 +132,19 @@ const BuyCoin = ({ coinData, walletBalance, onError }) => {
 								type="text"
 								class="form-control border-0 fs-3"
 								placeholder="INR"
-								value={buyMode.inrValue}
-								onChange={onClickBuyValue}
+								value={sellMode.inrValue}
+								onChange={onClickSellValue}
 							/>
 						</>
 					)}
-					{buyMode.coin && (
+					{sellMode.coin && (
 						<>
 							<input
 								type="text"
 								class="form-control border-0 fs-3"
 								placeholder={coinData.name}
-								value={buyMode.coinValue}
-								onChange={onClickBuyValue}
+								value={sellMode.coinValue}
+								onChange={onClickSellValue}
 							/>
 							<span class="input-group-text border-0 bg-white fs-3">
 								{coinData.symbol.toUpperCase()}
@@ -155,21 +155,17 @@ const BuyCoin = ({ coinData, walletBalance, onError }) => {
 						class="btn btn-outline-white"
 						type="button"
 						id="button-addon2"
-						onClick={convertBuy}
+						onClick={convertSell}
 					>
 						<i class="fa fa-exchange fs-4"></i>
 					</button>
 				</div>
-				<button
-					type="submit"
-					className="btn btn-success"
-					id={Styles.submit}
-				>
-					Buy {coinData.symbol.toUpperCase()}
+				<button type="submit" className="btn btn-success" id={Styles.submit}>
+					Sell BTC
 				</button>
 			</form>
 		</Fragment>
 	);
 };
 
-export default BuyCoin;
+export default SellCoin;

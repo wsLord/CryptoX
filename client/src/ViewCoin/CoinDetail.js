@@ -10,6 +10,7 @@ import AuthContext from "../store/authContext";
 import Logo from "../shared/img/icon.png";
 import LoadingSpinner from "../shared/components/UIElements/LoadingSpinner";
 import BuyCoin from "./BuyCoin";
+import SellCoin from "./SellCoin";
 
 const CoinDetail = () => {
 	const ctx = useContext(AuthContext);
@@ -26,13 +27,6 @@ const CoinDetail = () => {
 		buy: "d-block",
 		sell: "d-none",
 		order: "d-none",
-	});
-
-	const [sellMode, setSellMode] = useState({
-		inrValue: "",
-		coinValue: "",
-		inr: true,
-		coin: false,
 	});
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -59,23 +53,6 @@ const CoinDetail = () => {
 	const [isInWatchList, setIsInWatchList] = useState(true);
 
 	// UI Functions
-	const onClickSellValue = (event) => {
-		if (sellMode.inr) {
-			setSellMode({
-				inrValue: event.target.value,
-				coinValue: "",
-				inr: true,
-				coin: false,
-			});
-		} else {
-			setSellMode({
-				inrValue: "",
-				coinValue: event.target.value,
-				inr: false,
-				coin: true,
-			});
-		}
-	};
 	const onClickBuy = () => {
 		setModes({
 			buy: "nav-link active",
@@ -158,28 +135,6 @@ const CoinDetail = () => {
 	}, [ctx, coinid]);
 
 	// Data Handling Functions
-
-	const convertSell = () => {
-		const price = coinData.market_data.current_price.inr;
-		if (sellMode.inr) {
-			const coinvalue = sellMode.inrValue / price;
-			setSellMode({
-				inrValue: "",
-				coinValue: coinvalue,
-				inr: false,
-				coin: true,
-			});
-		} else {
-			const inrvalue = sellMode.coinValue * price;
-			setSellMode({
-				inrValue: inrvalue,
-				coinValue: "",
-				inr: true,
-				coin: false,
-			});
-		}
-	};
-
 	const addToWatchList = async () => {
 		try {
 			const res = await axios.get(
@@ -331,61 +286,11 @@ const CoinDetail = () => {
 									/>
 								</div>
 								<div className={visibility.sell}>
-									<p className="text-end text-primary">
-										Available 100 BTC in Assets
-									</p>
-									<form
-										className="d-flex flex-column"
-										action=""
-										method="get"
-										id={Styles.sellform}
-									>
-										<div class="input-group mb-3">
-											{sellMode.inr && (
-												<>
-													<span class="input-group-text border-0 bg-white fs-3">
-														&#x20B9;
-													</span>
-													<input
-														type="text"
-														class="form-control border-0 fs-3"
-														placeholder="INR"
-														value={sellMode.inrValue}
-														onChange={onClickSellValue}
-													/>
-												</>
-											)}
-											{sellMode.coin && (
-												<>
-													<input
-														type="text"
-														class="form-control border-0 fs-3"
-														placeholder={coinData.name}
-														value={sellMode.coinValue}
-														onChange={onClickSellValue}
-													/>
-													<span class="input-group-text border-0 bg-white fs-3">
-														{coinData.symbol.toUpperCase()}
-													</span>
-												</>
-											)}
-											<button
-												class="btn btn-outline-white"
-												type="button"
-												id="button-addon2"
-												onClick={convertSell}
-											>
-												<i class="fa fa-exchange fs-4"></i>
-											</button>
-										</div>
-										<button
-											type="button"
-											className="btn btn-success"
-											id={Styles.submit}
-										>
-											Sell BTC
-										</button>
-									</form>
+									<SellCoin
+										walletBalance={walletBalance}
+										coinData={coinData}
+										onError={onError}
+									/>
 								</div>
 								<div className={visibility.order}>
 									<OrderCoin />

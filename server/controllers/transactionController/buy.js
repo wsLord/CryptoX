@@ -18,7 +18,7 @@ const buyQuantity = async (req, res, next) => {
 	const coinid = req.body.coinid;
 
 	// Quantity precise to 7 places
-	const quantity = BigInt(parseFloat(req.body.quantity).toFixed(7) * 10000000);
+	const quantity = BigInt(Math.trunc(req.body.quantity * 10000000));
 
 	try {
 		const user = await User.findById(req.userData.id)
@@ -35,7 +35,7 @@ const buyQuantity = async (req, res, next) => {
 
 		// Price in Paise
 		const price = BigInt(
-			parseFloat(coinData.market_data.current_price.inr).toFixed(2) * 100
+			Math.trunc(coinData.market_data.current_price.inr * 100)
 		);
 
 		const walletOfUser = user.wallet;
@@ -146,8 +146,12 @@ const buyQuantity = async (req, res, next) => {
 			success: true,
 			message: "Transaction complete",
 			transactionID: transactionInstance.id,
-			quantity: converter.quantityToDecimalString(buyCoinTransactionInstance.quantity),
-			amount: converter.amountToDecimalString(buyCoinTransactionInstance.amount),
+			quantity: converter.quantityToDecimalString(
+				buyCoinTransactionInstance.quantity
+			),
+			amount: converter.amountToDecimalString(
+				buyCoinTransactionInstance.amount
+			),
 			coinSymbol: coinData.symbol,
 		});
 	} catch (err) {
@@ -168,7 +172,7 @@ const buyAmount = async (req, res, next) => {
 	const coinid = req.body.coinid;
 
 	// Amount in paise in BigInt
-	const amount = BigInt(parseFloat(req.body.amount).toFixed(2) * 100);
+	const amount = BigInt(Math.trunc(req.body.amount * 100));
 
 	try {
 		const user = await User.findById(req.userData.id)
@@ -185,7 +189,7 @@ const buyAmount = async (req, res, next) => {
 
 		// Price in Paise
 		const price = BigInt(
-			parseFloat(coinData.market_data.current_price.inr).toFixed(2) * 100
+			Math.trunc(coinData.market_data.current_price.inr * 100)
 		);
 
 		const walletOfUser = user.wallet;
@@ -289,8 +293,12 @@ const buyAmount = async (req, res, next) => {
 			success: true,
 			message: "Transaction complete",
 			transactionID: transactionInstance.id,
-			quantity: converter.quantityToDecimalString(buyCoinTransactionInstance.quantity),
-			amount: converter.amountToDecimalString(buyCoinTransactionInstance.amount),
+			quantity: converter.quantityToDecimalString(
+				buyCoinTransactionInstance.quantity
+			),
+			amount: converter.amountToDecimalString(
+				buyCoinTransactionInstance.amount
+			),
 			coinSymbol: coinData.symbol,
 		});
 	} catch (err) {
