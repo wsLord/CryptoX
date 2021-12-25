@@ -6,6 +6,10 @@ export default function Send() {
     const [Limit, setLimit] = useState(0)
     const [Selected, setSelected] = useState("");
 
+    const [verifyState, setverifyState] = useState("verify")
+    const [email, setEmail] = useState("");
+    const [user,setUser] = useState("");
+
     const handleSelect = (event) => {
         const selected = event.target.value;
         setSelected(selected);
@@ -15,7 +19,21 @@ export default function Send() {
             }
         });
     }
+    const handleEmail = (event) => {
+        setEmail(event.target.value);
+        setverifyState("verify");
+    }
+    const verifyUser = () => {
 
+        // //verify email here
+
+        // //set if verified
+        // setverifyState("verified"); 
+        // setUser("Sanskar Jain");
+
+        // //set if invalid
+        setverifyState("invalid");
+    }
     return (
         <div>
             <form className="d-flex m-5 flex-column align-items-start" action="">
@@ -36,8 +54,23 @@ export default function Send() {
                 </div>
                 <div className="input-group mt-3 fs-3">
                     <span className="input-group-text fs-4 bg-white" id="basic-addon3">To</span>
-                    <input type="email" className="form-control" id="email" placeholder="Email ID" required />
+                    <input type="email" className="form-control" id="email" placeholder="Email ID" value={email} onChange={handleEmail} required />
+                    {verifyState === "verify" &&
+                        <button class="btn btn-link fs-5" type="button" id="button-addon2" onClick={verifyUser}>Verify</button>
+                    }
+                    {verifyState === "verified" &&
+                        <button class="btn btn-link" type="button" id="button-addon2" onClick={verifyUser}><i class="fa fa-check-circle text-success fs-4"></i></button>
+                    }
+                    {verifyState === "invalid" &&
+                        <button class="btn btn-link" type="button" id="button-addon2" onClick={verifyUser}><i class="fa fa-times-circle text-danger fs-4"></i></button>
+                    }
                 </div>
+                {verifyState === "verified" &&
+                    <p className="text-success">* User Name : {user}</p>
+                }
+                {verifyState === "invalid" &&
+                    <p className="text-danger">* No user regiested with given email ID</p>
+                }
                 <div className="input-group mt-3 fs-3">
                     <span className="input-group-text fs-4 bg-white" id="basic-addon3">Note</span>
                     <textarea className="form-control" id="msg" placeholder="Optional message" />

@@ -16,11 +16,6 @@ const Overview = ({ id, coinData }) => {
 	const [change, setChange] = useState(
 		coinData ? coinData.market_data.price_change_percentage_24h : 0
 	);
-	// const [coinData, setCoinData] = useState(null);
-	// // {
-	// // 	data: {},
-	// // 	flag: false,
-	// // });
 	const [mode, setMode] = useState({
 		y: active,
 		m: unactive,
@@ -123,9 +118,7 @@ const Overview = ({ id, coinData }) => {
 					{coinData && (
 						<span className={Styles.size}>
 							&#x20B9;
-							{parseFloat(coinData.market_data.current_price.inr).toFixed(
-								2
-							)}{" "}
+							{parseFloat(coinData.market_data.current_price.inr).toFixed(2)}
 						</span>
 					)}
 					{change > 0 && <span className="text-success h3">({change}%)</span>}

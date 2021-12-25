@@ -81,6 +81,10 @@ const Portfolio = () => {
 		setError(null);
 	};
 	const ref = React.createRef();
+	const options = {
+		orientation: 'landscape',
+		unit: 'in'
+	};
 	return (
 		<Fragment>
 			{error && <Alert msg={error} onClose={clearAlert} />}
@@ -138,7 +142,7 @@ const Portfolio = () => {
 							<h3>Daily Report</h3>
 						</div>
 						<div className="card-body">
-							<Pdf targetRef={ref} filename="daily_report.pdf">
+							<Pdf targetRef={ref} filename="daily_report.pdf" options={options}>
 								{({ toPdf }) => <button onClick={toPdf} className='btn btn-success mt-3'><i class="fa fa-file-pdf-o fs-5"></i> Generate pdf</button>}
 							</Pdf>
 						</div>
