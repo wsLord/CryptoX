@@ -17,6 +17,7 @@ import BuySellDetails from "../Transactions/BuySellDetails";
 import BuySellConfirmation from "../Confirmations/BuySellConfirmation";
 import Exchange from "../Exchange/Exchange"
 import Settings from "../Settings/Settings";
+import Orders from "../Orders/OrdersList";
 
 const DashboardRouter = () => {
 	return (
@@ -40,6 +41,9 @@ const DashboardRouter = () => {
 				</Route>
 				<Route exact path="/transactions/add" render={(props) => <AddMoneyDetails {...props}/>} />
 				<Route exact path="/transactions/buysell" render={(props) => <BuySellDetails {...props}/>} />
+				<Route exact path="/orders">
+					<Orders />
+				</Route>
 				<Route exact path="/confirm/payment" render={(props) => <PaymentConfirmation {...props}/>} />
 				<Route exact path="/confirm/buysell" render={(props) => <BuySellConfirmation {...props}/>} />
 				<Route exact path="/exchange">
