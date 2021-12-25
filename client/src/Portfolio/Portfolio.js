@@ -8,6 +8,7 @@ import Transactionimg from "../shared/img/Transaction.png";
 import AddMoney from "./AddMoney";
 import Withdraw from "./Withdraw";
 import Transaction from "./Transaction";
+import DailyReport from "./DailyReport";
 import Assets from "./Assets";
 import Alert from "../shared/components/Alert";
 import AuthContext from "../store/authContext";
@@ -137,10 +138,7 @@ const Portfolio = () => {
 							<h3>Daily Report</h3>
 						</div>
 						<div className="card-body">
-							<span className="placeholder col-12"></span>
-							<span className="placeholder col-12"></span>
-							<span className="placeholder col-12"></span>
-							<span className="placeholder col-12"></span>
+							<DailyReport/>
 						</div>
 					</div>
 				</div>
