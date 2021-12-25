@@ -16,7 +16,11 @@ const exchangeSchema=new mongoose.Schema({
         type: String,
         required: true,
     },
-    price: {
+    price1: {
+        type: String,
+        required: true,
+    },
+    price2: {
         type: String,
         required: true,
     },

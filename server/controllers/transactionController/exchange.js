@@ -4,8 +4,7 @@ const Portfolio = require("../../models/portfolio");
 const Exchange = require("../../models/transactions/exchange");
 const CoinGecko = require("coingecko-api");
 const CoinGeckoClient = new CoinGecko();
-const senderTransaction = require("../../models/transactions/sender");
-const recieverTransaction = require("../../models/transactions/reciever");
+const exchangeTransaction = require("../../models/transactions/exchange");
 const Transaction = require("../../models/transaction");
 const exchange = async (req, res,next) => {
     try{
@@ -14,10 +13,10 @@ const exchange = async (req, res,next) => {
         
         //needed values in req.body
         let {coinId1,coinId2,quantityToExchange} = req.body;
-        quantityToExchange = BigInt(parseFloat(req.body.quantityToExchange).toFixed(7) * 10000000);
+        quantityToExchange = BigInt(Math.floor(parseFloat(req.body.quantityToExchange).toFixed(7) * 10000000));
         
         //Finding the Users
-        const User = await User.findById(req.userData.id)
+        const user = await User.findById(req.userData.id)
         .populate("wallet")
         .populate("portfolio")
         .exec();
@@ -44,20 +43,20 @@ const exchange = async (req, res,next) => {
         const currentPrice1 = BigInt(
 			parseFloat(coinData.market_data.current_price.inr).toFixed(2) * 100
 		);
-		const currentPrice2 = BigInt(
+		const currentPrice2 = BigInt(Math.floor(
 			parseFloat(coinData2.market_data.current_price.inr).toFixed(2) * 100
-		);
+		));
 
         //wallets and portfolio of user
-        const walletOfUser = userSendingCoin.wallet;
-		const portfolioOfUser = userSendingCoin.portfolio;
+        const walletOfUser = user.wallet;
+		const portfolioOfUser = user.portfolio;
         
         
-        let tcost = currentPrice * quantityToExchange;
+        let tcost = currentPrice1 * quantityToExchange;
 		tcost = tcost.toString();
 
         //Making sure the cost is atleast greater than the charge
-        // console.log(currentPrice,BigInt(tcost),ChargeOfTransaction);
+        console.log(currentPrice1,BigInt(tcost),ChargeOfTransaction);
         if(BigInt(tcost)<=ChargeOfTransaction){
             const error = new Error(
 				"TRANSACTION DECLINED! Cost must be atleast Re. 200"
@@ -86,44 +85,38 @@ const exchange = async (req, res,next) => {
         
         //Creating Transaction Instance
         let transactionInstance = await Transaction.create({
-			category: "sendRecieve",
-			wallet: walletOfSender.id,
-			sender: null,
-            reciever: null
+			category: "exchange",
+			wallet: walletOfUser.id,
+			exchange: null
 		});
         
         
         // Creating Sender And Reciever Transaction Instance
-		let senTrans = await senderTransaction.create({
-			wallet: walletOfSender.id,
-			coinid: coinId,
+		let excTrans = await exchangeTransaction.create({
+			wallet: walletOfUser.id,
+			coinid1: coinId1,
+			coinid2: coinId2,
 			amount: cost.toString(),
-			price: currentPrice.toString(),
-			quantitySent: quantityToExchange.toString(),
+			price1: currentPrice1.toString(),
+			price2: currentPrice2.toString(),
+			quantitySendForExchange: quantityToExchange.toString(),
+			quantityRecieved:quantityRecievedByUser.toString(),
             chargedQuantity:quantityRecievedByAdmin.toString(),
             chargedMoney:charge,
 			status: "PENDING",
 		});
-        let recTrans = await recieverTransaction.create({
-			wallet: walletOfReciever.id,
-			coinid: coinId,
-			amount: recMon,
-			price: currentPrice.toString(),
-			quantityRecieved:quantityRecievedByReciever.toString(),
-			status: "PENDING",
-		});
+        
         
         //Linking Sender and Reciever to Transaction Instance
-        transactionInstance.sender = senTrans.id;
-        transactionInstance.reciever = recTrans.id;
-        transactionInstance.save();
+        transactionInstance.exchange = excTrans.id;
+		transactionInstance.save();
 
         // Checking if coin is already existent in Portfolio and getting its index
         let oldQuantity;
 		let avgPrice;
 		
-		let coinIndex = portfolioOfSender.coinsOwned.findIndex((tcoin) => {
-			if (tcoin.coinid === coinId) {
+		let coinIndex = portfolioOfUser.coinsOwned.findIndex((tcoin) => {
+			if (tcoin.coinid === coinId1) {
 				oldQuantity = BigInt(tcoin.quantity);
 				avgPrice = BigInt(tcoin.priceOfBuy);
 				return true;
@@ -136,13 +129,10 @@ const exchange = async (req, res,next) => {
         // console.log(BigInt(oldQuantity),quantityToSend);
         if (coinIndex === -1 || BigInt(oldQuantity)<quantityToExchange) {
 
-            senTrans.status = 'FAILED';
-            senTrans.statusMessage = 'Insufficient Coins in Assets Of Sender';
-            await senTrans.save();
+            excTrans.status = 'FAILED';
+            excTrans.statusMessage = 'Insufficient Coins in Assets Of User';
+            await excTrans.save();
 
-            recTrans.status = 'FAILED';
-            recTrans.statusMessage = 'Insufficient Coins in Assets of Sender';
-            await recTrans.save();
 
 			const error = new Error("TRANSACTION DECLINED! Quantity of coin is Not Sufficient");
 			error.code = 405;
@@ -153,22 +143,22 @@ const exchange = async (req, res,next) => {
         //Now transaction is possible
 
 
-        //Updating Portfolio of Sender
+        //Updating Portfolio of User
         
-        portfolioOfSender.coinsOwned.splice(coinIndex, 1);
+        portfolioOfUser.coinsOwned.splice(coinIndex, 1);
 		let newQuantity = oldQuantity - quantityToExchange;
 		if (newQuantity > 0n) {
-			portfolioOfSender.coinsOwned.push({
-				coinid: coinId,
+			portfolioOfUser.coinsOwned.push({
+				coinid: coinId1,
 				quantity: newQuantity.toString(),
 				priceOfBuy: avgPrice,
 			});
 		}
-		await portfolioOfSender.save();
+		await portfolioOfUser.save();
 
-        //Updating portfolio of Recievers
-        coinIndex = portfolioOfReciever.coinsOwned.findIndex((tcoin) => {
-			if (tcoin.coinid === coinId) {
+        //Updating portfolio of User while recieving
+        coinIndex = portfolioOfUser.coinsOwned.findIndex((tcoin) => {
+			if (tcoin.coinid === coinId2) {
 				oldQuantity = BigInt(tcoin.quantity);
 				oldAvgPrice = BigInt(tcoin.priceOfBuy);
 				return true;
@@ -179,24 +169,24 @@ const exchange = async (req, res,next) => {
 		// coinIndex is -1 if not found
         
 		if (coinIndex >= 0) {
-			let newQuantity = oldQuantity + quantityRecievedByReciever;
+			let newQuantity = oldQuantity + quantityRecievedByUser;
 			let newAvgPrice = ((oldAvgPrice * oldQuantity) + ttcost) / newQuantity;
 
-			portfolioOfReciever.coinsOwned[coinIndex].quantity = newQuantity.toString();
-			portfolioOfReciever.coinsOwned[coinIndex].priceOfBuy = newAvgPrice.toString();
+			portfolioOfUser.coinsOwned[coinIndex].quantity = newQuantity.toString();
+			portfolioOfUser.coinsOwned[coinIndex].priceOfBuy = newAvgPrice.toString();
 		} else {
-			portfolioOfReciever.coinsOwned.push({
-				coinid: coinId,
-				quantity: quantityRecievedByReciever.toString(),
-				priceOfBuy: newAvgPrice.toString(),
+			portfolioOfUser.coinsOwned.push({
+				coinid: coinId2,
+				quantity: quantityRecievedByUser.toString(),
+				priceOfBuy: currentPrice2.toString(),
 			});
 		}
-		await portfolioOfReciever.save();
+		await portfolioOfUser.save();
         
-        senTrans.status = 'SUCCESS';
-        recTrans.status = 'SUCCESS';
-        await senTrans.save();
-        await recTrans.save();
+        excTrans.status = 'SUCCESS';
+        
+        await excTrans.save();
+        
 
         return res.status(200).json({
             success: true,
@@ -206,120 +196,10 @@ const exchange = async (req, res,next) => {
     }
     catch(err){
         console.log("Error in SendRecieve, Err:",err);
+
+		return res.next(err);
     }
 }
 module.exports = exchange;
 
 
-// const axios = require("axios");
-// const User = require("../../models/user");
-// const Portfolio = require("../../models/portfolio");
-// const Exchange = require("../../models/transactions/exchange");
-
-// const exchange = async () => {
-// 	if (!req.userData) {
-// 		res.redirect("back");
-// 	}
-// 	let user = await User.findById(req.userData);
-// 	if (!user) {
-// 		res.redirect("back");
-// 	}
-// 	let coinIdToSell = req.body.sellCoin;
-// 	let coinIdToBuy = req.body.buyCoin;
-
-// 	let coinDataSell = await axios.get(
-// 		`https://api.coingecko.com/api/v3/coins/$(coinIdToSell)`
-// 	); //axios by default parses Json response
-// 	let coinDataBuy = await axios.get(
-// 		`https://api.coingecko.com/api/v3/coins/$(coinIdToBuy)`
-// 	);
-// 	let priceOfBuyCoin = BigInt(
-// 		coinDataBuy.market_data.current_price.inr * 10000000
-// 	);
-// 	let priceOfSellCoin = BigInt(
-// 		coinDataSell.market_data.current_price.inr * 10000000
-// 	);
-
-// 	// let portfolioOfUser=await Portfolio.findById(user.portfolioId);
-
-// 	//sellPart
-// 	let quantity = BigInt(req.body.quantity);
-
-// 	let portfolioOfUser = await Portfolio.findById(user.portfolioId);
-
-// 	var quantityOfCoinsOwned;
-// 	var avgPrice;
-// 	var index;
-
-// 	for (a of portfolioOfUser.coinsOwned) {
-// 		if (a.coinId == coinIdToSell) {
-// 			quantityOfCoinsOwned = BigInt(a.quantity);
-// 			avgPrice = a.priceOfBuy;
-// 			index = portfolioOfUser.coinsOwned.findIndex(a);
-// 		}
-// 	}
-// 	if (index && quantityOfCoinsOwned >= quantity) {
-// 		portfolioOfUser.coinsOwned.slice(index, 1);
-// 		let newQuantity = quantityOfCoinsOwned - quantity;
-// 		if (newQuantity > 0n) {
-// 			portfolioOfUser.coinsOwned.push({
-// 				coidId: coinIdToSell,
-// 				quantity: newQuantity.toString(),
-// 				priceOfBuy: avgPrice,
-// 			});
-// 		}
-// 		// await portfolioOfUser.save();
-
-// 		let MoneyHeld = priceOfSellCoin * quantity;
-// 		// let charge=MoneyHeld-
-
-// 		let quantityBoughtAgain = MoneyHeld / priceOfBuyCoin;
-
-// 		for (a of portfolioOfUser.coinsOwned) {
-// 			if (a.coidId == coinIdToBuy) {
-// 				quantityBought = a.quantity;
-// 				avgPrice = a.priceOfBuy;
-// 				index = portfolioOfUser.coinsOwned.findIndex(a);
-// 			}
-// 		}
-// 		if (index) {
-// 			portfolioOfUser.coinsOwned.slice(index, 1);
-// 			let newAvgPrice =
-// 				(avgPrice * quantityBought + MoneyHeld) /
-// 				(quantityBought + quantityBoughtAgain);
-// 			let newQuantity = quantityBought + quantityBoughtAgain;
-// 			portfolioOfUser.coinsOwned.push({
-// 				coidId: coinIdToBuy,
-// 				quantity: newQuantity.toString(),
-// 				priceOfBuy: newAvgPrice.toString(),
-// 			});
-// 		} else {
-// 			portfolioOfUser.coinsOwned.push({
-// 				coidId: coinIdToBuy,
-// 				quantity: quantityBoughtAgain.toString(),
-// 				priceOfBuy: priceOfBuyCoin.toString(),
-// 			});
-// 		}
-// 		await portfolioOfUser.save();
-
-// 		try {
-// 			let xchange = await Exchange.create({
-// 				walletId: user.walletId,
-// 				quantitySold: quantity,
-// 				quantityBought: quantityBoughtAgain,
-// 				coinIdSold: coinIdToSell,
-// 				coinIdBought: coinIdToBuy,
-// 			});
-
-// 			return res.redirect("back");
-// 		} catch (err) {
-// 			console.log("error", err);
-// 			return;
-// 		}
-// 	} else {
-// 		console.log("the transaction is not possible");
-// 		res.redirect("back");
-// 	}
-// };
-
-// module.exports = exchange;
