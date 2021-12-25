@@ -4,7 +4,7 @@ const { check } = require("express-validator");
 
 const authVerify = require("../middlewares/authVerify");
 const dataController = require("../controllers/transactionController/getData");
-const buy = require("../controllers/transactionController/buy");
+const buyController = require("../controllers/transactionController/buy");
 const buyLimit = require("../controllers/transactionController/buyLimit");
 const exchange = require("../controllers/transactionController/exchange");
 const sell = require("../controllers/transactionController/sell");
@@ -16,9 +16,14 @@ router.get("/data/list", dataController.getTransactionList);
 router.post("/data", dataController.getTransactionData);
 
 router.post(
-	"/buy",
+	"/buy/quantity",
 	[check("quantity").not().isEmpty(), check("coinid").not().isEmpty()],
-	buy
+	buyController.buyQuantity
+);
+router.post(
+	"/buy/amount",
+	[check("amount").isInt({ min: 100, max: 100000 }), check("coinid").not().isEmpty()],
+	buyController.buyAmount
 );
 router.post(
 	"/sell",

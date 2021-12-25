@@ -2,15 +2,13 @@ import React, { Fragment, useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
-import Order from "./Order"
+import Order from "./Order";
 import Styles from "./CoinDetail.module.css";
 import Overview from "./Overview";
 import Alert from "../shared/components/Alert";
 import AuthContext from "../store/authContext";
+import Logo from "../shared/img/icon.png";
 import LoadingSpinner from "../shared/components/UIElements/LoadingSpinner";
-
-const CoinGecko = require("coingecko-api");
-const CoinGeckoClient = new CoinGecko();
 
 const CoinDetail = () => {
 	const ctx = useContext(AuthContext);
@@ -29,7 +27,15 @@ const CoinDetail = () => {
 	});
 	const [error, setError] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
-	const [coinData, setCoinData] = useState(null);
+	const [coinData, setCoinData] = useState({
+		coinName: "Coin",
+		coinSymbol: "CPX",
+		coinIcon: Logo,
+	});
+	const [assetData, setAssetData] = useState({
+		isAvailable: false,
+		quantity: "0.00",
+	});
 	const [walletBalance, setWalletBalance] = useState({
 		Rupees: "...",
 		Paise: "..",
@@ -41,12 +47,14 @@ const CoinDetail = () => {
 			setIsLoading(true);
 
 			try {
-				let { data: coinData } = await CoinGeckoClient.coins.fetch(coinid, {
-					tickers: false,
-					community_data: false,
-					developer_data: false,
-					sparkline: false,
-				});
+				let { data: assetData } = await axios.get(
+					`${process.env.REACT_APP_SERVER_URL}/user/assets/${coinid}`,
+					{
+						headers: {
+							Authorization: "Bearer " + ctx.token,
+						},
+					}
+				);
 
 				let { data: userData } = await axios.post(
 					`${process.env.REACT_APP_SERVER_URL}/user/data`,
@@ -61,7 +69,9 @@ const CoinDetail = () => {
 					}
 				);
 
-				setCoinData(coinData);
+				console.log(assetData, userData);
+
+				setAssetData(assetData);
 				setWalletBalance(userData.balance);
 				setIsInWatchList(userData.isInWatchList);
 			} catch (err) {
@@ -85,7 +95,6 @@ const CoinDetail = () => {
 			order: "d-none",
 		});
 	};
-
 	const onClickSell = () => {
 		setModes({
 			buy: "nav-link",
@@ -110,6 +119,46 @@ const CoinDetail = () => {
 			order: "d-block",
 		});
 	};
+	const setCoinDetails = (data) => {
+		setCoinData(data);
+	}
+
+	const addToWatchList = async () => {
+		try {
+			const res = await axios.get(
+				`${process.env.REACT_APP_SERVER_URL}/user/watchlist/add/${coinid}`,
+				{
+					headers: {
+						Authorization: "Bearer " + ctx.token,
+					},
+				}
+			);
+
+			setIsInWatchList(true);
+		} catch (err) {
+			console.log(err.response.data.message);
+			setError(err.response.data.message);
+		}
+	};
+	const removeFromWatchList = async () => {
+		try {
+			const res = await axios.get(
+				`${process.env.REACT_APP_SERVER_URL}/user/watchlist/remove/${coinid}`,
+				{
+					headers: {
+						Authorization: "Bearer " + ctx.token,
+					},
+				}
+			);
+
+			setIsInWatchList(false);
+		} catch (err) {
+			console.log(err.response.data.message);
+			setError(err.response.data.message);
+		}
+	};
+
+	const buyCoinHandler = async () => {};
 
 	const clearError = () => {
 		setError(null);
@@ -122,41 +171,67 @@ const CoinDetail = () => {
 				<div className="card m-3">
 					<div className="card-body d-flex justify-content-between">
 						<div className="title d-flex align-items-center">
-							<img
-								className={Styles.logo}
-								src="https://logos-world.net/wp-content/uploads/2020/08/Bitcoin-Logo.png"
-								alt=""
-							/>
-							<h1>Bitcoin </h1>
-							<p className="sym text-secondary h3"> (BTC)</p>
+							<img className={Styles.logo} src={coinData.Icon} alt="" />
+							<h1>{coinData.name}</h1>
+							<p className="sym text-secondary h3">{coinData.symbol}</p>
 						</div>
-						<button type="button" className="btn btn-outline-secondary">
-							{isInWatchList && (
+						{isInWatchList && (
+							<button
+								type="button"
+								className="btn btn-outline-secondary"
+								onClick={removeFromWatchList}
+							>
 								<p className="fa fa-star-o h4"> Remove from Watchlist</p>
-							)}
-							{!isInWatchList && (
+							</button>
+						)}
+						{!isInWatchList && (
+							<button
+								type="button"
+								className="btn btn-outline-secondary"
+								onClick={addToWatchList}
+							>
 								<p className="fa fa-star-o h4"> Add to Watchlist</p>
-							)}
-						</button>
+							</button>
+						)}
 					</div>
 				</div>
 				<div className="main m-3 p-1 d-flex justify-content-between">
 					<div className="card col-8" id={Styles.overview}>
 						<div className="card-header h3 text-start">Overview</div>
 						<div className="card-body">
-							<Overview coin="bitcoin" />
+							<Overview coin={coinid} setCoinDetails={setCoinDetails}/>
 						</div>
 					</div>
 					<div className="col-4 p-10">
 						<div className="card">
 							<div className="card-header h3 text-start">Assets</div>
-							<div className="card-body">
-								<p className="text-secondary h3">Total BTC:100</p>
-								<p className="text-secondary h3">
-									Total price :&#x20B9; 22939.1991
-								</p>
-								<p className="text-secondary h3">Profit/Loss :10%</p>
-							</div>
+							{assetData.isAvailable && (
+								<div className="card-body">
+									<p className="text-secondary h3">
+										Quantity Available: {assetData.quantity}
+										{coinData.symbol}
+									</p>
+									<p className="text-secondary h3">
+										Purchase Price: &#x20B9; {assetData.purchasePrice}
+									</p>
+									<p className="text-secondary h3">
+										Profit/Loss: {assetData.changePercentage}%
+									</p>
+								</div>
+							)}
+							{!assetData.isAvailable && (
+								<div className="card-body">
+									<p className="text-secondary h3">No Assets</p>
+
+									<p className="text-secondary h5">
+										Looks like there isn't any {coinData.symbol} in your
+										account yet.
+									</p>
+									<p className="text-secondary h5">
+										CryptoX is the easiest place to get started.
+									</p>
+								</div>
+							)}
 						</div>
 						<div className="card" id={Styles.options}>
 							<div className="card-body">
@@ -188,15 +263,18 @@ const CoinDetail = () => {
 										method="get"
 										id={Styles.buyform}
 									>
-										<label htmlFor="amount" className="form-label h4 text-start">
-											Pay(&#x20B9;)
+										<label
+											htmlFor="amount"
+											className="form-label h4 text-start"
+										>
+											Amount(&#x20B9;)
 										</label>
 										<div className="input-group mb-3">
 											<input
 												type="number"
 												className="form-control w-75"
 												id="amount"
-												min={0}
+												min={100}
 											/>
 											<span className="input-group-text">
 												<p className="h6">.</p>
@@ -221,8 +299,9 @@ const CoinDetail = () => {
 											type="button"
 											className="btn btn-success"
 											id={Styles.submit}
+											onClick={buyCoinHandler}
 										>
-											Buy BTC
+											Buy {coinData.symbol}
 										</button>
 									</form>
 								</div>

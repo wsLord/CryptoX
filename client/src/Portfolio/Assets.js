@@ -50,8 +50,8 @@ const Assets = ({ onAlert }) => {
 									<th scope="col">Asset</th>
 									<th scope="col">Quantity</th>
 									<th scope="col">Current Price</th>
-									<th scope="col">Purchased Price</th>
-									<th scope="col">Change(%)</th>
+									<th scope="col">Purchase Price</th>
+									<th scope="col">Profit/Loss (%)</th>
 									<th scope="col">Action</th>
 								</tr>
 							</thead>

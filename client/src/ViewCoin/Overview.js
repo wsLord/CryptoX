@@ -8,11 +8,15 @@ import bar from "../shared/img/bar.jpg";
 import candlestick from "../shared/img/candlestick.jpg";
 import Styles from "./Graph.module.css";
 
+
+const CoinGecko = require("coingecko-api");
+const CoinGeckoClient = new CoinGecko();
+
 export default function Overview(props) {
     const active = "btn btn-outline-secondary active";
     const unactive = "btn btn-outline-secondary";
     const [change, setchange] = useState(0);
-    const [coinData, setcoinData] = useState({
+    const [coinData, setCoinData] = useState({
         data: {},
         flag: false
     })
@@ -113,14 +117,22 @@ export default function Overview(props) {
     useEffect(() => {
         const fetchData = async () => {
             if (!coinData.flag) {
-                let url = `https://api.coingecko.com/api/v3/coins/${props.coin}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`;
-                let data = await fetch(url);
-                let parseData = await data.json();
-                setcoinData({
+							let { data: parseData } = await CoinGeckoClient.coins.fetch(props.coin, {
+								tickers: false,
+								market_data: true,
+								community_data: false,
+								developer_data: false,
+								sparkline: false,
+							});
+                // let url = `https://api.coingecko.com/api/v3/coins/${props.coin}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`;
+                // let data = await fetch(url);
+                // let parseData = await data.json();
+                setCoinData({
                     data: parseData,
                     flag: true
                 });
                 setchange(parseData.market_data.price_change_percentage_1y);
+								props.setCoinDetails(parseData);
             }
         };
         fetchData();

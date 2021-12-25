@@ -6,14 +6,17 @@ const CoinGeckoClient = new CoinGecko();
 
 const converter = require("../conversions");
 const User = require("../../models/user");
-const Wallet = require("../../models/wallet");
-const Portfolio = require("../../models/portfolio");
-const Transaction = require("../../models/transaction");
 
 const getCoinAssetsData = async (req, res, next) => {
 	const coinid = req.params.id;
 
 	try {
+		let { data: coinData } = await CoinGeckoClient.coins.fetch(coinid, {
+			tickers: false,
+			community_data: false,
+			developer_data: false,
+			sparkline: false,
+		});
 		let userData = await User.findById(req.userData.id).populate("portfolio");
 
 		// Finding coin assets in Portfolio
@@ -21,17 +24,33 @@ const getCoinAssetsData = async (req, res, next) => {
 			return tcoin.coinid === coinid;
 		});
 
+		console.log(coinData.image);
+
 		if (!coinAsset) {
 			return res.status(201).json({
 				isAvailable: false,
+				coinName: coinData.name,
+				coinSymbol: coinData.symbol.toUpperCase(),
+				coinIcon: coinData.image.large,
 				quantity: "0.00",
-				purchasePrice: "0.00",
 			});
 		} else {
+			// Calculating change Percentage
+			let buyPrice = BigInt(coinAsset.priceOfBuy);
+			let changePercentage =
+				BigInt(
+					parseFloat(coinData.market_data.current_price.inr).toFixed(2) * 100
+				) - buyPrice;
+			changePercentage = Number((changePercentage * 10000n) / buyPrice) / 100;
+
 			return res.status(201).json({
 				isAvailable: true,
+				coinName: coinData.name,
+				coinSymbol: coinData.symbol.toUpperCase(),
+				coinIcon: coinData.image.large,
 				quantity: converter.quantityToDecimalString(coinAsset.quantity),
-				purchasePrice: converter.amountToRupeesPaise(coinAsset.priceOfBuy),
+				purchasePrice: converter.amountToDecimalString(coinAsset.priceOfBuy),
+				changePercentage,
 			});
 		}
 	} catch (err) {
@@ -72,9 +91,15 @@ const getAssetsData = async (req, res, next) => {
 			changePercentage = Number((changePercentage * 10000n) / buyPrice) / 100;
 
 			tcoinData.sNo = sNo;
-			tcoinData.quantity = converter.quantityToDecimalString(coinArray[index].quantity);
-			tcoinData.purchasePrice = converter.amountToRupeesPaise(coinArray[index].priceOfBuy);
-			tcoinData.currentPrice = converter.marketPriceToRupeesPaise(tcoinData.market_data.current_price.inr);
+			tcoinData.quantity = converter.quantityToDecimalString(
+				coinArray[index].quantity
+			);
+			tcoinData.purchasePrice = converter.amountToRupeesPaise(
+				coinArray[index].priceOfBuy
+			);
+			tcoinData.currentPrice = converter.marketPriceToRupeesPaise(
+				tcoinData.market_data.current_price.inr
+			);
 			tcoinData.changePercentage = changePercentage;
 
 			coinAssetList.push(tcoinData);
