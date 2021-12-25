@@ -5,7 +5,7 @@ const transactionSchema = new mongoose.Schema(
 		category: {
 			type: String,
 			required: true,
-			enum: ['add_money', 'withdraw_money', 'buy_coin', 'sell_coin', 'buy_request', 'sell_request','send_receive']
+			enum: ['add_money', 'withdraw_money', 'buy_coin', 'sell_coin', 'buy_request', 'sell_request','send_receive','exchange']
 		},
 		wallet: {
 			type: mongoose.Schema.Types.ObjectId,
@@ -43,6 +43,10 @@ const transactionSchema = new mongoose.Schema(
 		receiveCoin:{
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "receiveCoin",
+		},
+		exchange:{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "exchange",
 		}
 	},
 	{
