@@ -71,11 +71,11 @@ const signup = async (req, res, next) => {
 	});
 
 	let zero = "0";
-	wallet = await Wallet.create({
+	let wallet = await Wallet.create({
 		balance: zero,
 		user: createdUser._id,
 	});
-	portfo = await Portfolio.create({
+	let portfo = await Portfolio.create({
 		user: createdUser._id,
 	});
 	createdUser.wallet = wallet._id;
@@ -88,7 +88,7 @@ const signup = async (req, res, next) => {
 	}
 
 	//Mail Verification
-	let info = await emailVerifyTokenSender(createdUser, req.headers.host);
+	let info = await emailVerifyTokenSender(createdUser.id, req.headers.host);
 
 	res.status(201).json({
 		message:

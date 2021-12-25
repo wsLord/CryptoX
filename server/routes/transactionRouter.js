@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { check } = require("express-validator");
+const { check, body } = require("express-validator");
 
 const authVerify = require("../middlewares/authVerify");
 const dataController = require("../controllers/transactionController/getData");
@@ -9,7 +9,9 @@ const buyLimit = require("../controllers/transactionController/buyLimit");
 const exchange = require("../controllers/transactionController/exchange");
 const sellController = require("../controllers/transactionController/sell");
 const sellLimit = require("../controllers/transactionController/sellLimit");
+const sendCoinController = require("../controllers/transactionController/sendCoin");
 const sendRecieve = require("../controllers/transactionController/sendRecieve");
+
 router.use(authVerify);
 
 // Transaction Details
@@ -58,7 +60,15 @@ router.post(
 	],
 	sellLimit
 );
-router.post("/exchange", exchange);
+
+// Send Coins - User Verify
+router.post(
+	"/send/verify",
+	body("email").normalizeEmail().isEmail(),
+	sendCoinController.verifyUser
+);
 router.post("/sendRecieve",sendRecieve);
+
+router.post("/exchange", exchange);
 
 module.exports = router;

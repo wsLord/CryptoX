@@ -1,6 +1,5 @@
-// const verification = require("express").Router();
-
 const emailVerifyToken = require("../models/emailVerifyToken");
+const emailVerifyTokenSender = require("../middlewares/emailToken");
 
 const verification = async (req, res, next) => {
 	// Find a matching token
@@ -45,4 +44,20 @@ const verification = async (req, res, next) => {
 	});
 };
 
+const verifyEmailRequest = async (req, res, next) => {
+	try {
+		//Mail Verification
+		let info = await emailVerifyTokenSender(req.userData.id, req.headers.host);
+
+		res.status(201).json({
+			message: "Verification email has been sent. Check your mailbox.",
+			mailinfo: info.messageId,
+		});
+	} catch (err) {
+		console.log(err);
+		return next(new Error("ERR: Unable to send verification mail."));
+	}
+};
+
 module.exports.verification = verification;
+module.exports.verifyEmailRequest = verifyEmailRequest;

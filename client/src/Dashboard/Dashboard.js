@@ -6,6 +6,7 @@ import Styles from "./Dashboard.module.css";
 import Spinner from "../shared/components/Spinner";
 import News from "./News";
 import AuthContext from "../store/authContext";
+import Alert from "../shared/components/Alert";
 
 const totalArticles = 100;
 
@@ -19,6 +20,7 @@ const Dashboard = (props) => {
 	const [balanceRupees, setBalanceRupees] = useState("***");
 	const [balancePaise, setBalancePaise] = useState("**");
 	const [isEmailVerified, setIsEmailVerified] = useState(false);
+	const [error, setError] = useState(null);
 
 	useEffect(() => {
 		// Getting Balance and Email Verification Info & news articles
@@ -73,8 +75,37 @@ const Dashboard = (props) => {
 		});
 	};
 
+	const sendVerificationMail = async () => {
+		setLoading(true);
+
+		try {
+			const { data } = await axios.get(
+				`${process.env.REACT_APP_SERVER_URL}/verify/email`,
+				{
+					headers: {
+						Authorization: "Bearer " + ctx.token,
+					},
+				}
+			);
+
+			console.log(data);
+
+			setError(data.message);
+			setLoading(false);
+		} catch (err) {
+			// Error sending Email Verification Mail
+			setError(err.response.data.message);
+			console.log(err.response);
+		}
+	};
+
+	const clearError = () => {
+		setError(null);
+	};
+
 	return (
 		<Fragment>
+			{error && <Alert msg={error} onClose={clearError} />}
 			<div className="card" id={Styles.top}>
 				<div className="card-body">
 					<h4>Welcome {name}</h4>
@@ -91,7 +122,7 @@ const Dashboard = (props) => {
 								<i className="fa fa-exclamation-triangle text-danger">
 									Account not verified
 								</i>
-								<button type="button" className="btn btn-success">
+								<button type="button" className="btn btn-success" onClick={sendVerificationMail}>
 									<strong>Verify your ID</strong>
 								</button>
 							</div>
