@@ -15,7 +15,7 @@ const Assets = ({ onAlert }) => {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				// Add id and amount of coins in assets from database
+				// Fetch id and amount of coins in assets from database
 				let { data } = await axios.get(
 					`${process.env.REACT_APP_SERVER_URL}/user/assets`,
 					{
@@ -28,12 +28,12 @@ const Assets = ({ onAlert }) => {
 				setCoinsList(data);
 			} catch (err) {
 				console.log(err.response.data.message);
-				onAlert(err.response.data.message);
+				// onAlert(err.response.data.message);
 			}
 		};
 
 		fetchData();
-	}, [ctx, onAlert]);
+	}, [ctx]); //, onAlert
 
 	return (
 		<div>

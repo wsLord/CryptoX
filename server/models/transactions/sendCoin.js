@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const senderSchema = new mongoose.Schema(
+const sendCoinSchema = new mongoose.Schema(
 	{
 		wallet: {
 			type: mongoose.Schema.Types.ObjectId,
@@ -10,26 +10,31 @@ const senderSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 		},
+		// Total price of quantity being sent
 		amount: {
 			type: String,
 			required: true,
 		},
+		// Price per coin at transaction time
 		price: {
 			type: String,
 			required: true,
 		},
+		// Total quantity being sent
 		quantitySent: {
 			type: String,
 			required: true,
 		},
-        chargedQuantity:{
-            type: String,
+		// Quantity charged as Transaction fee
+		chargedQuantity: {
+			type: String,
 			required: true,
-        },
-        chargedMoney:{
-            type: String,
+		},
+		// Transaction fee cost (chargedQuantity in Rupees)
+		chargedMoney: {
+			type: String,
 			required: true,
-        },
+		},
 		status: {
 			type: String,
 			required: true,
@@ -44,4 +49,4 @@ const senderSchema = new mongoose.Schema(
 	}
 );
 
-module.exports = mongoose.model("sender", senderSchema);
+module.exports = mongoose.model("sendCoin", sendCoinSchema);

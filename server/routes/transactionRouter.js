@@ -9,8 +9,8 @@ const buyLimit = require("../controllers/transactionController/buyLimit");
 const exchange = require("../controllers/transactionController/exchange");
 const sellController = require("../controllers/transactionController/sell");
 const sellLimit = require("../controllers/transactionController/sellLimit");
-const sendCoinController = require("../controllers/transactionController/sendCoin");
-const sendRecieve = require("../controllers/transactionController/sendRecieve");
+const sendReceiveController = require("../controllers/transactionController/sendReceive");
+const sendRecieve = require("../controllers/transactionController/sendReceive");
 
 router.use(authVerify);
 
@@ -26,7 +26,10 @@ router.post(
 );
 router.post(
 	"/buy/amount",
-	[check("amount").isFloat({ min: 100, max: 100000 }), check("coinid").not().isEmpty()],
+	[
+		check("amount").isFloat({ min: 100, max: 100000 }),
+		check("coinid").not().isEmpty(),
+	],
 	buyController.buyAmount
 );
 
@@ -38,7 +41,10 @@ router.post(
 );
 router.post(
 	"/sell/amount",
-	[check("amount").isFloat({ min: 100, max: 100000 }), check("coinid").not().isEmpty()],
+	[
+		check("amount").isFloat({ min: 100, max: 100000 }),
+		check("coinid").not().isEmpty(),
+	],
 	sellController.sellAmount
 );
 
@@ -47,7 +53,7 @@ router.post(
 	[
 		check("quantity").not().isEmpty(),
 		check("maxPrice").not().isEmpty(),
-		check("coinid").isLength({ min: 3, max: 3 }),
+		check("coinid").not().isEmpty(),
 	],
 	buyLimit
 );
@@ -56,7 +62,7 @@ router.post(
 	[
 		check("quantity").not().isEmpty(),
 		check("maxPrice").not().isEmpty(),
-		check("coinid").isLength({ min: 3, max: 3 }),
+		check("coinid").not().isEmpty(),
 	],
 	sellLimit
 );
@@ -65,9 +71,17 @@ router.post(
 router.post(
 	"/send/verify",
 	body("email").normalizeEmail().isEmail(),
-	sendCoinController.verifyUser
+	sendReceiveController.verifyUser
 );
-router.post("/sendRecieve",sendRecieve);
+router.post(
+	"/send",
+	[
+		check("quantity").not().isEmpty(),
+		check("email").normalizeEmail().isEmail(),
+		check("coinid").not().isEmpty(),
+	],
+	sendReceiveController.sendRecieve
+);
 
 router.post("/exchange", exchange);
 

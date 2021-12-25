@@ -1,24 +1,24 @@
+const { validationResult } = require("express-validator");
 const axios = require("axios");
 const CoinGecko = require("coingecko-api");
 const CoinGeckoClient = new CoinGecko();
+require("dotenv").config();
 
 const User = require("../../models/user");
 const Portfolio = require("../../models/portfolio");
 const Exchange = require("../../models/exchange");
-const senderTransaction = require("../../models/transactions/sender");
-const recieverTransaction = require("../../models/transactions/reciever");
+const senderTransaction = require("../../models/transactions/sendCoin");
+const receiverTransaction = require("../../models/transactions/receiveCoin");
 const Transaction = require("../../models/transaction");
 
 const sendRecieve = async (req, res, next) => {
 	try {
 		//ChargeForTransaction
-		const ChargeOfTransaction = BigInt(200000000000);
+		const chargeOfTransaction = BigInt(process.env.SEND_CHARGES * 100);
 
 		//needed values in req.body
-		let { coinId, emailOfReciever, quantityToSend } = req.body;
-		quantityToSend = BigInt(
-			parseFloat(req.body.quantityToSend).toFixed(7) * 10000000
-		);
+		const { coinid: coinId, email: emailOfReciever } = req.body;
+		const quantityToSend = BigInt(Math.trunc(req.body.quantity * 10000000));
 
 		//Finding the two Users
 		const userSendingCoin = await User.findById(req.userData.id)
@@ -35,7 +35,7 @@ const sendRecieve = async (req, res, next) => {
 
 		//Making Sure there is a reciever
 		if (!userRecievingCoin) {
-			return res.json("Incorrect Email Provided for reciever");
+			return next(new Error("Incorrect Email provided for reciever"));
 		}
 
 		//getting the coinData through api
@@ -48,7 +48,7 @@ const sendRecieve = async (req, res, next) => {
 
 		//getting the current Price
 		const currentPrice = BigInt(
-			parseFloat(coinData.market_data.current_price.inr).toFixed(2) * 100
+			Math.trunc(coinData.market_data.current_price.inr * 100)
 		);
 
 		//wallets and portfolios of both users
@@ -57,40 +57,54 @@ const sendRecieve = async (req, res, next) => {
 		const walletOfReciever = userRecievingCoin.wallet;
 		const portfolioOfReciever = userRecievingCoin.portfolio;
 
+		// Cost in BigInt with 7 extra precision digits
 		let tcost = currentPrice * quantityToSend;
 		tcost = tcost.toString();
 
-		//Making sure the cost is atleast greater than the charge
-		// console.log(currentPrice,BigInt(tcost),ChargeOfTransaction);
-		if (BigInt(tcost) <= ChargeOfTransaction) {
+		// Length of tcost must be >= 12 so that transaction is worth Rs.100
+		if (tcost.length < 12) {
 			const error = new Error(
-				"TRANSACTION DECLINED! Cost must be atleast Re. 200"
+				"TRANSACTION DECLINED! Value must be atleast Rs. 100"
 			);
 			error.code = 405;
 			return next(error);
 		}
-		const ttcost = BigInt(tcost);
-		//Finding the Money For transactions that
-		const moneyForReciever = ttcost - ChargeOfTransaction;
-		const moneyForAdmin = ChargeOfTransaction;
 
-		// Trimming last 7 extra digits and Cost in paise in BigInt
+		// Cost in paise in BigInt after Trimming last 7 extra digits
 		const cost = BigInt(tcost.slice(0, -7));
 
-		//Trimming last 7 extra digits
-		const charge = ChargeOfTransaction.toString().slice(0, -7);
-		const recMon = moneyForReciever.toString().slice(0, -7);
+		// Making sure the cost is atleast greater than the charge
+		// console.log(currentPrice,BigInt(tcost),chargeOfTransaction);
+		if (cost <= chargeOfTransaction) {
+			const error = new Error(
+				"TRANSACTION DECLINED! Cost must be greater than Rs. " +
+					process.env.SEND_CHARGES +
+					" i.e. send charges."
+			);
+			error.code = 405;
+			return next(error);
+		}
 
-		//Finding Quantity of coins To Buy By both Admin And Reciever
-		let quantityRecievedByAdmin = moneyForAdmin / currentPrice;
-		let quantityRecievedByReciever = moneyForReciever / currentPrice;
+		//Finding the Money For transactions that
+		const moneyForReciever = cost - chargeOfTransaction;
+		const moneyForAdmin = chargeOfTransaction;
+
+		// //Trimming last 7 extra digits
+		// const charge = chargeOfTransaction.toString().slice(0, -7);
+		// const recMon = moneyForReciever.toString().slice(0, -7);
+
+		//Finding Quantity of coins To Buy By Admin precise to 7 digs
+		const quantityRecievedByAdmin = (moneyForAdmin * 10000000n) / currentPrice;
+
+		//Finding Quantity of coins To Buy By Admin And Reciever
+		const quantityRecievedByReciever = quantityToSend - quantityRecievedByAdmin;
 
 		//Creating Transaction Instance
 		let transactionInstance = await Transaction.create({
-			category: "sendRecieve",
+			category: "send_receive",
 			wallet: walletOfSender.id,
-			sender: null,
-			reciever: null,
+			sendCoin: null,
+			receiveCoin: null,
 		});
 
 		// Creating Sender And Reciever Transaction Instance
@@ -101,22 +115,27 @@ const sendRecieve = async (req, res, next) => {
 			price: currentPrice.toString(),
 			quantitySent: quantityToSend.toString(),
 			chargedQuantity: quantityRecievedByAdmin.toString(),
-			chargedMoney: charge,
+			chargedMoney: moneyForAdmin.toString(),
 			status: "PENDING",
 		});
-		let recTrans = await recieverTransaction.create({
+		let recTrans = await receiverTransaction.create({
 			wallet: walletOfReciever.id,
 			coinid: coinId,
-			amount: recMon,
+			amount: moneyForReciever.toString(),
 			price: currentPrice.toString(),
 			quantityRecieved: quantityRecievedByReciever.toString(),
 			status: "PENDING",
 		});
 
 		//Linking Sender and Reciever to Transaction Instance
-		transactionInstance.sender = senTrans.id;
-		transactionInstance.reciever = recTrans.id;
-		transactionInstance.save();
+		transactionInstance.sendCoin = senTrans.id;
+		transactionInstance.receiveCoin = recTrans.id;
+		await transactionInstance.save();
+
+		walletOfSender.transactionList.push(transactionInstance.id);
+		await walletOfSender.save();
+		walletOfReciever.transactionList.push(transactionInstance.id);
+		await walletOfReciever.save();
 
 		// Checking if coin is already existent in Portfolio and getting its index
 		let oldQuantity;
@@ -133,9 +152,9 @@ const sendRecieve = async (req, res, next) => {
 
 		//In case of Insufficient coins In portfolio
 		// console.log(BigInt(oldQuantity),quantityToSend);
-		if (coinIndex === -1 || BigInt(oldQuantity) < quantityToSend) {
+		if (coinIndex === -1 || oldQuantity < quantityToSend) {
 			senTrans.status = "FAILED";
-			senTrans.statusMessage = "Insufficient Coins in Assets Of Sender";
+			senTrans.statusMessage = "Insufficient Coins in Assets";
 			await senTrans.save();
 
 			recTrans.status = "FAILED";
@@ -152,7 +171,6 @@ const sendRecieve = async (req, res, next) => {
 		//Now transaction is possible
 
 		//Updating Portfolio of Sender
-
 		portfolioOfSender.coinsOwned.splice(coinIndex, 1);
 		let newQuantity = oldQuantity - quantityToSend;
 		if (newQuantity > 0n) {
@@ -175,10 +193,12 @@ const sendRecieve = async (req, res, next) => {
 		});
 
 		// coinIndex is -1 if not found
-
 		if (coinIndex >= 0) {
 			let newQuantity = oldQuantity + quantityRecievedByReciever;
-			let newAvgPrice = (oldAvgPrice * oldQuantity + ttcost) / newQuantity;
+			let newAvgPrice =
+				(oldAvgPrice * oldQuantity +
+					quantityRecievedByReciever * currentPrice) /
+				newQuantity;
 
 			portfolioOfReciever.coinsOwned[coinIndex].quantity =
 				newQuantity.toString();
@@ -188,7 +208,7 @@ const sendRecieve = async (req, res, next) => {
 			portfolioOfReciever.coinsOwned.push({
 				coinid: coinId,
 				quantity: quantityRecievedByReciever.toString(),
-				priceOfBuy: newAvgPrice.toString(),
+				priceOfBuy: currentPrice.toString(),
 			});
 		}
 		await portfolioOfReciever.save();
@@ -205,6 +225,40 @@ const sendRecieve = async (req, res, next) => {
 		});
 	} catch (err) {
 		console.log("Error in SendRecieve, Err:", err);
+		return next(new Error("Error in SendRecieve"));
 	}
 };
-module.exports = sendRecieve;
+
+const verifyUser = async (req, res, next) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return next(
+			new Error("ERR: Invalid inputs passed, please check your data.")
+		);
+	}
+
+	const email = req.body.email;
+
+	try {
+		const userData = await User.findOne({ email: email });
+
+		// If found
+		if (userData) {
+			return res.status(200).json({
+				isFound: true,
+				name: userData.name,
+				message: "User Found!",
+			});
+		} else {
+			return res.status(200).json({
+				isFound: false,
+				message: "No such user found!",
+			});
+		}
+	} catch (err) {
+		return next(new Error("ERR: Unable to verify user. Please try again!"));
+	}
+};
+
+module.exports.verifyUser = verifyUser;
+module.exports.sendRecieve = sendRecieve;

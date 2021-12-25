@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
-const recieverSchema = new mongoose.Schema(
+const receiveCoinSchema = new mongoose.Schema(
 	{
-		wallet:{
+		wallet: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Wallet",
 		},
@@ -10,19 +10,22 @@ const recieverSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 		},
+		// Total price of quantity being sent
 		amount: {
 			type: String,
 			required: true,
 		},
-		price:{
+		// Price per coin at transaction time
+		price: {
 			type: String,
 			required: true,
 		},
+		// Quantity received by user
 		quantityRecieved: {
 			type: String,
 			required: true,
 		},
-        status: {
+		status: {
 			type: String,
 			required: true,
 			enum: ["SUCCESS", "PENDING", "FAILED"],
@@ -36,4 +39,4 @@ const recieverSchema = new mongoose.Schema(
 	}
 );
 
-module.exports = mongoose.model("reciever", recieverSchema);
+module.exports = mongoose.model("receiveCoin", receiveCoinSchema);

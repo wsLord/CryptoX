@@ -126,7 +126,7 @@ const buyQuantity = async (req, res, next) => {
 		// coinIndex is -1 if not found
 		if (coinIndex >= 0) {
 			let newQuantity = oldQuantity + quantity;
-			let newAvgPrice = (oldAvgPrice * oldQuantity + cost) / newQuantity;
+			let newAvgPrice = (oldAvgPrice * oldQuantity + cost * 10000000n) / newQuantity;
 
 			portfolioOfUser.coinsOwned[coinIndex].quantity = newQuantity.toString();
 			portfolioOfUser.coinsOwned[coinIndex].priceOfBuy = newAvgPrice.toString();
@@ -273,7 +273,7 @@ const buyAmount = async (req, res, next) => {
 		// coinIndex is -1 if not found
 		if (coinIndex >= 0) {
 			let newQuantity = oldQuantity + quantity;
-			let newAvgPrice = (oldAvgPrice * oldQuantity + amount) / newQuantity;
+			let newAvgPrice = (oldAvgPrice * oldQuantity + amount * 10000000n) / newQuantity;
 
 			portfolioOfUser.coinsOwned[coinIndex].quantity = newQuantity.toString();
 			portfolioOfUser.coinsOwned[coinIndex].priceOfBuy = newAvgPrice.toString();
