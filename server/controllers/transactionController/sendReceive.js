@@ -6,7 +6,7 @@ require("dotenv").config();
 
 const User = require("../../models/user");
 const Portfolio = require("../../models/portfolio");
-const Exchange = require("../../models/exchange");
+// const Exchange = require("../../models/exchange");
 const senderTransaction = require("../../models/transactions/sendCoin");
 const receiverTransaction = require("../../models/transactions/receiveCoin");
 const Transaction = require("../../models/transaction");
