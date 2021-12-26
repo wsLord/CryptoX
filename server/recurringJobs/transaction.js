@@ -139,28 +139,37 @@ const executeOrders3 = async (coin)=>{
 
         
         
-        let currentPrice=BigInt(Math.floor(coin.current_price*100));
-        
-      
+        //getting the current Price of the coin
+        const currentPrice = BigInt(Math.floor(
+			parseFloat(coin.current_price).toFixed(2) * 100
+        ));
+
+        //finding all the sellRequest for the current coin and populated the transaction and buyLimit
         let sellReqs =await sellRequest.find({
             coinId:coin.id,
             mode:"1"             
-        }).exec();
-        
+        })
+        .populate('transaction')
+        .populate('sellLimit')
+        .exec();
             
-        //  }
+        //iterating over the request for the current coin
          for(req of sellReqs){
-            
+            //if the price is greater than or equals to the limit  price
             if(BigInt(req.minPrice)<=currentPrice){
 
+                //finding the wallet and portfolio of the user
                 let walletOfUser=await Wallet.findById(req.from);
                 let portfolioOfUser=await Portfolio.findById(req.portfolioId);
+
+
+                //getting the quantity in BigInt
                 const quantity = BigInt(req.quantity);
                
         
         
         
-                // Cost in BigInt with 7 extra precision digits
+                //caculating the total cost for transaction with precision to 7 digits
                 let tcost = currentPrice * quantity;
                 tcost = tcost.toString();
                 
@@ -187,44 +196,28 @@ const executeOrders3 = async (coin)=>{
                     });
                    
                     // Declining transaction when coin doesn't exist
-               
                     if (coinIndex != -1&& oldQuantity >= quantity) {
                         
                     
                             
-                            // Creating Transaction Instance
-                            let transactionInstance = await Transaction.create({
-                                category: "sell_request",
-                                wallet: walletOfUser.id,
-                                sellCoin: null,
-                            });
-                    
-                            // Creating Buy Coin Transaction Instance
-                            let sellCoinTransactionInstance = await sellCoinTransaction.create({
-                                wallet: walletOfUser.id,
-                                coinid: coin.id,
-                                amount: cost.toString(),
-                                price: currentPrice.toString(),
-                                quantity: quantity.toString(),
-                                status: "SUCCESS",
-                            });
-                    
-                            // Linking Transaction Instance to Add Money Transaction Instance
-                            transactionInstance.sellCoin = sellCoinTransactionInstance.id;
-                            await transactionInstance.save();
-                            await sellCoinTransactionInstance.save();
                             
+                            
+                            //storing the current Price and total ammount
+                            req.sellLimit.price = currentPrice.toString();
+                            req.sellLimit.amount = cost.toString();
+                            await req.sellLimit.save();
                     
                     
                     
                     
                     
-                    
-                    
+                            //updating the wallet balance
                             let newBalance = BigInt(walletOfUser.balance) + cost;
                             walletOfUser.balance = newBalance.toString();
                             await walletOfUser.save();
                     
+
+                            //updating portfolio of the user
                             portfolioOfUser.coinsOwned.splice(coinIndex, 1);
                             let newQuantity = oldQuantity - quantity;
                             if (newQuantity > 0n) {
@@ -235,6 +228,8 @@ const executeOrders3 = async (coin)=>{
                                 });
                             }
                             await portfolioOfUser.save();
+                            req.sellLimit.status = "SUCCESS";
+                            await req.sellLimit.save();
                             await sellRequest.findByIdAndDelete(req._id);
                             console.log('transaction done');
                             
@@ -258,7 +253,7 @@ module.exports.checkLimitBuy=async()=>{
         let coinData =  await axios.get(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&order=market_cap_desc&per_page=100&page=1&sparkline=false`);
         for(coin of coinData.data){
         executeOrders2(coin);
-        // executeOrders3(coin);
+        executeOrders3(coin);
         // executeOrders();
         }
     });
