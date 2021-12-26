@@ -5,6 +5,7 @@ import Logo from "../img/icon.png";
 import Styles from "./Header.module.css"
 import profile from "../img/profile.png"
 import AuthContext from "../../store/authContext";
+import NotificationsCenter from "../../Notifications/NotificationsCenter";
 
 const Header = () => {
 	const ctx = useContext(AuthContext);
@@ -75,6 +76,9 @@ const Header = () => {
 							</li>
 						</ul>
 						<ul className="nav navbar-nav navbar-right">
+
+							<NotificationsCenter/>
+							
 							<div className="dropstart">
 								<button id={Styles.btn} className="dropdown-toggle" type="button" data-bs-toggle="dropdown">
 									<img src={profile} id={Styles.profile} alt="" />
