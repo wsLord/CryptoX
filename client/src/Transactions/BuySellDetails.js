@@ -2,6 +2,8 @@ import React, { Fragment, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
+import loader from "../shared/img/load.gif"
+
 import Styles from "./Transaction.module.css";
 import success from "../shared/img/success.png";
 import failed from "../shared/img/failed.png";
@@ -14,9 +16,11 @@ const BuySellDetails = (props) => {
 
 	const [error, setError] = useState(null);
 	const [transaction, setTransaction] = useState([]);
+	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
 		const fetchData = async () => {
+			setIsLoading(true);
 			try {
 				const { data } = await axios.post(
 					`${process.env.REACT_APP_SERVER_URL}/transaction/data`,
@@ -36,6 +40,9 @@ const BuySellDetails = (props) => {
 				console.log(err.response.data);
 				setError("Something went wrong!" + err.response.data.message);
 			}
+			setTimeout(() => {
+				setIsLoading(false);
+			}, 500);
 		};
 
 		fetchData();
@@ -50,7 +57,8 @@ const BuySellDetails = (props) => {
 			{error && <Alert msg={error} onClose={clearError} />}
 			<div class="card m-5 shadow p-3 mb-5 bg-body rounded">
 				<div class="card-body">
-					{transaction.isSuccess && (
+					{isLoading && <img src={loader} alt="" />}
+					{!isLoading &&  transaction.isSuccess && (
 						<div>
 							<img src={success} alt="" id={Styles.simg} />
 							{transaction.category === "buy_coin" && (
@@ -92,7 +100,7 @@ const BuySellDetails = (props) => {
 							<Link className="btn btn-success mt-2 fs-5" to="/transactions">Back to Transactions</Link>
 						</div>
 					)}
-					{!transaction.isSuccess && (
+					{!isLoading &&  !transaction.isSuccess && (
 						<div>
 							<img src={failed} alt="" id={Styles.simg} />
 							{transaction.category === "buy_coin" && (
