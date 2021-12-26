@@ -107,7 +107,74 @@ const getAssetsData = async (req, res, next) => {
 	}
 };
 
-const getReports = async (req, res, next) => {};
+const getReports = async (req, res, next) => {
+	try {
+		let userData = await User.findById(req.userData.id).populate("portfolio");
+
+		// Finding coin assets in Portfolio
+		let coinArray = userData.portfolio.coinsOwned;
+		let coinAssetList = [];
+
+		let sNo = 0;
+		for (let index in coinArray) {
+			sNo += 1;
+
+			let { data: tcoinData } = await CoinGeckoClient.coins.fetch(
+				coinArray[index].coinid,
+				{
+					tickers: false,
+					community_data: false,
+					developer_data: false,
+					sparkline: false,
+				}
+			);
+
+			// Calculating change Percentage
+			let buyPrice = BigInt(coinArray[index].priceOfBuy);
+			let changePercentage =
+				BigInt(Math.trunc(tcoinData.market_data.current_price.inr * 100)) -
+				buyPrice;
+			changePercentage = Number((changePercentage * 10000n) / buyPrice) / 100;
+
+			tcoinData.sNo = sNo;
+			tcoinData.quantity = converter.quantityToDecimalString(
+				coinArray[index].quantity
+			);
+			tcoinData.purchasePrice = converter.amountToRupeesPaise(
+				coinArray[index].priceOfBuy
+			);
+			tcoinData.currentPrice = converter.marketPriceToRupeesPaise(
+				tcoinData.market_data.current_price.inr
+			);
+			tcoinData.changePercentage = changePercentage;
+			
+			//getting the current price
+			const currentPrice = BigInt(Math.floor(
+				parseFloat(tcoinData.market_data.current_price.inr).toFixed(2) * 100
+			));
+
+
+			
+			let totalCost = BigInt(coinArray[index].priceOfBuy)*BigInt(coinArray[index].quantity);
+			let currentTotalValue = currentPrice*BigInt(coinArray[index].quantity);
+			totalCost = totalCost.toString().slice(0, -7);
+			currentTotalValue = currentTotalValue.toString().slice(0, -7);
+			
+			tcoinData.moneyInvested = converter.amountToRupeesPaise(totalCost);
+
+			tcoinData.currentTotalValue = converter.amountToRupeesPaise(currentTotalValue);
+
+			coinAssetList.push(tcoinData);
+		}
+
+		return res.status(201).json(coinAssetList);
+	} catch (err) {
+		console.log(err);
+		const error = new Error("ERR: Unable to fetch Assets data.");
+		error.code = 405;
+		return next(error);
+	}
+};
 
 module.exports.getCoinAssetsData = getCoinAssetsData;
 module.exports.getAssetsData = getAssetsData;
