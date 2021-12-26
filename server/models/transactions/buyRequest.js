@@ -26,10 +26,15 @@ const buyRequestSchema=new mongoose.Schema({
     portfolioId: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "Portfolio",
-	}
-
-  
-
+	},
+    transaction: {
+        type: mongoose.Schema.Types.ObjectId,
+		ref: "Transaction",
+    },
+    buyLimit:{
+        type: mongoose.Schema.Types.ObjectId,
+		ref: "buyLimit",
+    }
 },{
     timestamps:true
 });

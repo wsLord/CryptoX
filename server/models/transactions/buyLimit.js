@@ -20,6 +20,10 @@ const buyLimitSchema = new mongoose.Schema(
             
             
         },
+        price: {
+			type: String,
+			required: true,
+		},
         maxPrice: {
             type:String,
             required :true

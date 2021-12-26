@@ -56,7 +56,7 @@ const exchange = async (req, res,next) => {
 		tcost = tcost.toString();
 
         //Making sure the cost is atleast greater than the charge
-        console.log(currentPrice1,BigInt(tcost),ChargeOfTransaction);
+        // console.log(currentPrice1,BigInt(tcost),ChargeOfTransaction);
         if(BigInt(tcost)<=ChargeOfTransaction){
             const error = new Error(
 				"TRANSACTION DECLINED! Cost must be atleast Re. 200"
