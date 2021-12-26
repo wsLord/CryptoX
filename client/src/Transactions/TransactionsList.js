@@ -63,7 +63,16 @@ const TransactionsList = () => {
 							<tbody>
 								{transactionList.map((element) => {
 									return (
-										<tr>
+										<tr class={Styles.pointer} onClick={() => {
+											let path = "/transactions/" + element.tNextPath;
+											console.log(path);
+											history.push({
+												pathname: "/transactions/" + element.tNextPath,
+												state: {
+													tid: element.tID,
+												},
+											});
+										}}>
 											<td className="fw-bold">{element.tType}</td>
 											<td>
 												{new Date(element.tDate).toString().slice(0, -31)}
@@ -94,16 +103,6 @@ const TransactionsList = () => {
 												<button
 													type="button"
 													className="btn btn-light bg-transparent"
-													onClick={() => {
-														let path = "/transactions/" + element.tNextPath;
-														console.log(path);
-														history.push({
-															pathname: "/transactions/" + element.tNextPath,
-															state: {
-																tid: element.tID,
-															},
-														});
-													}}
 												>
 													<i className="fa fa-chevron-right"></i>
 												</button>

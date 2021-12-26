@@ -1,5 +1,4 @@
 const { validationResult } = require("express-validator");
-const axios = require("axios");
 const CoinGecko = require("coingecko-api");
 const CoinGeckoClient = new CoinGecko();
 require("dotenv").config();
@@ -12,6 +11,13 @@ const receiverTransaction = require("../../models/transactions/receiveCoin");
 const Transaction = require("../../models/transaction");
 
 const sendRecieve = async (req, res, next) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return next(
+			new Error("ERR: Invalid inputs passed, please check your data.")
+		);
+	}
+
 	try {
 		//ChargeForTransaction
 		const chargeOfTransaction = BigInt(process.env.SEND_CHARGES * 100);
@@ -89,14 +95,10 @@ const sendRecieve = async (req, res, next) => {
 		const moneyForReciever = cost - chargeOfTransaction;
 		const moneyForAdmin = chargeOfTransaction;
 
-		// //Trimming last 7 extra digits
-		// const charge = chargeOfTransaction.toString().slice(0, -7);
-		// const recMon = moneyForReciever.toString().slice(0, -7);
-
 		//Finding Quantity of coins To Buy By Admin precise to 7 digs
 		const quantityRecievedByAdmin = (moneyForAdmin * 10000000n) / currentPrice;
 
-		//Finding Quantity of coins To Buy By Admin And Reciever
+		//Finding Quantity of coins To Buy By Reciever
 		const quantityRecievedByReciever = quantityToSend - quantityRecievedByAdmin;
 
 		//Creating Transaction Instance
@@ -110,6 +112,7 @@ const sendRecieve = async (req, res, next) => {
 		// Creating Sender And Reciever Transaction Instance
 		let senTrans = await senderTransaction.create({
 			wallet: walletOfSender.id,
+			to: emailOfReciever,
 			coinid: coinId,
 			amount: cost.toString(),
 			price: currentPrice.toString(),
@@ -120,6 +123,7 @@ const sendRecieve = async (req, res, next) => {
 		});
 		let recTrans = await receiverTransaction.create({
 			wallet: walletOfReciever.id,
+			from: userSendingCoin.email,
 			coinid: coinId,
 			amount: moneyForReciever.toString(),
 			price: currentPrice.toString(),

@@ -83,6 +83,15 @@ router.post(
 	sendReceiveController.sendRecieve
 );
 
-router.post("/exchange", exchange);
+// Exchange Coins
+router.post(
+	"/exchange",
+	[
+		check("quantity").not().isEmpty(),
+		check("coinid1").not().isEmpty(),
+		check("coinid2").not().isEmpty(),
+	],
+	exchange
+);
 
 module.exports = router;
