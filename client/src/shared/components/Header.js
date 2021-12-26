@@ -77,12 +77,10 @@ const Header = () => {
 						</ul>
 						<ul className="nav navbar-nav navbar-right">
 
-							<NotificationsCenter/>
-							
-							<div className="dropstart">
-								<button id={Styles.btn} className="dropdown-toggle" type="button" data-bs-toggle="dropdown">
-									<img src={profile} id={Styles.profile} alt="" />
-								</button>
+							<NotificationsCenter />
+							<div class="vr"></div>
+							<div className="dropstart ms-2">
+								<img src={profile} id={Styles.profile} className="dropdown-toggle bg-transparent" type="button" data-bs-toggle="dropdown" alt="" />
 								<ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
 									<li><Link className="dropdown-item" to="/settings">Setting</Link></li>
 									<li><button className="dropdown-item" onClick={ctx.logout}>Sign out</button></li>
