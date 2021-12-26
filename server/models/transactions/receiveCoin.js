@@ -6,6 +6,10 @@ const receiveCoinSchema = new mongoose.Schema(
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Wallet",
 		},
+		from: {
+			type: String,
+			required: true,
+		},
 		coinid: {
 			type: String,
 			required: true,
