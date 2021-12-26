@@ -24,7 +24,15 @@ const sellRequestSchema=new mongoose.Schema({
     portfolioId: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "Portfolio",
-	}
+	},
+    transaction: {
+        type: mongoose.Schema.Types.ObjectId,
+		ref: "Transaction",
+    },
+    sellLimit:{
+        type: mongoose.Schema.Types.ObjectId,
+		ref: "sellLimit",
+    }
 
   
 

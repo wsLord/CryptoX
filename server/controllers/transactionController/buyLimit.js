@@ -4,38 +4,39 @@ const Transaction = require('../../models/transaction');
 const buyLimitTransaction = require("../../models/transactions/buyLimit");
 const buyLimit = async (req, res, next) => {
 	try {
+		let {quantity,coinId,maxPrice} = req.body;
 		//Finding  the user
 		let user = await User.findById(req.userData.id);
 
 		//getting the quantity and maxPrice 
-		let quantity = BigInt(Math.floor(parseFloat(req.body.quantity).toFixed(7) * 10000000));
+		quantity = BigInt(Math.floor(parseFloat(quantity).toFixed(7) * 10000000));
 		const maxpri = BigInt(Math.floor(
-			parseFloat(req.body.maxPrice).toFixed(2) * 100
+			parseFloat(maxPrice).toFixed(2) * 100
 		));
 
 		let transactionInstance = await Transaction.create({
-			category: "buy_request",
-			wallet: walletOfUser.id,
-			buyRequest: null,
+			category: "buy_limit",
+			wallet: user.wallet,
+			buyLimit: null,
 		});
 		// Creating Buy Coin Transaction Instance
 		let buyLimitTransactionInstance = await buyLimitTransaction.create({
-			wallet: walletOfUser.id,
-			coinid: coin.id,
-			amount: cost.toString(),
+			wallet:user.wallet,
+			coinid: coinId,
+			amount: 'unspecified',
 			mode:"1",
-			price: currentPrice.toString(),
-			maxPrice: req.maxPrice,
+			price: 'unspecified',
+			maxPrice: maxpri.toString(),
 			quantity: quantity.toString(),
 			status: "PENDING",
 		});
 		//Linking the buyRequest to Transaction
-		transactionInstance.buyRequest = buyLimitTransactionInstance.id;
+		transactionInstance.buyLimit = buyLimitTransactionInstance.id;
 		await transactionInstance.save();
 
 
         let newRequest = await BuyRequest.create({
-			coinId: req.body.coinId,
+			coinId: coinId,
 			from: user.wallet,
 			quantity: quantity.toString(),
 			mode: "1",
