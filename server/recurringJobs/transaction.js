@@ -35,13 +35,17 @@ const executeOrders2 = async (coin)=>{
     try{
 
         //getting the current Price of the coin
-        let currentPrice=BigInt(Math.floor(coin.current_price*100));
-
-        //finding all the buyRequest for the current coin
+        const currentPrice = BigInt(Math.floor(
+			parseFloat(coin.current_price).toFixed(2) * 100
+        ));
+        //finding all the buyRequest for the current coin and populated the transaction and buyLimit
         let buyReqs =await buyRequest.find({
             coinId:coin.id,
             mode:"1"           
-        }).exec();
+        })
+        .populate('transaction')
+        .populate('buyLimit')
+        .exec();
          
          //iterating over the request for the current coin
          for(req of buyReqs){      
@@ -61,7 +65,7 @@ const executeOrders2 = async (coin)=>{
                 let tcost = currentPrice * quantity;
 
                 //storing the total cost as ttcost
-                const ttcost = tconst;
+                const ttcost = tcost;
 
                 //converting tcost to paise 
                 tcost = tcost.toString();     
@@ -71,28 +75,15 @@ const executeOrders2 = async (coin)=>{
                 const cost = BigInt(tcost);
 
                 //checking if the user has enough balance
-                if(BigInt(walletOfUser.balance) >= cost){           
+                if(BigInt(walletOfUser.balance) >= cost){
                 
-                let transactionInstance = await Transaction.create({
-                    category: "buy_request",
-                    wallet: walletOfUser.id,
-                    buyRequest: null,
-                });
-                // Creating Buy Coin Transaction Instance
-                let buyLimitTransactionInstance = await buyLimitTransaction.create({
-                    wallet: walletOfUser.id,
-                    coinid: coin.id,
-                    amount: cost.toString(),
-                    mode:"1",
-                    price: currentPrice.toString(),
-                    maxPrice: req.maxPrice,
-                    quantity: quantity.toString(),
-                    status: "SUCCESS",
-                });
+                //storing the current Price and total ammount
+                req.buyLimit.price = currentPrice.toString();
+                req.buyLimit.amount = cost.toString();
+                await req.buyLimit.save();
+                
         
-                // Linking Transaction Instance to Add Money Transaction Instance
-                transactionInstance.buyCoin = buyCoinTransactionInstance.id;
-                await transactionInstance.save();
+                
         
                
         
@@ -115,7 +106,7 @@ const executeOrders2 = async (coin)=>{
                 //updating the portfolio
                 if (coinIndex!=-1) {
                     let newQuantity = BigInt(oldQuantity) + quantity;
-                    let newAvgPrice = (oldAvgPrice*oldQuantity + cost) / newQuantity;
+                    let newAvgPrice = (oldAvgPrice*oldQuantity + ttcost) / newQuantity;
         
                     portfolioOfUser.coinsOwned[coinIndex].quantity = newQuantity.toString();
                     portfolioOfUser.coinsOwned[coinIndex].priceOfBuy = newAvgPrice.toString();
@@ -128,9 +119,10 @@ const executeOrders2 = async (coin)=>{
                     });
                 }
                 await portfolioOfUser.save();
+                req.buyLimit.status = "SUCCESS";
+                await req.buyLimit.save();
                 await buyRequest.findByIdAndDelete(req._id);                //deleting the buy Request when request is processed
-                buyCoinTransactionInstance.status = "SUCCESS";
-                await buyCoinTransactionInstance.save();
+                
                 console.log('transaction done');
                 }
             }
@@ -265,7 +257,7 @@ module.exports.checkLimitBuy=async()=>{
     const mJob =schedule.scheduleJob('*/5 * * * * *',async ()=>{//my place
         let coinData =  await axios.get(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&order=market_cap_desc&per_page=100&page=1&sparkline=false`);
         for(coin of coinData.data){
-        // executeOrders2(coin);
+        executeOrders2(coin);
         // executeOrders3(coin);
         // executeOrders();
         }
