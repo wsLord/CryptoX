@@ -142,12 +142,12 @@ const Exchange = ({ coinAssetList: assetList, onError }) => {
 			console.log(data);
 
 			// Success
-			// return history.push({
-			// 	pathname: "/confirm/send",
-			// 	state: {
-			// 		...data,
-			// 	},
-			// });
+			return history.push({
+				pathname: "/confirm/exchange",
+				state: {
+					...data,
+				},
+			});
 		} catch (err) {
 			console.log(err.response.data.message);
 			onError(err.response.data.message);

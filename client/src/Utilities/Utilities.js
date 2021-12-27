@@ -116,7 +116,7 @@ const Utilities = () => {
 								className={style.convertLink}
 								onClick={() => handleClick("convert")}
 							>
-								Convert
+								Exchange
 							</button>
 						</li>
 					</ul>
