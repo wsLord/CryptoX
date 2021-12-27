@@ -12,6 +12,11 @@ const getData = async (req, res, next) => {
 			balance = converter.amountToRupeesPaise(user.wallet.balance);
 		}
 
+		let referralBalance = null;
+		if (req.body.referralBalance) {
+			referralBalance = converter.amountToDecimalString(user.wallet.referralBalance);
+		}
+
 		let isInWatchList;
 		if (req.body.isInWatchList) {
 			isInWatchList = user.watchList.includes(req.body.isInWatchList);
@@ -28,6 +33,7 @@ const getData = async (req, res, next) => {
 			...(req.body.watchList && { watchList: user.watchList }),
 			...(req.body.isInWatchList && { isInWatchList: isInWatchList }),
 			...(req.body.balance && { balance: balance }),
+			...(req.body.referralBalance && { referralBalance: referralBalance }),
 		};
 
 		// Sending Required Data

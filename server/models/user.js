@@ -27,6 +27,7 @@ const userSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 	},
+	// saves id of user that referred
 	referredBy: {
 		type: String,
 		default: null,

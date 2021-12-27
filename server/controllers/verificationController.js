@@ -1,5 +1,6 @@
 const emailVerifyToken = require("../models/emailVerifyToken");
 const emailVerifyTokenSender = require("../middlewares/emailToken");
+const referralController = require("../controllers/referralController");
 
 const verification = async (req, res, next) => {
 	// Find a matching token
@@ -30,13 +31,17 @@ const verification = async (req, res, next) => {
 		});
 	}
 
-	// Verify and save the user
-	user.isVerified = true;
+	// Verify and give Referral amount if referred
 	try {
+		user.isVerified = true;
+
+		// Check and add referral amount
+		await referralController.addReferralAmount(user.id);
+
 		await user.save();
 	} catch (err) {
 		console.log(err);
-		return next(new Error("ERR: Unable to verify. Please try later."));
+		return next(new Error("ERR: Unable to verify or Referral Amount Error!"));
 	}
 
 	res.status(201).json({

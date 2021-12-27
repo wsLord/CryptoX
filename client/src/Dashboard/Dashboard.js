@@ -19,6 +19,7 @@ const Dashboard = (props) => {
 	const [name, setName] = useState("User");
 	const [balanceRupees, setBalanceRupees] = useState("***");
 	const [balancePaise, setBalancePaise] = useState("**");
+	const [referralBalance, setReferralBalance] = useState("***.**");
 	const [isEmailVerified, setIsEmailVerified] = useState(false);
 	const [error, setError] = useState(null);
 
@@ -34,6 +35,7 @@ const Dashboard = (props) => {
 						name: true,
 						balance: true,
 						isEmailVerified: true,
+						referralBalance: true,
 					},
 					{
 						headers: {
@@ -50,6 +52,7 @@ const Dashboard = (props) => {
 				setName(data.name);
 				setBalanceRupees(data.balance.Rupees);
 				setBalancePaise(data.balance.Paise);
+				setReferralBalance(data.referralBalance);
 				setIsEmailVerified(data.isEmailVerified);
 				setArticles(parseData.articles);
 				setLoading(false);
@@ -79,14 +82,11 @@ const Dashboard = (props) => {
 		setLoading(true);
 
 		try {
-			const { data } = await axios.get(
-				`${process.env.REACT_APP_SERVER_URL}/verify/email`,
-				{
-					headers: {
-						Authorization: "Bearer " + ctx.token,
-					},
-				}
-			);
+			const { data } = await axios.get(`${process.env.REACT_APP_SERVER_URL}/verify/email`, {
+				headers: {
+					Authorization: "Bearer " + ctx.token,
+				},
+			});
 
 			console.log(data);
 
@@ -112,16 +112,12 @@ const Dashboard = (props) => {
 					<div className="card shadow-sm p-3 mb-5 bg-body rounded">
 						{isEmailVerified && (
 							<div className="card-body" id={Styles.verify}>
-								<i className="fa fa-check-circle text-success">
-									Account verified
-								</i>
+								<i className="fa fa-check-circle text-success">Account verified</i>
 							</div>
 						)}
 						{!isEmailVerified && (
 							<div className="card-body" id={Styles.verify}>
-								<i className="fa fa-exclamation-triangle text-danger">
-									Account not verified
-								</i>
+								<i className="fa fa-exclamation-triangle text-danger">Account not verified</i>
 								<button type="button" className="btn btn-success" onClick={sendVerificationMail}>
 									<strong>Verify your ID</strong>
 								</button>
@@ -133,7 +129,7 @@ const Dashboard = (props) => {
 							<h3>
 								Total balance ₹ {balanceRupees}.{balancePaise}
 							</h3>
-							<h4>Total amount earned from referral ₹ 0.00</h4>
+							<h4>Total amount earned from referral: ₹ {referralBalance}</h4>
 						</div>
 					</div>
 				</div>

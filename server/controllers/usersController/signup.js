@@ -48,7 +48,7 @@ const signup = async (req, res, next) => {
 
 			// Only check if such user found
 			if (referralUser) {
-				referredBy = referralUser.email;
+				referredBy = referralUser.id;
 			}
 
 			// Add money to referred user wallet
@@ -73,6 +73,7 @@ const signup = async (req, res, next) => {
 	let zero = "0";
 	let wallet = await Wallet.create({
 		balance: zero,
+		referralBalance: zero,
 		user: createdUser._id,
 	});
 	let portfo = await Portfolio.create({

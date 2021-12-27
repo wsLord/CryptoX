@@ -42,4 +42,41 @@ const invite = async (req, res, next) => {
 	});
 };
 
+const addReferralAmount = (userid) => {
+	return new Promise(async (resolve, reject) => {
+		try {
+			// User who got referred by someone
+			const userReferred = await User.findById(userid).populate("wallet");
+			if (userReferred.referredBy !== null) {
+				// User who referred this user
+				const userReferrer = await User.findById(userReferred.referredBy).populate("wallet");
+
+				const referrerAmount = BigInt(Math.trunc(process.env.REFERRAL_AMOUNT_OLD_USER * 100));
+				const newBalanceReferrer = BigInt(userReferrer.wallet.balance) + referrerAmount;
+				const newRefBalanceReferrer = BigInt(userReferrer.wallet.referralBalance) + referrerAmount;
+
+				const referredAmount = BigInt(Math.trunc(process.env.REFERRAL_AMOUNT_NEW_USER * 100));
+				const newBalanceReferred = BigInt(userReferred.wallet.balance) + referredAmount;
+				const newRefBalanceReferred = BigInt(userReferred.wallet.referralBalance) + referredAmount;
+
+				userReferrer.wallet.balance = newBalanceReferrer.toString();
+				userReferrer.wallet.referralBalance = newRefBalanceReferrer.toString();
+				await userReferrer.wallet.save();
+
+				userReferred.wallet.balance = newBalanceReferred.toString();
+				userReferred.wallet.referralBalance = newRefBalanceReferred.toString();
+				await userReferred.wallet.save();
+
+				resolve("Added Referral Amount");
+			} else {
+				resolve("unreferred");
+			}
+		} catch (err) {
+			console.log(err);
+			reject("Unable to check for Referral Amount");
+		}
+	});
+};
+
 module.exports.invite = invite;
+module.exports.addReferralAmount = addReferralAmount;
