@@ -139,7 +139,7 @@ const CoinDetail = () => {
 	// Data Handling Functions
 	const addToWatchList = async () => {
 		try {
-			const res = await axios.get(
+			const { data } = await axios.get(
 				`${process.env.REACT_APP_SERVER_URL}/user/watchlist/add/${coinid}`,
 				{
 					headers: {
@@ -148,6 +148,7 @@ const CoinDetail = () => {
 				}
 			);
 
+			console.log(data.message);
 			setIsInWatchList(true);
 		} catch (err) {
 			console.log(err.response.data.message);
@@ -156,7 +157,7 @@ const CoinDetail = () => {
 	};
 	const removeFromWatchList = async () => {
 		try {
-			const res = await axios.get(
+			const { data } = await axios.get(
 				`${process.env.REACT_APP_SERVER_URL}/user/watchlist/remove/${coinid}`,
 				{
 					headers: {
@@ -165,6 +166,7 @@ const CoinDetail = () => {
 				}
 			);
 
+			console.log(data.message);
 			setIsInWatchList(false);
 		} catch (err) {
 			console.log(err.response.data.message);
@@ -184,12 +186,16 @@ const CoinDetail = () => {
 		<Fragment>
 			{error && <Alert msg={error} onClose={clearError} />}
 			{isLoading && <LoadingSpinner />}
-			{!isLoading &&
+			{!isLoading && (
 				<div>
 					<div className="card m-3">
 						<div className="card-body d-flex justify-content-between">
 							<div className="title d-flex align-items-center">
-								<img className={Styles.logo} src={coinData.image.large} alt="" />
+								<img
+									className={Styles.logo}
+									src={coinData.image.large}
+									alt=""
+								/>
 								<h1>{coinData.name} </h1>
 								<p className="sym text-secondary h3">
 									{coinData.symbol.toUpperCase()}
@@ -256,7 +262,8 @@ const CoinDetail = () => {
 
 										<p className="text-secondary fs-5">
 											Looks like there isn't any{" "}
-											<b>{coinData.symbol.toUpperCase()}</b> in your account yet.
+											<b>{coinData.symbol.toUpperCase()}</b> in your account
+											yet.
 											<br />
 											CryptoX is the easiest place to get started.
 										</p>
@@ -304,7 +311,7 @@ const CoinDetail = () => {
 						</div>
 					</div>
 				</div>
-			}
+			)}
 		</Fragment>
 	);
 };

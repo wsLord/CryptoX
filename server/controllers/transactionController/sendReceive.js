@@ -9,13 +9,12 @@ const Portfolio = require("../../models/portfolio");
 const senderTransaction = require("../../models/transactions/sendCoin");
 const receiverTransaction = require("../../models/transactions/receiveCoin");
 const Transaction = require("../../models/transaction");
+const converter = require("../conversions");
 
 const sendRecieve = async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-		return next(
-			new Error("ERR: Invalid inputs passed, please check your data.")
-		);
+		return next(new Error("ERR: Invalid inputs passed, please check your data."));
 	}
 
 	try {
@@ -23,7 +22,7 @@ const sendRecieve = async (req, res, next) => {
 		const chargeOfTransaction = BigInt(process.env.SEND_CHARGES * 100);
 
 		//needed values in req.body
-		const { coinid: coinId, email: emailOfReciever } = req.body;
+		const { coinid: coinId, email: emailOfReciever, note: messageNote } = req.body;
 		const quantityToSend = BigInt(Math.trunc(req.body.quantity * 10000000));
 
 		//Finding the two Users
@@ -53,9 +52,7 @@ const sendRecieve = async (req, res, next) => {
 		});
 
 		//getting the current Price
-		const currentPrice = BigInt(
-			Math.trunc(coinData.market_data.current_price.inr * 100)
-		);
+		const currentPrice = BigInt(Math.trunc(coinData.market_data.current_price.inr * 100));
 
 		//wallets and portfolios of both users
 		const walletOfSender = userSendingCoin.wallet;
@@ -69,9 +66,7 @@ const sendRecieve = async (req, res, next) => {
 
 		// Length of tcost must be >= 12 so that transaction is worth Rs.100
 		if (tcost.length < 12) {
-			const error = new Error(
-				"TRANSACTION DECLINED! Value must be atleast Rs. 100"
-			);
+			const error = new Error("TRANSACTION DECLINED! Value must be atleast Rs. 100");
 			error.code = 405;
 			return next(error);
 		}
@@ -116,10 +111,11 @@ const sendRecieve = async (req, res, next) => {
 			coinid: coinId,
 			amount: cost.toString(),
 			price: currentPrice.toString(),
-			quantitySent: quantityToSend.toString(),
+			totalQuantity: quantityToSend.toString(),
 			chargedQuantity: quantityRecievedByAdmin.toString(),
 			chargedMoney: moneyForAdmin.toString(),
 			status: "PENDING",
+			note: messageNote,
 		});
 		let recTrans = await receiverTransaction.create({
 			wallet: walletOfReciever.id,
@@ -129,6 +125,7 @@ const sendRecieve = async (req, res, next) => {
 			price: currentPrice.toString(),
 			quantityRecieved: quantityRecievedByReciever.toString(),
 			status: "PENDING",
+			note: messageNote,
 		});
 
 		//Linking Sender and Reciever to Transaction Instance
@@ -157,19 +154,32 @@ const sendRecieve = async (req, res, next) => {
 		//In case of Insufficient coins In portfolio
 		// console.log(BigInt(oldQuantity),quantityToSend);
 		if (coinIndex === -1 || oldQuantity < quantityToSend) {
-			senTrans.status = "FAILED";
-			senTrans.statusMessage = "Insufficient Coins in Assets";
-			await senTrans.save();
+			console.log("Insufficient Coins");
 
-			recTrans.status = "FAILED";
-			recTrans.statusMessage = "Insufficient Coins in Assets of Sender";
-			await recTrans.save();
+			try {
+				senTrans.status = "FAILED";
+				senTrans.statusMessage = "Insufficient Coins in Assets";
+				await senTrans.save();
 
-			const error = new Error(
-				"TRANSACTION DECLINED! Quantity of coin is Not Sufficient"
-			);
-			error.code = 405;
-			return next(error);
+				recTrans.status = "FAILED";
+				recTrans.statusMessage = "Insufficient Coins in Assets of Sender";
+				await recTrans.save();
+			} catch (err) {
+				const error = new Error("Some error occured on SendReceive. Details: " + err.message);
+				error.code = 405;
+				return next(error);
+			}
+
+			return res.status(200).json({
+				success: false,
+				toEmail: emailOfReciever,
+				note: messageNote,
+				message: "Insufficient Coins in Assets",
+				coinSymbol: coinData.symbol,
+				coinName: coinData.name,
+				totalQuantity: converter.quantityToDecimalString(quantityToSend.toString()),
+				transactionID: transactionInstance.id,
+			});
 		}
 
 		//Now transaction is possible
@@ -200,14 +210,10 @@ const sendRecieve = async (req, res, next) => {
 		if (coinIndex >= 0) {
 			let newQuantity = oldQuantity + quantityRecievedByReciever;
 			let newAvgPrice =
-				(oldAvgPrice * oldQuantity +
-					quantityRecievedByReciever * currentPrice) /
-				newQuantity;
+				(oldAvgPrice * oldQuantity + quantityRecievedByReciever * currentPrice) / newQuantity;
 
-			portfolioOfReciever.coinsOwned[coinIndex].quantity =
-				newQuantity.toString();
-			portfolioOfReciever.coinsOwned[coinIndex].priceOfBuy =
-				newAvgPrice.toString();
+			portfolioOfReciever.coinsOwned[coinIndex].quantity = newQuantity.toString();
+			portfolioOfReciever.coinsOwned[coinIndex].priceOfBuy = newAvgPrice.toString();
 		} else {
 			portfolioOfReciever.coinsOwned.push({
 				coinid: coinId,
@@ -225,7 +231,15 @@ const sendRecieve = async (req, res, next) => {
 		return res.status(200).json({
 			success: true,
 			message: "Transaction complete",
+			note: messageNote,
 			transactionID: transactionInstance.id,
+			toEmail: emailOfReciever,
+			coinSymbol: coinData.symbol,
+			coinName: coinData.name,
+			totalQuantity: converter.quantityToDecimalString(quantityToSend.toString()),
+			chargedQuantity: converter.quantityToDecimalString(quantityRecievedByAdmin.toString()),
+			chargedMoney: converter.amountToDecimalString(moneyForAdmin.toString()),
+			sentQuantity: converter.quantityToDecimalString(quantityRecievedByReciever.toString()),
 		});
 	} catch (err) {
 		console.log("Error in SendRecieve, Err:", err);
@@ -236,12 +250,10 @@ const sendRecieve = async (req, res, next) => {
 const verifyUser = async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-		return next(
-			new Error("ERR: Invalid inputs passed, please check your data.")
-		);
+		return next(new Error("ERR: Invalid inputs passed, please check your data."));
 	}
 
-	const email = req.body.email;
+	const { email } = req.body;
 
 	try {
 		const userData = await User.findOne({ email: email });

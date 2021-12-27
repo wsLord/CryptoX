@@ -1,26 +1,42 @@
-import React, { useState } from "react";
+import React, { useContext, useRef, useEffect, useState } from "react";
+import axios from "axios";
 
-export default function Send() {
-	const assets = [
-		{ coinID: "bitcoin", quantity: "212" },
-		{ coinID: "dogecoin", quantity: "2312" },
-		{ coinID: "ethereum", quantity: "500" },
-	];
+import AuthContext from "../store/authContext";
+import { useHistory } from "react-router-dom";
 
+const Send = ({ coinAssetList: assetList, onError }) => {
+	const history = useHistory();
+
+	const ctx = useContext(AuthContext);
+
+	const inputRefNotes = useRef();
+	const inputRefQuantity = useRef();
+	const [coinAssetList, setCoinAssetList] = useState([]);
 	const [maxQuantityLimit, setMaxQuantityLimit] = useState(0);
-	const [selectedCoin, setSelectedCoin] = useState("");
-
+	const [selectedCoin, setSelectedCoin] = useState({
+		name: "",
+		id: "",
+	});
 	const [verifyState, setVerifyState] = useState("verify");
 	const [email, setEmail] = useState("");
 	const [user, setUser] = useState("");
 
-
+	useEffect(() => {
+		if (assetList) {
+			console.log(assetList);
+			setCoinAssetList(assetList);
+		}
+	}, [assetList]);
 
 	const handleSelect = (event) => {
-		const selectedCoin = event.target.value;
-		setSelectedCoin(selectedCoin);
-		assets.forEach((element) => {
-			if (element.coinID === selectedCoin) {
+		const coinid = event.target.value;
+
+		coinAssetList.forEach((element) => {
+			if (element.id === coinid) {
+				setSelectedCoin({
+					name: element.name,
+					id: coinid,
+				});
 				setMaxQuantityLimit(element.quantity);
 			}
 		});
@@ -29,40 +45,98 @@ export default function Send() {
 		setEmail(event.target.value);
 		setVerifyState("verify");
 	};
-	const verifyUser = () => {
-		// //verify email here
 
-		// //set if verified
-		// setVerifyState("verified");
-		// setUser("Sanskar Jain");
+	// Verify tosend email here
+	const verifyUserHandler = async () => {
+		try {
+			const { data } = await axios.post(
+				`${process.env.REACT_APP_SERVER_URL}/transaction/send/verify`,
+				{
+					email: email,
+				},
+				{
+					headers: {
+						Authorization: "Bearer " + ctx.token,
+					},
+				}
+			);
 
-		// //set if invalid
-		setVerifyState("invalid");
+			if (data.isFound) {
+				// set if valid
+				setVerifyState("valid");
+				setUser(data.name);
+			} else {
+				// set if invalid
+				setVerifyState("invalid");
+			}
+		} catch (err) {
+			console.log(err.response.data.message);
+			onError(err.response.data.message);
+		}
 	};
+
+	// Send Coin Handler
+	const sendCoinHandler = async (event) => {
+		event.preventDefault();
+
+		try {
+			const { data } = await axios.post(
+				`${process.env.REACT_APP_SERVER_URL}/transaction/send/`,
+				{
+					coinid: selectedCoin.id,
+					email: email,
+					quantity: inputRefQuantity.current.value,
+					note: inputRefNotes.current.value,
+				},
+				{
+					headers: {
+						Authorization: "Bearer " + ctx.token,
+					},
+				}
+			);
+
+			console.log(data);
+
+			// Success
+			return history.push({
+				pathname: "/confirm/send",
+				state: {
+					...data,
+				},
+			});
+		} catch (err) {
+			console.log(err.response.data.message);
+			onError(err.response.data.message);
+		}
+	};
+
 	return (
 		<div>
-			<form className="d-flex m-5 flex-column align-items-start" action="">
+			<form
+				className="d-flex m-5 flex-column align-items-start"
+				action=""
+				onSubmit={sendCoinHandler}
+			>
 				<select className="form-select fs-4 p-2" onChange={handleSelect}>
-					<option className="h3" selectedCoin value="">
+					<option className="h3" value="">
 						Pay with
 					</option>
-					{assets.map((element) => {
+					{coinAssetList.map((element) => {
 						return (
-							<option className="fs-4" value={element.coinID}>
-								{element.coinID}
+							<option className="fs-4" key={element.id} value={element.id}>
+								{element.name}
 							</option>
 						);
 					})}
 				</select>
-				{selectedCoin !== "" && (
+				{selectedCoin.name !== "" && (
 					<p className="text-primary mt-3">
-						Available : <span className="h5">{maxQuantityLimit}</span> {selectedCoin} in
-						assets
+						Available : <span className="h5">{maxQuantityLimit}</span> {selectedCoin.name} in Assets
 					</p>
 				)}
 				<div className="input-group mt-3 fs-3">
 					<span className="input-group-text fs-4 bg-white" id="basic-addon3">
-						Amount
+						Quantity
 					</span>
 					<input
 						type="number"
@@ -70,6 +144,7 @@ export default function Send() {
 						id="amount"
 						min="0"
 						max={maxQuantityLimit}
+						ref={inputRefQuantity}
 						required
 					/>
 				</div>
@@ -88,40 +163,38 @@ export default function Send() {
 					/>
 					{verifyState === "verify" && (
 						<button
-							class="btn btn-link fs-5"
+							className="btn btn-link fs-5"
 							type="button"
 							id="button-addon2"
-							onClick={verifyUser}
+							onClick={verifyUserHandler}
 						>
 							Verify
 						</button>
 					)}
-					{verifyState === "verified" && (
+					{verifyState === "valid" && (
 						<button
-							class="btn btn-link"
+							className="btn btn-link"
 							type="button"
 							id="button-addon2"
-							onClick={verifyUser}
+							onClick={verifyUserHandler}
 						>
-							<i class="fa fa-check-circle text-success fs-4"></i>
+							<i className="fa fa-check-circle text-success fs-4"></i>
 						</button>
 					)}
 					{verifyState === "invalid" && (
 						<button
-							class="btn btn-link"
+							className="btn btn-link"
 							type="button"
 							id="button-addon2"
-							onClick={verifyUser}
+							onClick={verifyUserHandler}
 						>
-							<i class="fa fa-times-circle text-danger fs-4"></i>
+							<i className="fa fa-times-circle text-danger fs-4"></i>
 						</button>
 					)}
 				</div>
-				{verifyState === "verified" && (
-					<p className="text-success">* User Name : {user}</p>
-				)}
+				{verifyState === "valid" && <p className="text-success">* User Name : {user}</p>}
 				{verifyState === "invalid" && (
-					<p className="text-danger">* No user registered with given email ID</p>
+					<p className="text-danger">* No such user exists with given email ID</p>
 				)}
 				<div className="input-group mt-3 fs-3">
 					<span className="input-group-text fs-4 bg-white" id="basic-addon3">
@@ -130,13 +203,20 @@ export default function Send() {
 					<textarea
 						className="form-control"
 						id="msg"
-						placeholder="Optional message"
+						placeholder="Optional Message"
+						ref={inputRefNotes}
 					/>
 				</div>
-				<button type="submit" className="btn btn-success fs-4 mt-3 w-100">
+				<button
+					type="submit"
+					className="btn btn-success fs-4 mt-3 w-100"
+					disabled={verifyState !== "valid"}
+				>
 					Send
 				</button>
 			</form>
 		</div>
 	);
-}
+};
+
+export default Send;

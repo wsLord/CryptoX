@@ -25,7 +25,7 @@ const sendCoinSchema = new mongoose.Schema(
 			required: true,
 		},
 		// Total quantity being sent
-		quantitySent: {
+		totalQuantity: {
 			type: String,
 			required: true,
 		},
@@ -47,6 +47,9 @@ const sendCoinSchema = new mongoose.Schema(
 		statusMessage: {
 			type: String,
 		},
+		note: {
+			type: String,
+		}
 	},
 	{
 		timestamps: true,

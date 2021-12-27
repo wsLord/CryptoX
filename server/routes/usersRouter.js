@@ -5,7 +5,7 @@ const router = express.Router();
 const watchListController = require("../controllers/usersController/watchList");
 const login = require("../controllers/usersController/login");
 const userDataController = require("../controllers/usersController/dataController");
-const portfolio = require("../controllers/usersController/portfolio");
+const portfolioController = require("../controllers/usersController/portfolio");
 const forgotPasswordController = require("../controllers/usersController/forgotPassword");
 const signup = require("../controllers/usersController/signup");
 const changePassword = require("../controllers/usersController/changePassword");
@@ -62,8 +62,8 @@ router.post(
 router.get("/watchlist/add/:id", watchListController.addToWatchList);
 router.get("/watchlist/remove/:id", watchListController.removeFromWatchList);
 
-router.get("/assets/:id", portfolio.getCoinAssetsData);
-router.get("/assets/report", portfolio.getReports);
-router.get("/assets", portfolio.getAssetsData);
+router.get("/assets/:id", portfolioController.getCoinAssetsData);
+router.get("/assets/report", portfolioController.getReports);
+router.get("/assets", portfolioController.getAssetsData);
 
 module.exports = router;

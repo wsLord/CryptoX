@@ -1,10 +1,11 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, Fragment } from "react";
 import axios from "axios";
 
 import Send from "./Send";
 import Receive from "./Receive";
 import Convert from "./Convert";
 import img from "../shared/img/coin.gif";
+import Alert from "../shared/components/Alert";
 import AuthContext from "../store/authContext";
 
 const activeItem = "nav-item border-top border-primary border-3 rounded";
@@ -24,6 +25,7 @@ const Exchange = () => {
 		convertLink: unactiveLink,
 	});
 	const [coinAssetList, setCoinAssetList] = useState([]);
+	const [error, setError] = useState(null);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -79,8 +81,16 @@ const Exchange = () => {
 		}
 	};
 
+	const onError = (msg) => {
+		setError(msg);
+	};
+	const clearError = () => {
+		setError(null);
+	};
+
 	return (
-		<div>
+		<Fragment>
+			{error && <Alert msg={error} onClose={clearError} />}
 			<div className="card m-5">
 				<div className="card-body">
 					<ul className="nav nav-tabs fs-4">
@@ -113,18 +123,20 @@ const Exchange = () => {
 					<div className="d-flex">
 						<div className="col-6">
 							{style.sendItem === activeItem && (
-								<Send coinAssetList={coinAssetList} />
+								<Send coinAssetList={coinAssetList} onError={onError} />
 							)}
-							{style.receiveItem === activeItem && <Receive />}
+							{style.receiveItem === activeItem && (
+								<Receive onError={onError} />
+							)}
 							{style.convertItem === activeItem && (
-								<Convert coinAssetList={coinAssetList} />
+								<Convert coinAssetList={coinAssetList} onError={onError} />
 							)}
 						</div>
 						<img className="col-6 mt-3" src={img} alt="" />
 					</div>
 				</div>
 			</div>
-		</div>
+		</Fragment>
 	);
 };
 
