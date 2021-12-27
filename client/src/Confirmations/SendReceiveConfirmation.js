@@ -64,7 +64,7 @@ const SendCoinConfirmation = (props) => {
 							class="btn btn-success"
 							id={Styles.back}
 							onClick={() => {
-								history.push("/exchange");
+								history.push("/utilities");
 							}}
 						>
 							Back to Exchange
@@ -113,7 +113,7 @@ const SendCoinConfirmation = (props) => {
 							class="btn btn-danger"
 							id={Styles.back}
 							onClick={() => {
-								history.push("/exchange");
+								history.push("/utilities");
 							}}
 						>
 							Back to Exchange

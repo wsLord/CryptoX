@@ -36,7 +36,6 @@ export default function ExchangeDetails(props) {
                     }
                 );
 
-                console.log(data);
                 setTransaction(data);
             } catch (err) {
                 console.log(err.response.data);
@@ -64,10 +63,10 @@ export default function ExchangeDetails(props) {
                         <div>
                             <img src={success} alt="" id={Styles.simg} />
                             <p className="text-primary h5">
-                                Added {transaction.toCoinName} of value
+                                Added {transaction.recieveCoinName} of value
                             </p>
                             <p className="h3">
-                                {transaction.toQuantity} ({transaction.toCoinSymbol})
+                                {transaction.quantityRecieved} ({transaction.coinid2})
                             </p>
                             <p className="mx-auto h5" id={Styles.tid}>
                                 Transaction ID:{" "}
@@ -80,9 +79,13 @@ export default function ExchangeDetails(props) {
                                 <div class="card-body d-flex flex-column align-items-start">
                                     <p className="h5">State: </p>
                                     <p className="fs-6 text-secondary">{transaction.status}</p>
+                                    <p className="h5">Transaction charge: </p>
+                                    <p className="fs-6 text-secondary">
+                                        &#8377; {transaction.chargedMoney} ({transaction.chargedQuantity} {transaction.coinid1})
+                                    </p>
                                     <p className="h5">Exchanged from:</p>
                                     <p className="fs-6 text-secondary">
-                                        {transaction.fromQuantity} {transaction.fromCoinSymbol}
+                                        {transaction.quantitySendForExchange} {transaction.sendCoinSymbol}
                                     </p>
                                 </div>
                             </div>
@@ -93,10 +96,10 @@ export default function ExchangeDetails(props) {
                         <div>
                             <img src={failed} alt="" id={Styles.simg} />
                             <p className="text-primary h5">
-                                Exchange {transaction.fromCoinName} of value
+                                Exchange {transaction.sendCoinName} of value
                             </p>
                             <p className="h3">
-                                {transaction.fromQuantity} ({transaction.fromCoinSymbol})
+                                {transaction.quantitySendForExchange} ({transaction.sendCoinSymbol})
                             </p>
                             <p className="mx-auto h5" id={Styles.tid}>
                                 Transaction ID{" "}
@@ -111,7 +114,7 @@ export default function ExchangeDetails(props) {
                                     <p className="fs-6 text-secondary">{transaction.status}</p>
                                     <p className="h5">Exchange To:</p>
                                     <p className="fs-6 text-secondary">
-                                        {transaction.toQuantity} {transaction.toCoinSymbol}
+                                        {transaction.recieveCoinName}
                                     </p>
                                     <p className="h5">Error Message:</p>
                                     <p className="fs-6 text-secondary">

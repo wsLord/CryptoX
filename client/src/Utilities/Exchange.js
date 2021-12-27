@@ -185,7 +185,7 @@ const Exchange = ({ coinAssetList: assetList, onError }) => {
 						})}
 					</select>
 					<input
-						type="number"
+						type="text"
 						class="form-control w-50"
 						id="fromAmount"
 						placeholder="Quantity"
