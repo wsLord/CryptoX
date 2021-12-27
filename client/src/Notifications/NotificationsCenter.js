@@ -26,13 +26,6 @@ export default function NotificationsCenter() {
             const temp = [{ title: "20 btc Sold", msg: "hello this is msg", date: "27 Dec" },
             { title: "20 btc Sold", msg: "hello this is msg", date: "27 Dec" },
             { title: "20 btc Sold", msg: "hello this is msg", date: "27 Dec" }]
-            if (temp.length > data.size) {
-                showNewNotification();
-            }
-            setdata({
-                size: temp.length,
-                notifications: temp
-            })
             setIsLoading(false);
         }
         fetchdata();

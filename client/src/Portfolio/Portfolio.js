@@ -1,7 +1,5 @@
 import React, { Fragment, useContext, useEffect, useState } from "react";
 import axios from "axios";
-import Pdf from "react-to-pdf";
-
 import Styles from "./Portfolio.module.css";
 import addMoneyimg from "../shared/img/add-money.png";
 import withdrawimg from "../shared/img/withdraw.png";
@@ -12,6 +10,7 @@ import Transaction from "./Transaction";
 import Assets from "./Assets";
 import Alert from "../shared/components/Alert";
 import AuthContext from "../store/authContext";
+import DailyReport from "./DailyReport";
 
 const Portfolio = () => {
 	const ctx = useContext(AuthContext);
@@ -80,11 +79,6 @@ const Portfolio = () => {
 	const clearAlert = () => {
 		setError(null);
 	};
-	const ref = React.createRef();
-	const options = {
-		orientation: 'landscape',
-		unit: 'in'
-	};
 	return (
 		<Fragment>
 			{error && <Alert msg={error} onClose={clearAlert} />}
@@ -131,7 +125,7 @@ const Portfolio = () => {
 						</div>
 					</div>
 					<br />
-					<div ref={ref}><Assets onAlert={setAlert} /></div>
+					<div><Assets onAlert={setAlert} /></div>
 				</div>
 				<div className="w-100">
 					{windows.addMoney && <AddMoney />}
@@ -142,9 +136,7 @@ const Portfolio = () => {
 							<h3>Daily Report</h3>
 						</div>
 						<div className="card-body">
-							<Pdf targetRef={ref} filename="daily_report.pdf" options={options}>
-								{({ toPdf }) => <button onClick={toPdf} className='btn btn-success mt-3'><i class="fa fa-file-pdf-o fs-5"></i> Generate pdf</button>}
-							</Pdf>
+							<DailyReport/>
 						</div>
 					</div>
 				</div>
