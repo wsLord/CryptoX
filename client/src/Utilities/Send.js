@@ -139,7 +139,7 @@ const Send = ({ coinAssetList: assetList, onError }) => {
 						Quantity
 					</span>
 					<input
-						type="number"
+						type="text"
 						className="form-control"
 						id="amount"
 						min="0"
