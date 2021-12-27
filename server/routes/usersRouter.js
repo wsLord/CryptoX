@@ -62,8 +62,8 @@ router.post(
 router.get("/watchlist/add/:id", watchListController.addToWatchList);
 router.get("/watchlist/remove/:id", watchListController.removeFromWatchList);
 
-router.get("/assets/:id", portfolioController.getCoinAssetsData);
 router.get("/assets/report", portfolioController.getReports);
+router.get("/assets/:id", portfolioController.getCoinAssetsData);
 router.get("/assets", portfolioController.getAssetsData);
 
 module.exports = router;

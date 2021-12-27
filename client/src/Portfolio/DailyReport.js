@@ -24,7 +24,7 @@ export default function DailyReport() {
         const fetchData = async () => {
             try {
                 const { data } = await axios.get(
-                    `${process.env.REACT_APP_SERVER_URL}/user/assetsReport`,
+                    `${process.env.REACT_APP_SERVER_URL}/user/assets/report`,
                     {
                         headers: {
                             Authorization: "Bearer " + ctx.token,

@@ -10,7 +10,6 @@ const exchange = require("../controllers/transactionController/exchange");
 const sellController = require("../controllers/transactionController/sell");
 const sellLimit = require("../controllers/transactionController/sellLimit");
 const sendReceiveController = require("../controllers/transactionController/sendReceive");
-const sendRecieve = require("../controllers/transactionController/sendReceive");
 
 router.use(authVerify);
 
