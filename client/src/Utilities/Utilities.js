@@ -3,7 +3,7 @@ import axios from "axios";
 
 import Send from "./Send";
 import Receive from "./Receive";
-import Convert from "./Convert";
+import Exchange from "./Exchange";
 import img from "../shared/img/coin.gif";
 import Alert from "../shared/components/Alert";
 import AuthContext from "../store/authContext";
@@ -13,7 +13,7 @@ const unactiveItem = "nav-item";
 const activeLink = "nav-link active";
 const unactiveLink = "nav-link";
 
-const Exchange = () => {
+const Utilities = () => {
 	const ctx = useContext(AuthContext);
 
 	const [style, setStyle] = useState({
@@ -129,7 +129,7 @@ const Exchange = () => {
 								<Receive onError={onError} />
 							)}
 							{style.convertItem === activeItem && (
-								<Convert coinAssetList={coinAssetList} onError={onError} />
+								<Exchange coinAssetList={coinAssetList} onError={onError} />
 							)}
 						</div>
 						<img className="col-6 mt-3" src={img} alt="" />
@@ -140,4 +140,4 @@ const Exchange = () => {
 	);
 };
 
-export default Exchange;
+export default Utilities;

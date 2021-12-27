@@ -29,11 +29,11 @@ const getTransactionList = async (req, res, next) => {
 							select: "-_id amount status coinid updatedAt",
 						},
 						{
-							path: "buyRequest",
+							path: "buyLimit",
 							select: "-_id amount status coinid updatedAt",
 						},
 						{
-							path: "sellRequest",
+							path: "sellLimit",
 							select: "-_id amount status coinid updatedAt",
 						},
 						{
@@ -168,10 +168,10 @@ const getTransactionData = async (req, res, next) => {
 				select: "-_id -wallet -__v",
 			},
 			{
-				path: "buyRequest",
+				path: "buyLimit",
 			},
 			{
-				path: "sellRequest",
+				path: "sellLimit",
 			},
 			{
 				path: "withdrawMoney",

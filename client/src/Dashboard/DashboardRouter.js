@@ -15,7 +15,7 @@ import ErrorPage from "../pages/ErrorPage";
 import AddMoneyDetails from "../Transactions/AddMoneyDetails";
 import BuySellDetails from "../Transactions/BuySellDetails";
 import BuySellConfirmation from "../Confirmations/BuySellConfirmation";
-import Exchange from "../Exchange/Exchange"
+import Utilities from "../Utilities/Utilities";
 import ExchangeConfirmation from "../Confirmations/ExchangeConfirmation";
 import ExchangeDetails from "../Transactions/ExchangeDetails"
 import Settings from "../Settings/Settings";
@@ -55,9 +55,8 @@ const DashboardRouter = () => {
 				<Route exact path="/confirm/buysell" render={(props) => <BuySellConfirmation {...props}/>} />
 				<Route exact path="/confirm/send" render={(props) => <SendCoinConfirmation {...props}/>} />
 				<Route exact path="/confirm/exchange" render={(props) => <ExchangeConfirmation {...props}/>} />
-
-				<Route exact path="/exchange">
-					<Exchange />
+				<Route exact path="/utilities">
+					<Utilities />
 				</Route>
 				<Route exact path="/referral">
 					<Referral />
