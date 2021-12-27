@@ -8,13 +8,12 @@ const Portfolio = require("../../models/portfolio");
 const Exchange = require("../../models/transactions/exchange");
 const exchangeTransaction = require("../../models/transactions/exchange");
 const Transaction = require("../../models/transaction");
+const converter = require("../conversions");
 
 const exchange = async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-		return next(
-			new Error("ERR: Invalid inputs passed, please check your data.")
-		);
+		return next(new Error("ERR: Invalid inputs passed, please check your data."));
 	}
 
 	try {
@@ -48,12 +47,8 @@ const exchange = async (req, res, next) => {
 		});
 
 		//getting the current Prices
-		const currentPrice1 = BigInt(
-			Math.trunc(coinData.market_data.current_price.inr * 100)
-		);
-		const currentPrice2 = BigInt(
-			Math.trunc(coinData2.market_data.current_price.inr * 100)
-		);
+		const currentPrice1 = BigInt(Math.trunc(coinData.market_data.current_price.inr * 100));
+		const currentPrice2 = BigInt(Math.trunc(coinData2.market_data.current_price.inr * 100));
 
 		//wallets and portfolio of user
 		const walletOfUser = user.wallet;
@@ -65,9 +60,7 @@ const exchange = async (req, res, next) => {
 
 		// Length of tcost must be >= 12 so that transaction is worth Rs.100
 		if (tcost.length < 12) {
-			const error = new Error(
-				"TRANSACTION DECLINED! Value must be atleast Rs. 100"
-			);
+			const error = new Error("TRANSACTION DECLINED! Value must be atleast Rs. 100");
 			error.code = 405;
 			return next(error);
 		}
@@ -127,6 +120,9 @@ const exchange = async (req, res, next) => {
 		transactionInstance.exchange = excTrans.id;
 		await transactionInstance.save();
 
+		walletOfUser.transactionList.push(transactionInstance.id);
+		await walletOfUser.save();
+
 		// Checking if coin is already existent in Portfolio and getting its index
 		let oldQuantity;
 		let avgPrice;
@@ -147,11 +143,18 @@ const exchange = async (req, res, next) => {
 			excTrans.statusMessage = "Insufficient Coins in Assets Of User";
 			await excTrans.save();
 
-			const error = new Error(
-				"TRANSACTION DECLINED! Quantity of coin is Not Sufficient"
-			);
-			error.code = 405;
-			return next(error);
+			return res.status(200).json({
+				success: false,
+				message: "Quantity of coin is Not Sufficient",
+				transactionID: transactionInstance.id,
+				status: excTrans.status,
+				fromCoinSymbol: coinData.symbol.toUpperCase(),
+				totalQuantity: converter.quantityToDecimalString(quantityToExchange.toString()),
+				fromCoinName: coinData.name,
+				toCoinSymbol: coinData2.symbol.toUpperCase(),
+				toCoinQuantity: converter.quantityToDecimalString(quantityToExchange.toString()),
+				toCoinName: coinData2.name,
+			});
 		}
 
 		//Now transaction is possible
@@ -183,8 +186,7 @@ const exchange = async (req, res, next) => {
 		if (coinIndex >= 0) {
 			let newQuantity = oldQuantity + quantityRecievedByUser;
 			let newAvgPrice =
-				(oldAvgPrice * oldQuantity + quantityRecievedByUser * currentPrice2) /
-				newQuantity;
+				(oldAvgPrice * oldQuantity + quantityRecievedByUser * currentPrice2) / newQuantity;
 
 			portfolioOfUser.coinsOwned[coinIndex].quantity = newQuantity.toString();
 			portfolioOfUser.coinsOwned[coinIndex].priceOfBuy = newAvgPrice.toString();
@@ -204,6 +206,15 @@ const exchange = async (req, res, next) => {
 			success: true,
 			message: "Transaction complete",
 			transactionID: transactionInstance.id,
+			fromCoinSymbol: coinData.symbol.toUpperCase(),
+			totalCoinQuantity: converter.quantityToDecimalString(quantityToExchange.toString()),
+			fromCoinName: coinData.name,
+			toCoinSymbol: coinData2.symbol.toUpperCase(),
+			totalQuantity: converter.quantityToDecimalString(quantityToExchange.toString()),
+			toCoinName: coinData2.name,
+			chargedQuantity: converter.quantityToDecimalString(quantityRecievedByAdmin.toString()),
+			chargedMoney: chargeOfTransaction.toString(),
+			fromUpdatedQuantity: converter.quantityToDecimalString(newQuantity.toString()),
 		});
 	} catch (err) {
 		console.log("Error in SendRecieve, Err:", err);

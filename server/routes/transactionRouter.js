@@ -60,7 +60,7 @@ router.post(
 	"/sellLimit",
 	[
 		check("quantity").not().isEmpty(),
-		check("maxPrice").not().isEmpty(),
+		check("minPrice").not().isEmpty(),
 		check("coinid").not().isEmpty(),
 	],
 	sellLimit

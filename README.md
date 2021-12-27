@@ -30,5 +30,5 @@ DisplayCrypto - Home/components
 Trade/CryptoList
 CoinDetail****
 WatchList**
-
+Utilities/Exchange
 
