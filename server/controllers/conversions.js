@@ -19,6 +19,13 @@ const marketPriceToRupeesPaise = (price) => {
 	};
 };
 
+const marketPriceToDecimalString = (price) => {
+	price = Math.trunc(price * 100);
+	price = price.toString();
+
+	return price.slice(0, -2) + "." + price.slice(-2);
+};
+
 const amountToDecimalString = (amt) => {
 	amt = amt.padStart(3, "0");
 
@@ -35,3 +42,4 @@ module.exports.amountToRupeesPaise = amountToRupeesPaise;
 module.exports.marketPriceToRupeesPaise = marketPriceToRupeesPaise;
 module.exports.quantityToDecimalString = quantityToDecimalString;
 module.exports.amountToDecimalString = amountToDecimalString;
+module.exports.marketPriceToDecimalString = marketPriceToDecimalString;
