@@ -9,7 +9,8 @@ const portfolioController = require("../controllers/usersController/portfolio");
 const forgotPasswordController = require("../controllers/usersController/forgotPassword");
 const signup = require("../controllers/usersController/signup");
 const changePassword = require("../controllers/usersController/changePassword");
-
+const getNotificationsController = require("../controllers/usersController/getNotifications");
+const deleteNotificationController = require("../controllers/usersController/deleteNotification");
 const authVerify = require("../middlewares/authVerify");
 
 router.post(
@@ -65,5 +66,8 @@ router.get("/watchlist/remove/:id", watchListController.removeFromWatchList);
 router.get("/assets/report", portfolioController.getReports);
 router.get("/assets/:id", portfolioController.getCoinAssetsData);
 router.get("/assets", portfolioController.getAssetsData);
+
+router.get("/getNotifications", getNotificationsController);
+router.get("/deleteNotification", deleteNotificationController);
 
 module.exports = router;

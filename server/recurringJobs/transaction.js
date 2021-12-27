@@ -8,6 +8,8 @@ const buyRequest = require('../models/transactions/buyRequest');
 const sellRequest = require('../models/transactions/sellRequest');
 const buyLimitTransaction = require("../models/transactions/buyLimit");
 const sellLimitTransaction = require("../models/transactions/sellLimit");
+const converter = require("../controllers/conversions");
+const Notification = require("../models/notification");
 // export {queue};
 // const {
 //     PriorityQueue,
@@ -122,7 +124,14 @@ const executeOrders2 = async (coin)=>{
                 req.buyLimit.status = "SUCCESS";
                 await req.buyLimit.save();
                 await buyRequest.findByIdAndDelete(req._id);                //deleting the buy Request when request is processed
-                
+                let quan = converter.quantityToDecimalString(quantity.toString());
+                let pp = converter.amountToDecimalString(currentPrice.toString());
+                await Notification.create({
+                    user:portfolioOfUser.user,
+                    Date:new Date(),
+                    title:'Buy Request processed!',
+                    message:`${quan} ${req.coinId} coins were bought at ${pp}`
+                })
                 console.log('transaction done');
                 }
             }
@@ -231,6 +240,15 @@ const executeOrders3 = async (coin)=>{
                             req.sellLimit.status = "SUCCESS";
                             await req.sellLimit.save();
                             await sellRequest.findByIdAndDelete(req._id);
+
+                            let quan = converter.quantityToDecimalString(quantity.toString());
+                            let pp = converter.amountToDecimalString(currentPrice.toString());
+                            await Notification.create({
+                                user:portfolioOfUser.user,
+                                Date:new Date(),
+                                title:'Sell Request processed!',
+                                message:`${quan} ${req.coinId} coins were sold at ${pp}`
+                            })
                             console.log('transaction done');
                             
                     
@@ -250,18 +268,18 @@ const executeOrders3 = async (coin)=>{
 
 module.exports.checkLimitBuy=async()=>{
     // const mJob =schedule.scheduleJob('*/5 * * * * *',async ()=>{//my place
-		// 	try {
+	// 		try {
     //     let coinData =  await axios.get(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&order=market_cap_desc&per_page=100&page=1&sparkline=false`);
-    //     console.log(coinData.data);
-		// 		for(coin of coinData.data){
+    //     // console.log(coinData.data);
+	// 			for(coin of coinData.data){
     //     executeOrders2(coin);
     //     executeOrders3(coin);
-    //     // executeOrders();
+    //     // executeOrders();Y
     //     }
-		// 	}
-		// 	catch(err) {
-		// 		// console.log(err);
-		// 		console.log("Schedule transaction Error");
-		// 	}
+	// 		}
+	// 		catch(err) {
+	// 			// console.log(err);
+	// 			console.log("Schedule transaction Error");
+	// 		}
     // });
 }
