@@ -51,7 +51,6 @@ const ExchangeConfirmation = (props) => {
 								</p>
 							</div>
 							<hr />
-							<hr />
 							<div className="d-flex justify-content-between">
 								<p className="h5 me-5">Updated {data.fromCoinName}: </p>
 								<p className="h5">

@@ -20,6 +20,7 @@ import ExchangeConfirmation from "../Confirmations/ExchangeConfirmation";
 import ExchangeDetails from "../Transactions/ExchangeDetails"
 import Settings from "../Settings/Settings";
 import Orders from "../Orders/OrdersList";
+import OrderDetails from "../Transactions/OrderDetails"
 import SendCoinConfirmation from "../Confirmations/SendReceiveConfirmation";
 import SendReceiveDetails from "../Transactions/SendReceiveDetails"
 
@@ -45,8 +46,10 @@ const DashboardRouter = () => {
 				</Route>
 				<Route exact path="/transactions/add" render={(props) => <AddMoneyDetails {...props}/>} />
 				<Route exact path="/transactions/buysell" render={(props) => <BuySellDetails {...props}/>} />
-				<Route exact path="/transactions/sendreceive" render={(props) => <SendReceiveDetails {...props}/>} />
+				<Route exact path="/transactions/sendrecieve" render={(props) => <SendReceiveDetails {...props}/>} />
 				<Route exact path="/transactions/exchange" render={(props) => <ExchangeDetails {...props}/>} />
+				<Route exact path="/transactions/buyorder" render={(props) => <OrderDetails {...props}/>} />
+				<Route exact path="/transactions/sellorder" render={(props) => <OrderDetails {...props}/>} />
 
 				<Route exact path="/orders">
 					<Orders />

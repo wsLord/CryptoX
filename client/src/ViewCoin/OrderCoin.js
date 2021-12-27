@@ -103,7 +103,7 @@ const CoinOrder = ({ onError, coinid }) => {
 					Quantity
 				</label>
 				<input
-					type="number"
+					type="text"
 					className="form-control mt-2"
 					id="coin"
 					min={0}
@@ -116,7 +116,7 @@ const CoinOrder = ({ onError, coinid }) => {
 				<div className="input-group">
 					<span className="input-group-text fs-5 mt-2">&#8377;</span>
 					<input
-						type="number"
+						type="text"
 						className="form-control mt-2"
 						id="price"
 						min={0}
