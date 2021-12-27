@@ -16,9 +16,12 @@ import AddMoneyDetails from "../Transactions/AddMoneyDetails";
 import BuySellDetails from "../Transactions/BuySellDetails";
 import BuySellConfirmation from "../Confirmations/BuySellConfirmation";
 import Exchange from "../Exchange/Exchange"
+import ExchangeConfirmation from "../Confirmations/ExchangeConfirmation";
+import ExchangeDetails from "../Transactions/ExchangeDetails"
 import Settings from "../Settings/Settings";
 import Orders from "../Orders/OrdersList";
 import SendCoinConfirmation from "../Confirmations/SendReceiveConfirmation";
+import SendReceiveDetails from "../Transactions/SendReceiveDetails"
 
 const DashboardRouter = () => {
 	return (
@@ -42,12 +45,17 @@ const DashboardRouter = () => {
 				</Route>
 				<Route exact path="/transactions/add" render={(props) => <AddMoneyDetails {...props}/>} />
 				<Route exact path="/transactions/buysell" render={(props) => <BuySellDetails {...props}/>} />
+				<Route exact path="/transactions/sendreceive" render={(props) => <SendReceiveDetails {...props}/>} />
+				<Route exact path="/transactions/exchange" render={(props) => <ExchangeDetails {...props}/>} />
+
 				<Route exact path="/orders">
 					<Orders />
 				</Route>
 				<Route exact path="/confirm/payment" render={(props) => <PaymentConfirmation {...props}/>} />
 				<Route exact path="/confirm/buysell" render={(props) => <BuySellConfirmation {...props}/>} />
 				<Route exact path="/confirm/send" render={(props) => <SendCoinConfirmation {...props}/>} />
+				<Route exact path="/confirm/exchange" render={(props) => <ExchangeConfirmation {...props}/>} />
+
 				<Route exact path="/exchange">
 					<Exchange />
 				</Route>
