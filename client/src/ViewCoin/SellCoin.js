@@ -62,7 +62,6 @@ const SellCoin = ({ coinData, assetData, onError }) => {
 	const sellCoinHandler = async (event) => {
 		event.preventDefault();
 
-		console.log("calle");
 		try {
 			let data;
 			if (sellMode.inr) {

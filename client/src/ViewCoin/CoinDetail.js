@@ -304,7 +304,7 @@ const CoinDetail = () => {
 										/>
 									</div>
 									<div className={visibility.order}>
-										<OrderCoin />
+										<OrderCoin onError={onError} coinid={coinid}/>
 									</div>
 								</div>
 							</div>

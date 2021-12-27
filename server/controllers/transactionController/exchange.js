@@ -120,6 +120,9 @@ const exchange = async (req, res, next) => {
 		transactionInstance.exchange = excTrans.id;
 		await transactionInstance.save();
 
+		walletOfUser.transactionList.push(transactionInstance.id);
+		await walletOfUser.save();
+
 		// Checking if coin is already existent in Portfolio and getting its index
 		let oldQuantity;
 		let avgPrice;
