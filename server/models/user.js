@@ -46,21 +46,7 @@ const userSchema = new mongoose.Schema({
 			type: String,
 			required: true,
 		},
-	],
-	notfications: [{
-        Date : {
-            type:Date,
-            required: true,
-        },
-        title: {
-            type: String,
-            required: true,
-        },
-        message: {
-            type: String,
-            default: 'no'
-        }
-    }]
+	]
 	
 	// image: { type: String, required: true }
 });
