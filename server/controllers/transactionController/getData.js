@@ -18,7 +18,7 @@ const getTransactionList = async (req, res, next) => {
 					populate: [
 						{
 							path: "addMoney",
-							select: "-_id amount status updatedAt",
+							select: "-_id -wallet -razorpay_signature -razorpay_payment_id -__v",
 						},
 						{
 							path: "buyCoin",
@@ -29,17 +29,29 @@ const getTransactionList = async (req, res, next) => {
 							select: "-_id amount status coinid updatedAt",
 						},
 						{
-							path: "buyRequest",
-							select: "-_id amount status coinid updatedAt",
+							path: "buyLimit",
+							select: "-_id -wallet -__v",
 						},
 						{
-							path: "sellRequest",
-							select: "-_id amount status coinid updatedAt",
+							path: "sellLimit",
+							select: "-_id -wallet -__v",
 						},
 						{
 							path: "withdrawMoney",
 							select: "-_id amount status updatedAt",
 						},
+						{
+							path: "sendCoin",
+							select: "-_id -wallet -__v",
+						},
+						{
+							path: "receiveCoin",
+							select: "-_id -wallet -__v",
+						},
+						{
+							path: "exchange",
+							select: "-_id -wallet -__v",
+						}
 					],
 				},
 			})
@@ -53,8 +65,8 @@ const getTransactionList = async (req, res, next) => {
 		let limit = count ? ((size > count) ? size - count : 0) : 0;
 		for (let i = size - 1; i >= limit; i--) {
 			let transItem = transactionDataArray[i];
-			let tType, tDate, isPlus, tAmount, isSuccess, tStatus, tCoinID, tNextPath;
-
+			let tType, tDate, isPlus, tAmount, isSuccess, tStatus, tCoinID,tCoinID2, tNextPath;
+			tcoinID2 = "unspecified";
 			if (transItem.category === "add_money") {
 				tType = "Add Money";
 				tDate = transItem.addMoney.updatedAt;
@@ -94,26 +106,40 @@ const getTransactionList = async (req, res, next) => {
 					transItem.sellCoin.amount.slice(-2);
 				tCoinID = transItem.sellCoin.coinid;
 				tNextPath = "buysell";
-			} else if (transItem.category === "buy_request") {
-				tType = "Buy Request";
-				tDate = transItem.buyRequest.updatedAt;
+			} else if (transItem.category === "buy_limit") {
+				tType = "Buy Limit";
+				tDate = transItem.buyLimit.updatedAt;
 				isPlus = true;
-				isSuccess = transItem.buyRequest.status === "SUCCESS";
-				tStatus = transItem.buyRequest.status;
+				isSuccess = transItem.buyLimit.status === "SUCCESS";
+				tStatus = transItem.buyLimit.status;
 				tStatus = tStatus.charAt(0) + tStatus.toLowerCase().slice(1);
-				tAmount = "-"; // transItem.buyRequest.amount.slice(0, -2) + "." + transItem.buyRequest.amount.slice(-2);
-				tCoinID = transItem.buyRequest.coinid;
-				tNextPath = "order";
-			} else if (transItem.category === "sell_request") {
-				tType = "Sell Request";
-				tDate = transItem.sellRequest.updatedAt;
+				if(transItem.buyLimit.status === "SUCCESS"){
+					tAmount = transItem.buyLimit.amount.slice(0, -2) +
+					"." +
+					transItem.buyLimit.amount.slice(-2);
+				}
+				else{
+					tAmount = "not defined"; // transItem.buyRequest.amount.slice(0, -2) + "." + transItem.buyRequest.amount.slice(-2);
+				}
+				tCoinID = transItem.buyLimit.coinid;
+				tNextPath = "buyorder";
+			} else if (transItem.category === "sell_limit") {
+				tType = "Sell Limit";
+				tDate = transItem.sellLimit.updatedAt;
 				isPlus = true;
-				isSuccess = transItem.sellRequest.status === "SUCCESS";
-				tStatus = transItem.sellRequest.status;
+				isSuccess = transItem.sellLimit.status === "SUCCESS";
+				tStatus = transItem.sellLimit.status;
 				tStatus = tStatus.charAt(0) + tStatus.toLowerCase().slice(1);
-				tAmount = "-"; // transItem.sellRequest.amount.slice(0, -2) + "." + transItem.sellRequest.amount.slice(-2);
-				tCoinID = transItem.sellRequest.coinid;
-				tNextPath = "order";
+				if(transItem.sellLimit.status === "SUCCESS"){
+					tAmount = transItem.sellLimit.amount.slice(0, -2) +
+					"." +
+					transItem.sellLimit.amount.slice(-2);
+				}
+				else{
+					tAmount = "not defined"; // transItem.sellRequest.amount.slice(0, -2) + "." + transItem.sellRequest.amount.slice(-2);
+				}
+				tCoinID = transItem.sellLimit.coinid;
+				tNextPath = "sellorder";
 			} else if (transItem.category === "withdraw_money") {
 				tType = "Withdraw Money";
 				tDate = transItem.withdrawMoney.updatedAt;
@@ -127,6 +153,44 @@ const getTransactionList = async (req, res, next) => {
 					transItem.withdrawMoney.amount.slice(-2);
 				tCoinID = "-";
 				tNextPath = "withdraw";
+			} else if (transItem.category === "send_receive") {
+				tType = "send receive";
+				tDate = transItem.sendCoin.updatedAt;
+				isPlus = true;
+				isSuccess = transItem.sendCoin.status === "SUCCESS";
+				tStatus = transItem.sendCoin.status;
+				tStatus = tStatus.charAt(0) + tStatus.toLowerCase().slice(1);
+				if(transItem.sendCoin.to===user.email){
+					tAmount =
+					transItem.receiveCoin.amount.slice(0, -2) +
+					"." +
+					transItem.receiveCoin.amount.slice(-2);
+				}
+				else
+				{
+					tAmount =
+					transItem.sendCoin.amount.slice(0, -2) +
+					"." +
+					transItem.sendCoin.amount.slice(-2);
+				}
+				tCoinID = transItem.sendCoin.coinid;
+				tNextPath = "sendrecieve";
+			}else if (transItem.category === "exchange") {
+				tType = "exchange";
+				tDate = transItem.exchange.updatedAt;
+				isPlus = true;
+				isSuccess = transItem.exchange.status === "SUCCESS";
+				tStatus = transItem.exchange.status;
+				tStatus = tStatus.charAt(0) + tStatus.toLowerCase().slice(1);
+				
+				tAmount =
+				transItem.exchange.amount.slice(0, -2) +
+				"." +
+				transItem.exchange.amount.slice(-2);
+				
+				tCoinID = transItem.exchange.coinid1;
+				tCoinID2 = transItem.exchange.coinid2;
+				tNextPath = "exchange";
 			}
 
 			let transactionElement = {
@@ -138,6 +202,7 @@ const getTransactionList = async (req, res, next) => {
 				isSuccess,
 				tStatus,
 				tCoinID,
+				tCoinID2,
 				tNextPath,
 			};
 
