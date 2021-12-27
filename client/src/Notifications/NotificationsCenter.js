@@ -19,6 +19,7 @@ export default function NotificationsCenter() {
             image: img
         })
     }
+    
     // useEffect(() => {
     //     const fetchdata = () => {
     //         //Fetch data
