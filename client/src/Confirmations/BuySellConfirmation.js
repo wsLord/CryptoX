@@ -19,7 +19,7 @@ const BuySellConfirmation = (props) => {
 						<div className="details">
 							<h2>Transaction Successful</h2>
 							<p className="h4 text-primary">
-								{data.quantity} {data.coinSymbol} for &#x20B9; {data.amount} purchased
+								{data.quantity} {data.coinSymbol} for &#x20B9; {data.amount} purchased/sold
 							</p>
 							<hr />
 							<div className="d-flex justify-content-between">

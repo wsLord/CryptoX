@@ -298,8 +298,8 @@ const CoinDetail = () => {
 									</div>
 									<div className={visibility.sell}>
 										<SellCoin
-											walletBalance={walletBalance}
 											coinData={coinData}
+											assetData={assetData}
 											onError={onError}
 										/>
 									</div>

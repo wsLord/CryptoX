@@ -5,7 +5,7 @@ import axios from "axios";
 import Styles from "./CoinDetail.module.css";
 import AuthContext from "../store/authContext";
 
-const SellCoin = ({ coinData, walletBalance, onError }) => {
+const SellCoin = ({ coinData, assetData, onError }) => {
 	const ctx = useContext(AuthContext);
 	const history = useHistory();
 
@@ -114,7 +114,9 @@ const SellCoin = ({ coinData, walletBalance, onError }) => {
 
 	return (
 		<Fragment>
-			<p className="text-end text-primary">Available 100 BTC in Assets</p>
+			<p className="text-end text-primary">
+				Available Quantity: {" " + assetData.quantity + " " + coinData.symbol.toUpperCase()}
+			</p>
 			<form
 				className="d-flex flex-column"
 				action=""
@@ -125,9 +127,7 @@ const SellCoin = ({ coinData, walletBalance, onError }) => {
 				<div class="input-group mb-3">
 					{sellMode.inr && (
 						<>
-							<span class="input-group-text border-0 bg-white fs-3">
-								&#x20B9;
-							</span>
+							<span class="input-group-text border-0 bg-white fs-3">&#x20B9;</span>
 							<input
 								type="text"
 								class="form-control border-0 fs-3"
@@ -161,7 +161,7 @@ const SellCoin = ({ coinData, walletBalance, onError }) => {
 					</button>
 				</div>
 				<button type="submit" className="btn btn-success" id={Styles.submit}>
-					Sell BTC
+					Sell {coinData.symbol.toUpperCase()}
 				</button>
 			</form>
 		</Fragment>
