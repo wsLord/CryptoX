@@ -9,8 +9,7 @@ const portfolioController = require("../controllers/usersController/portfolio");
 const forgotPasswordController = require("../controllers/usersController/forgotPassword");
 const signup = require("../controllers/usersController/signup");
 const changePassword = require("../controllers/usersController/changePassword");
-const getNotificationsController = require("../controllers/usersController/getNotifications");
-const deleteNotificationController = require("../controllers/usersController/deleteNotification");
+const notificationsController = require("../controllers/notificationController");
 const authVerify = require("../middlewares/authVerify");
 
 router.post(
@@ -67,7 +66,7 @@ router.get("/assets/report", portfolioController.getReports);
 router.get("/assets/:id", portfolioController.getCoinAssetsData);
 router.get("/assets", portfolioController.getAssetsData);
 
-router.get("/getNotifications", getNotificationsController);
-router.get("/deleteNotification", deleteNotificationController);
+router.get("/notifications/get", notificationsController.getNotifications);
+router.post("/notifications/delete", notificationsController.deleteNotifications);
 
 module.exports = router;
