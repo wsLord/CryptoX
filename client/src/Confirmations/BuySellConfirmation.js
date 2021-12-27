@@ -19,7 +19,7 @@ const BuySellConfirmation = (props) => {
 						<div className="details">
 							<h2>Transaction Successful</h2>
 							<p className="h4 text-primary">
-							{data.quantity} {data.coinSymbol} for &#x20B9; {data.amount} is added to your assets
+								{data.quantity} {data.coinSymbol} for &#x20B9; {data.amount} purchased
 							</p>
 							<hr />
 							<div className="d-flex justify-content-between">
@@ -28,13 +28,23 @@ const BuySellConfirmation = (props) => {
 							</div>
 							<hr />
 							<div className="d-flex justify-content-between">
-								<p className="h5 me-5">RazorPay Order ID: </p>
-								<p className="h5">{"Bhaad me jaao"}</p>
+								<p className="h5 me-5">Coin: </p>
+								<p className="h5">{data.coinName + " (" + data.coinSymbol + ")"}</p>
+							</div>
+							<hr />
+							<div className="d-flex justify-content-between">
+								<p className="h5 me-5">Quantity: </p>
+								<p className="h5">{data.quantity + " " + data.coinSymbol}</p>
+							</div>
+							<hr />
+							<div className="d-flex justify-content-between">
+								<p className="h5 me-5">Amount: </p>
+								<p className="h5">&#x20B9; {data.amount}</p>
 							</div>
 							<hr />
 							<div className="d-flex justify-content-between">
 								<p className="h5 me-5">Updated Balance: </p>
-								<p className="h5">&#x20B9; {"Bhaad me jaao"}</p>
+								<p className="h5">&#x20B9; {data.updatedBalance}</p>
 							</div>
 							<hr />
 						</div>
@@ -46,7 +56,7 @@ const BuySellConfirmation = (props) => {
 								history.push("/portfolio");
 							}}
 						>
-							Back to Portfolio
+							Go to Portfolio
 						</button>
 					</div>
 				</div>
@@ -65,8 +75,23 @@ const BuySellConfirmation = (props) => {
 							</div>
 							<hr />
 							<div className="d-flex justify-content-between">
-								<p className="h5 me-5">RazorPay Order ID: </p>
-								<p className="h5">{"Bhaad me jaao"}</p>
+								<p className="h5 me-5">Status: </p>
+								<p className="h5">{data.status}</p>
+							</div>
+							<hr />
+							<div className="d-flex justify-content-between">
+								<p className="h5 me-5">Coin: </p>
+								<p className="h5">{data.coinName + " (" + data.coinSymbol + ")"}</p>
+							</div>
+							<hr />
+							<div className="d-flex justify-content-between">
+								<p className="h5 me-5">Quantity: </p>
+								<p className="h5">{data.quantity + " " + data.coinSymbol}</p>
+							</div>
+							<hr />
+							<div className="d-flex justify-content-between">
+								<p className="h5 me-5">Amount: </p>
+								<p className="h5">&#x20B9; {data.amount}</p>
 							</div>
 							<hr />
 							<div className="d-flex justify-content-between">
@@ -83,7 +108,7 @@ const BuySellConfirmation = (props) => {
 								history.push("/portfolio");
 							}}
 						>
-							Back to Portfolio
+							Go to Portfolio
 						</button>
 					</div>
 				</div>
