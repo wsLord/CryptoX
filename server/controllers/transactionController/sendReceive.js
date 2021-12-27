@@ -10,6 +10,7 @@ const senderTransaction = require("../../models/transactions/sendCoin");
 const receiverTransaction = require("../../models/transactions/receiveCoin");
 const Transaction = require("../../models/transaction");
 const converter = require("../conversions");
+const Notification = require("../../models/notification");
 
 const sendRecieve = async (req, res, next) => {
 	const errors = validationResult(req);
@@ -227,7 +228,14 @@ const sendRecieve = async (req, res, next) => {
 		recTrans.status = "SUCCESS";
 		await senTrans.save();
 		await recTrans.save();
-
+		//sending notification to recievers
+		let qq = converter.quantityToDecimalString(quantityRecievedByReciever.toString())
+		await Notification.create({
+			user:portfolioOfReciever.user,
+			Date:new Date(),
+			title:' Coins recieved!',
+			message:`${userSendingCoin.name} sent you ${qq} ${coinId} coins`
+		})
 		return res.status(200).json({
 			success: true,
 			message: "Transaction complete",
