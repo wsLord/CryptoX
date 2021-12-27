@@ -10,10 +10,12 @@ const NotificationsCenter = () => {
 	const ctx = useContext(AuthContext);
 
 	const [isLoading, setIsLoading] = useState(false);
+	// eslint-disable-next-line
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [notificationCount, setNotificationCount] = useState(0);
 	const [notifications, setNotifications] = useState([]);
 
+	// eslint-disable-next-line
 	const showNewNotificationOnDesktop = () => {
 		new Notification("CryptoX", {
 			body: "how you doin!!!!",
@@ -66,6 +68,7 @@ const NotificationsCenter = () => {
 			});
 
 			// Fetching notifications on first website load
+			// eslint-disable-next-line
 			let { data: deleted } = await axios.post(
 				`${process.env.REACT_APP_SERVER_URL}/user/notifications/delete`,
 				{
@@ -98,7 +101,7 @@ const NotificationsCenter = () => {
 			});
 
 			setNotifications(data);
-			
+
 			console.log(data);
 			setNotificationCount(0);
 			setIsDeleting(false);
