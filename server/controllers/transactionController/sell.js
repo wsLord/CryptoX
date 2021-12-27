@@ -10,9 +10,7 @@ const converter = require("../conversions");
 const sellQuantity = async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-		return next(
-			new Error("ERR: Invalid inputs passed, please check your data.")
-		);
+		return next(new Error("ERR: Invalid inputs passed, please check your data."));
 	}
 	const coinid = req.body.coinid;
 
@@ -33,9 +31,7 @@ const sellQuantity = async (req, res, next) => {
 		});
 
 		// Price in Paise
-		const price = BigInt(
-			Math.trunc(coinData.market_data.current_price.inr * 100)
-		);
+		const price = BigInt(Math.trunc(coinData.market_data.current_price.inr * 100));
 
 		const walletOfUser = user.wallet;
 		const portfolioOfUser = user.portfolio;
@@ -46,9 +42,7 @@ const sellQuantity = async (req, res, next) => {
 
 		// Length of tcost must be >= 10 so that transaction is worth Re. 1
 		if (tcost.length < 10) {
-			const error = new Error(
-				"TRANSACTION DECLINED! Cost must be atleast Re. 1"
-			);
+			const error = new Error("TRANSACTION DECLINED! Cost must be atleast Re. 1");
 			error.code = 405;
 			return next(error);
 		}
@@ -107,8 +101,7 @@ const sellQuantity = async (req, res, next) => {
 
 			try {
 				sellCoinTransactionInstance.status = "FAILED";
-				sellCoinTransactionInstance.statusMessage =
-					"Insufficient coins in assets.";
+				sellCoinTransactionInstance.statusMessage = "Insufficient coins in assets.";
 				await sellCoinTransactionInstance.save();
 			} catch (err) {
 				const error = new Error("Some error occured. Details: " + err.message);
@@ -118,7 +111,12 @@ const sellQuantity = async (req, res, next) => {
 
 			return res.status(200).json({
 				success: false,
-				message: "ERR: Insufficient coins in assets.",
+				message: "Insufficient coins in assets.",
+				status: sellCoinTransactionInstance.status,
+				coinName: coinData.name,
+				coinSymbol: coinData.symbol.toUpperCase(),
+				quantity: converter.quantityToDecimalString(sellCoinTransactionInstance.quantity),
+				amount: converter.amountToDecimalString(sellCoinTransactionInstance.amount),
 				transactionID: transactionInstance.id,
 			});
 		}
@@ -145,13 +143,11 @@ const sellQuantity = async (req, res, next) => {
 			success: true,
 			message: "Transaction complete",
 			transactionID: transactionInstance.id,
-			quantity: converter.quantityToDecimalString(
-				sellCoinTransactionInstance.quantity
-			),
-			amount: converter.amountToDecimalString(
-				sellCoinTransactionInstance.amount
-			),
-			coinSymbol: coinData.symbol,
+			coinName: coinData.name,
+			coinSymbol: coinData.symbol.toUpperCase(),
+			quantity: converter.quantityToDecimalString(sellCoinTransactionInstance.quantity),
+			amount: converter.amountToDecimalString(sellCoinTransactionInstance.amount),
+			updatedBalance: converter.amountToDecimalString(walletOfUser.balance),
 		});
 	} catch (err) {
 		const error = new Error("Some error occured. Details: " + err.message);
@@ -163,9 +159,7 @@ const sellQuantity = async (req, res, next) => {
 const sellAmount = async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-		return next(
-			new Error("ERR: Invalid inputs passed, please check your data.")
-		);
+		return next(new Error("ERR: Invalid inputs passed, please check your data."));
 	}
 	const coinid = req.body.coinid;
 
@@ -186,9 +180,7 @@ const sellAmount = async (req, res, next) => {
 		});
 
 		// Price in Paise
-		const price = BigInt(
-			Math.trunc(coinData.market_data.current_price.inr * 100)
-		);
+		const price = BigInt(Math.trunc(coinData.market_data.current_price.inr * 100));
 
 		const walletOfUser = user.wallet;
 		const portfolioOfUser = user.portfolio;
@@ -198,9 +190,7 @@ const sellAmount = async (req, res, next) => {
 
 		// Quantity must be > 0 so that transaction is performed
 		if (quantity === 0n) {
-			const error = new Error(
-				"TRANSACTION DECLINED! Quantity too less to perform transaction"
-			);
+			const error = new Error("TRANSACTION DECLINED! Quantity too less to perform transaction");
 			error.code = 405;
 			return next(error);
 		}
@@ -253,8 +243,7 @@ const sellAmount = async (req, res, next) => {
 
 			try {
 				sellCoinTransactionInstance.status = "FAILED";
-				sellCoinTransactionInstance.statusMessage =
-					"Insufficient coins in assets.";
+				sellCoinTransactionInstance.statusMessage = "Insufficient coins in assets.";
 				await sellCoinTransactionInstance.save();
 			} catch (err) {
 				const error = new Error("Some error occured. Details: " + err.message);
@@ -264,7 +253,12 @@ const sellAmount = async (req, res, next) => {
 
 			return res.status(200).json({
 				success: false,
-				message: "ERR: Insufficient coins in assets.",
+				message: "Insufficient coins in assets.",
+				status: sellCoinTransactionInstance.status,
+				coinName: coinData.name,
+				coinSymbol: coinData.symbol.toUpperCase(),
+				quantity: converter.quantityToDecimalString(sellCoinTransactionInstance.quantity),
+				amount: converter.amountToDecimalString(sellCoinTransactionInstance.amount),
 				transactionID: transactionInstance.id,
 			});
 		}
@@ -291,13 +285,11 @@ const sellAmount = async (req, res, next) => {
 			success: true,
 			message: "Transaction complete",
 			transactionID: transactionInstance.id,
-			quantity: converter.quantityToDecimalString(
-				sellCoinTransactionInstance.quantity
-			),
-			amount: converter.amountToDecimalString(
-				sellCoinTransactionInstance.amount
-			),
-			coinSymbol: coinData.symbol,
+			coinName: coinData.name,
+			coinSymbol: coinData.symbol.toUpperCase(),
+			quantity: converter.quantityToDecimalString(sellCoinTransactionInstance.quantity),
+			amount: converter.amountToDecimalString(sellCoinTransactionInstance.amount),
+			updatedBalance: converter.amountToDecimalString(walletOfUser.balance),
 		});
 	} catch (err) {
 		const error = new Error("Some error occured. Details: " + err.message);

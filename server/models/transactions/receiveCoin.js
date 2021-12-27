@@ -37,6 +37,9 @@ const receiveCoinSchema = new mongoose.Schema(
 		statusMessage: {
 			type: String,
 		},
+		note: {
+			type: String,
+		}
 	},
 	{
 		timestamps: true,

@@ -249,12 +249,19 @@ const executeOrders3 = async (coin)=>{
 }
 
 module.exports.checkLimitBuy=async()=>{
-    const mJob =schedule.scheduleJob('*/5 * * * * *',async ()=>{//my place
-        let coinData =  await axios.get(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&order=market_cap_desc&per_page=100&page=1&sparkline=false`);
-        for(coin of coinData.data){
-        executeOrders2(coin);
-        executeOrders3(coin);
-        // executeOrders();
-        }
-    });
+    // const mJob =schedule.scheduleJob('*/5 * * * * *',async ()=>{//my place
+		// 	try {
+    //     let coinData =  await axios.get(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&order=market_cap_desc&per_page=100&page=1&sparkline=false`);
+    //     console.log(coinData.data);
+		// 		for(coin of coinData.data){
+    //     executeOrders2(coin);
+    //     executeOrders3(coin);
+    //     // executeOrders();
+    //     }
+		// 	}
+		// 	catch(err) {
+		// 		// console.log(err);
+		// 		console.log("Schedule transaction Error");
+		// 	}
+    // });
 }

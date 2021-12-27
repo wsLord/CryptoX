@@ -78,7 +78,7 @@ const Header = () => {
 						<ul className="nav navbar-nav navbar-right">
 
 							<NotificationsCenter />
-							<div class="vr"></div>
+							<div className="vr"></div>
 							<div className="dropstart ms-2">
 								<img src={profile} id={Styles.profile} className="dropdown-toggle bg-transparent" type="button" data-bs-toggle="dropdown" alt="" />
 								<ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
