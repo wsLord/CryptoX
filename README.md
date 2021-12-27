@@ -92,7 +92,7 @@ npm start
 <a name="gothru"></a> 
 ## Go-through Videos
 
-* [CryptoX](https://drive.google.com/file/d/1RKiFWtnve2jbD7SJjtHb0Tqyu-ZN10ge/view?usp=sharing)
+* [CryptoX](https://www.youtube.com/watch?v=L_1lqI3QkWQ)
 
 
 <a name="depend"></a>
