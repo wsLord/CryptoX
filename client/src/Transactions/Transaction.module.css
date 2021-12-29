@@ -20,7 +20,7 @@
     background-color: rgb(198, 233, 248);
     border-radius: 12px;
 }
-.pointer
+.pointer,#cursor
 {
     cursor:pointer;
 }
