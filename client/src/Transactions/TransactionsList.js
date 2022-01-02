@@ -13,6 +13,11 @@ const TransactionsList = () => {
 
 	const [error, setError] = useState(null);
 	const [transactionList, setTransactionList] = useState([]);
+	const [filter, setFilter] = useState("all");
+
+	const filterHandler = (event) => {
+		setFilter(event.target.value);
+	}
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -48,6 +53,19 @@ const TransactionsList = () => {
 					<img src={img} alt="" id={Styles.img} /> Transaction History
 				</h2>
 				<div className="card-body">
+					<div className="d-flex flex-row my-3">
+						<i class="fa fa-filter fs-2 text-secondary p-1 border-secondary border border-end-0 rounded-start"></i>
+						<select class="form-select fs-5 border-secondary w-25 rounded-0 border-start-0 rounded-end" onChange={filterHandler} id={Styles.cursor} aria-label="Default select example">
+							<option value="all" selected>ALL</option>
+							<option value="Add Money">Add Money</option>
+							<option value="Sell">Sell</option>
+							<option value="Buy">Buy</option>
+							<option value="Send/Receive">Send/Receive</option>
+							<option value="Sell Limit">Sell Limit</option>
+							<option value="Buy Limit">Buy Limit</option>
+							<option value="Exchange">Exchange</option>
+						</select>
+					</div>
 					{transactionList.length === 0 && <h4>Very lonely here...</h4>}
 					{transactionList.length > 0 && (
 						<table className="table fs-5">
@@ -61,7 +79,7 @@ const TransactionsList = () => {
 								</tr>
 							</thead>
 							<tbody>
-								{transactionList.map((element) => {
+								{filter === "all" && transactionList.map((element) => {
 									return (
 										<tr class={Styles.pointer} onClick={() => {
 											let path = "/transactions/" + element.tNextPath;
@@ -109,6 +127,58 @@ const TransactionsList = () => {
 											</td>
 										</tr>
 									);
+								})}
+								{filter !== "all" && transactionList.map((element) => {
+									if (filter === element.tType) {
+										return (
+											<tr class={Styles.pointer} onClick={() => {
+												let path = "/transactions/" + element.tNextPath;
+												console.log(path);
+												history.push({
+													pathname: "/transactions/" + element.tNextPath,
+													state: {
+														tid: element.tID,
+													},
+												});
+											}}>
+												<td className="fw-bold">{element.tType}</td>
+												<td>
+													{new Date(element.tDate).toString().slice(0, -31)}
+												</td>
+												{element.isSuccess && (
+													<td className="text-success fw-bold">
+														{element.tStatus}
+													</td>
+												)}
+												{!element.isSuccess && (
+													<td className="text-danger fw-bold">
+														{element.tStatus}
+													</td>
+												)}
+												<td className="text-center">{element.tCoinID}</td>
+												{element.tAmount === "-" || !element.isSuccess ? (
+													<td className="fw-bold">&#8377; {element.tAmount}</td>
+												) : element.isPlus ? (
+													<td className="text-success fw-bold">
+														+ &#8377; {element.tAmount}
+													</td>
+												) : (
+													<td className="text-danger fw-bold">
+														- &#8377; {element.tAmount}
+													</td>
+												)}
+												<td>
+													<button
+														type="button"
+														className="btn btn-light bg-transparent"
+													>
+														<i className="fa fa-chevron-right"></i>
+													</button>
+												</td>
+											</tr>
+										)
+									}
+									return (<></>)
 								})}
 							</tbody>
 						</table>

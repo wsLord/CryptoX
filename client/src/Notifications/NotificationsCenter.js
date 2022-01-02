@@ -150,7 +150,7 @@ const NotificationsCenter = () => {
 						{isLoading && <img src={loader} alt="" />}
 						{!isLoading && (
 							<div className="modal-body">
-								{notifications.map((element) => {
+								{[...notifications].map((element) => {
 									return (
 										<div className="card mb-2">
 											<div className="card-body d-flex justify-content-evenly align-items-center">
@@ -161,7 +161,7 @@ const NotificationsCenter = () => {
 													<h4>{element.title}</h4>
 													<p className="text-primary">{element.message}</p>
 												</div>
-												<div className="col-3 fs-5 text-secondary">{element.Date}</div>
+												<div className="col-3 fs-6 text-secondary">{new Date(element.Date).toLocaleString(undefined, { timeZone: 'Asia/Kolkata' })}</div>
 											</div>
 										</div>
 									);
