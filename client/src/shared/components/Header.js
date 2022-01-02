@@ -6,6 +6,7 @@ import Styles from "./Header.module.css"
 import profile from "../img/profile.png"
 import AuthContext from "../../store/authContext";
 import NotificationsCenter from "../../Notifications/NotificationsCenter";
+import Search from "../../Search/Search";
 
 const Header = () => {
 	const ctx = useContext(AuthContext);
@@ -76,7 +77,8 @@ const Header = () => {
 							</li>
 						</ul>
 						<ul className="nav navbar-nav navbar-right">
-
+							<Search />
+							<div className="vr me-2"></div>
 							<NotificationsCenter />
 							<div className="vr"></div>
 							<div className="dropstart ms-2">
