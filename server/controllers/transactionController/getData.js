@@ -66,7 +66,7 @@ const getTransactionList = async (req, res, next) => {
 		for (let i = size - 1; i >= limit; i--) {
 			let transItem = transactionDataArray[i];
 			let tType, tDate, isPlus, tAmount, isSuccess, tStatus, tCoinID, tCoinID2, tNextPath;
-			tcoinID2 = "unspecified";
+			tCoinID2 = "unspecified";
 			if (transItem.category === "add_money") {
 				tType = "Add Money";
 				tDate = transItem.addMoney.updatedAt;
@@ -74,8 +74,7 @@ const getTransactionList = async (req, res, next) => {
 				isSuccess = transItem.addMoney.status === "SUCCESS";
 				tStatus = transItem.addMoney.status;
 				tStatus = tStatus.charAt(0) + tStatus.toLowerCase().slice(1);
-				tAmount =
-					transItem.addMoney.amount.slice(0, -2) + "." + transItem.addMoney.amount.slice(-2);
+				tAmount = converter.amountToDecimalString(transItem.addMoney.amount);
 				tCoinID = "-";
 				tNextPath = "add";
 			} else if (transItem.category === "buy_coin") {
@@ -85,7 +84,7 @@ const getTransactionList = async (req, res, next) => {
 				isSuccess = transItem.buyCoin.status === "SUCCESS";
 				tStatus = transItem.buyCoin.status;
 				tStatus = tStatus.charAt(0) + tStatus.toLowerCase().slice(1);
-				tAmount = transItem.buyCoin.amount.slice(0, -2) + "." + transItem.buyCoin.amount.slice(-2);
+				tAmount = converter.amountToDecimalString(transItem.buyCoin.amount);
 				tCoinID = transItem.buyCoin.coinid;
 				tNextPath = "buysell";
 			} else if (transItem.category === "sell_coin") {
@@ -95,8 +94,7 @@ const getTransactionList = async (req, res, next) => {
 				isSuccess = transItem.sellCoin.status === "SUCCESS";
 				tStatus = transItem.sellCoin.status;
 				tStatus = tStatus.charAt(0) + tStatus.toLowerCase().slice(1);
-				tAmount =
-					transItem.sellCoin.amount.slice(0, -2) + "." + transItem.sellCoin.amount.slice(-2);
+				tAmount = converter.amountToDecimalString(transItem.sellCoin.amount);
 				tCoinID = transItem.sellCoin.coinid;
 				tNextPath = "buysell";
 			} else if (transItem.category === "buy_limit") {
@@ -107,10 +105,9 @@ const getTransactionList = async (req, res, next) => {
 				tStatus = transItem.buyLimit.status;
 				tStatus = tStatus.charAt(0) + tStatus.toLowerCase().slice(1);
 				if (transItem.buyLimit.status === "SUCCESS") {
-					tAmount =
-						transItem.buyLimit.amount.slice(0, -2) + "." + transItem.buyLimit.amount.slice(-2);
+					tAmount = converter.amountToDecimalString(transItem.buyLimit.amount);
 				} else {
-					tAmount = "-"; // transItem.buyRequest.amount.slice(0, -2) + "." + transItem.buyRequest.amount.slice(-2);
+					tAmount = "-";
 				}
 				tCoinID = transItem.buyLimit.coinid;
 				tNextPath = "buyorder";
@@ -122,10 +119,9 @@ const getTransactionList = async (req, res, next) => {
 				tStatus = transItem.sellLimit.status;
 				tStatus = tStatus.charAt(0) + tStatus.toLowerCase().slice(1);
 				if (transItem.sellLimit.status === "SUCCESS") {
-					tAmount =
-						transItem.sellLimit.amount.slice(0, -2) + "." + transItem.sellLimit.amount.slice(-2);
+					tAmount = converter.amountToDecimalString(transItem.sellLimit.amount);
 				} else {
-					tAmount = "-"; // transItem.sellRequest.amount.slice(0, -2) + "." + transItem.sellRequest.amount.slice(-2);
+					tAmount = "-";
 				}
 				tCoinID = transItem.sellLimit.coinid;
 				tNextPath = "sellorder";
@@ -136,10 +132,7 @@ const getTransactionList = async (req, res, next) => {
 				isSuccess = transItem.withdrawMoney.status === "SUCCESS";
 				tStatus = transItem.withdrawMoney.status;
 				tStatus = tStatus.charAt(0) + tStatus.toLowerCase().slice(1);
-				tAmount =
-					transItem.withdrawMoney.amount.slice(0, -2) +
-					"." +
-					transItem.withdrawMoney.amount.slice(-2);
+				tAmount = converter.amountToDecimalString(transItem.withdrawMoney.amount);
 				tCoinID = "-";
 				tNextPath = "withdraw";
 			} else if (transItem.category === "send_receive") {
@@ -150,13 +143,9 @@ const getTransactionList = async (req, res, next) => {
 				tStatus = transItem.sendCoin.status;
 				tStatus = tStatus.charAt(0) + tStatus.toLowerCase().slice(1);
 				if (transItem.sendCoin.to === user.email) {
-					tAmount =
-						transItem.receiveCoin.amount.slice(0, -2) +
-						"." +
-						transItem.receiveCoin.amount.slice(-2);
+					tAmount = converter.amountToDecimalString(transItem.receiveCoin.amount);
 				} else {
-					tAmount =
-						transItem.sendCoin.amount.slice(0, -2) + "." + transItem.sendCoin.amount.slice(-2);
+					tAmount = converter.amountToDecimalString(transItem.sendCoin.amount);
 				}
 				tCoinID = transItem.sendCoin.coinid;
 				tNextPath = "sendrecieve";
@@ -168,8 +157,7 @@ const getTransactionList = async (req, res, next) => {
 				tStatus = transItem.exchange.status;
 				tStatus = tStatus.charAt(0) + tStatus.toLowerCase().slice(1);
 
-				tAmount =
-					transItem.exchange.amount.slice(0, -2) + "." + transItem.exchange.amount.slice(-2);
+				tAmount = converter.amountToDecimalString(transItem.exchange.amount);
 
 				tCoinID = transItem.exchange.coinid1;
 				tCoinID2 = transItem.exchange.coinid2;
@@ -379,7 +367,7 @@ const getTransactionData = async (req, res, next) => {
 				sendCoinName: coinData.name,
 				recieveCoinName: coinData2.name,
 				sendCoinSymbol: coinData.symbol.toUpperCase(),
-				recieveCoinSymbol: coinData.symbol.toUpperCase(),
+				recieveCoinSymbol: coinData2.symbol.toUpperCase(),
 				...innerData,
 			};
 
@@ -463,5 +451,134 @@ const getTransactionData = async (req, res, next) => {
 	}
 };
 
+// get Pending & Completed Orders
+const getOrders = async (req, res, next) => {
+	const count = req.query.count;
+
+	try {
+		const user = await User.findById(req.userData.id)
+			.populate({
+				path: "wallet",
+				populate: {
+					path: "transactionList",
+					match: { category: { $in: ["buy_limit", "sell_limit"] } },
+					select: "-wallet -__v -createdAt -updatedAt",
+					populate: [
+						{
+							path: "buyLimit",
+							select: "-_id -wallet -__v",
+						},
+						{
+							path: "sellLimit",
+							select: "-_id -wallet -__v",
+						},
+					],
+				},
+			})
+			.exec();
+
+		const transactionDataArray = user.wallet.transactionList;
+
+		let pendingOrders = [];
+		let otherOrders = [];
+
+		// Reverse loop so that recent transaction is shown first
+		let size = transactionDataArray.length;
+		let limit = count ? (size > count ? size - count : 0) : 0;
+		for (let i = size - 1; i >= limit; i--) {
+			let transItem = transactionDataArray[i];
+			let id, type, date, triggerPrice, status, coinID, nextPath, actualPrice;
+
+			if (transItem.category === "buy_limit") {
+				id = transItem.id;
+				type = "Buy Limit";
+				date = transItem.buyLimit.createdAt;
+				coinID = transItem.buyLimit.coinid;
+				quantity = converter.quantityToDecimalString(transItem.buyLimit.quantity);
+				triggerPrice = converter.amountToDecimalString(transItem.buyLimit.maxPrice);
+				nextPath = "buyorder";
+
+				if (transItem.buyLimit.status === "PENDING") {
+					pendingOrders.push({
+						id,
+						type,
+						date,
+						coinID,
+						quantity,
+						triggerPrice,
+						nextPath,
+					});
+				} else {
+					let tStatus = transItem.buyLimit.status;
+					status = tStatus.charAt(0) + tStatus.toLowerCase().slice(1);
+					if (transItem.buyLimit.status === "SUCCESS") {
+						actualPrice = converter.amountToDecimalString(transItem.buyLimit.price);
+					} else {
+						actualPrice = "-";
+					}
+
+					otherOrders.push({
+						id,
+						type,
+						date,
+						coinID,
+						status,
+						quantity,
+						triggerPrice,
+						actualPrice,
+						nextPath,
+					});
+				}
+			} else if (transItem.category === "sell_limit") {
+				id = transItem.id;
+				type = "Sell Limit";
+				date = transItem.sellLimit.createdAt;
+				coinID = transItem.sellLimit.coinid;
+				quantity = converter.quantityToDecimalString(transItem.sellLimit.quantity);
+				triggerPrice = converter.amountToDecimalString(transItem.sellLimit.minPrice);
+				nextPath = "sellorder";
+
+				if (transItem.sellLimit.status === "PENDING") {
+					pendingOrders.push({
+						id,
+						type,
+						date,
+						coinID,
+						quantity,
+						triggerPrice,
+						nextPath,
+					});
+				} else {
+					let tStatus = transItem.sellLimit.status;
+					status = tStatus.charAt(0) + tStatus.toLowerCase().slice(1);
+					if (transItem.sellLimit.status === "SUCCESS") {
+						actualPrice = converter.amountToDecimalString(transItem.sellLimit.price);
+					} else {
+						actualPrice = "-";
+					}
+
+					otherOrders.push({
+						id,
+						type,
+						date,
+						coinID,
+						status,
+						quantity,
+						triggerPrice,
+						actualPrice,
+						nextPath,
+					});
+				}
+			}
+		}
+
+		return res.status(200).json({ pendingOrders, otherOrders });
+	} catch (err) {
+		console.log(err);
+		return next(new Error("ERR: Unable to retrieve Order List."));
+	}
+};
+
 module.exports.getTransactionList = getTransactionList;
 module.exports.getTransactionData = getTransactionData;
+module.exports.getOrders = getOrders;

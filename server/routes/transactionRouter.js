@@ -17,6 +17,9 @@ router.use(authVerify);
 router.get("/data/list", dataController.getTransactionList);
 router.post("/data", dataController.getTransactionData);
 
+// Order Details
+router.get("/data/orders", dataController.getOrders);
+
 // Buy Coin Normally
 router.post(
 	"/buy/quantity",

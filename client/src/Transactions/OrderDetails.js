@@ -83,14 +83,14 @@ export default function OrderDetails(props) {
                                 </p>
                                 <div class="card" id={Styles.details}>
                                     <div class="card-body d-flex flex-column align-items-start">
-                                        <p className="h5">Trigger price</p>
+                                        <p className="h5">Trigger Price</p>
                                         {transaction.category === "buy_limit" && (
                                             <p className="fs-6 text-secondary">&#8377; {transaction.maxPrice}</p>
                                         )}
                                         {transaction.category === "sell_limit" && (
                                             <p className="fs-6 text-secondary">&#8377; {transaction.minPrice}</p>
                                         )}
-                                        <p className="h5">Date(order placed):</p>
+                                        <p className="h5">Date (Order placed):</p>
                                         <p className="fs-6 text-secondary">
                                             {new Date(transaction.createdAt).toString().slice(0, -31)}
                                         </p>
@@ -102,7 +102,7 @@ export default function OrderDetails(props) {
                                         </p>
                                     </div>
                                 </div>
-                                <Link className="btn btn-success mt-2 fs-5" to="/orders">Back to orders list</Link>
+                                <Link className="btn btn-success mt-2 fs-5" to="/orders">Back to Orders list</Link>
                             </div>
                         )}
 
@@ -128,20 +128,20 @@ export default function OrderDetails(props) {
                                 </p>
                                 <div class="card" id={Styles.details}>
                                     <div class="card-body d-flex flex-column align-items-start">
-                                        <p className="h5">Trigger price</p>
+                                        <p className="h5">Trigger Price</p>
                                         {transaction.category === "buy_limit" && (
                                             <p className="fs-6 text-secondary">&#8377; {transaction.maxPrice}</p>
                                         )}
                                         {transaction.category === "sell_limit" && (
                                             <p className="fs-6 text-secondary">&#8377; {transaction.minPrice}</p>
                                         )}
-                                        <p className="h5">Date(order placed):</p>
+                                        <p className="h5">Date (Order placed):</p>
                                         <p className="fs-6 text-secondary">
                                             {new Date(transaction.createdAt).toString().slice(0, -31)}
                                         </p>
                                     </div>
                                 </div>
-                                <Link className="btn btn-success mt-2 fs-5" to="/orders">Back to orders list</Link>
+                                <Link className="btn btn-success mt-2 fs-5" to="/orders">Back to Orders list</Link>
                             </div>
                         )}
 
@@ -170,14 +170,14 @@ export default function OrderDetails(props) {
                                 </p>
                                 <div class="card" id={Styles.details}>
                                     <div class="card-body d-flex flex-column align-items-start">
-                                        <p className="h5">Trigger price</p>
+                                        <p className="h5">Trigger Price</p>
                                         {transaction.category === "buy_limit" && (
                                             <p className="fs-6 text-secondary">&#8377; {transaction.maxPrice}</p>
                                         )}
                                         {transaction.category === "sell_limit" && (
                                             <p className="fs-6 text-secondary">&#8377; {transaction.minPrice}</p>
                                         )}
-                                        <p className="h5">Date(order placed):</p>
+                                        <p className="h5">Date (Order placed):</p>
                                         <p className="fs-6 text-secondary">
                                             {new Date(transaction.createdAt).toString().slice(0, -31)}
                                         </p>
@@ -187,7 +187,7 @@ export default function OrderDetails(props) {
                                         </p>
                                     </div>
                                 </div>
-                                <Link className="btn btn-danger mt-2 fs-5" to="/orders">Back to orders list</Link>
+                                <Link className="btn btn-danger mt-2 fs-5" to="/orders">Back to Orders list</Link>
                             </div>
                         )}
                     </div>

@@ -15,14 +15,14 @@ const NotificationsCenter = () => {
 	const [notificationCount, setNotificationCount] = useState(0);
 	const [notifications, setNotifications] = useState([]);
 
-	// eslint-disable-next-line
-	const showNewNotificationOnDesktop = () => {
-		new Notification("CryptoX", {
-			body: "how you doin!!!!",
-			icon: icon,
-			image: img,
-		});
-	};
+	// // eslint-disable-next-line
+	// const showNewNotificationOnDesktop = () => {
+	// 	new Notification("CryptoX", {
+	// 		body: "how you doin!!!!",
+	// 		icon: icon,
+	// 		image: img,
+	// 	});
+	// };
 
 	useEffect(() => {
 		const fetchData = async () => {

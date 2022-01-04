@@ -11,7 +11,7 @@ const buyLimit = async (req, res, next) => {
 
 		//getting the quantity and maxPrice
 		quantity = BigInt(Math.trunc(quantity * 10000000));
-		const maxpri = BigInt(Math.trunc(maxPrice * 100));
+		maxPrice = BigInt(Math.trunc(maxPrice * 100));
 
 		let transactionInstance = await Transaction.create({
 			category: "buy_limit",
@@ -26,7 +26,7 @@ const buyLimit = async (req, res, next) => {
 			amount: "unspecified",
 			mode: "1",
 			price: "unspecified",
-			maxPrice: maxpri.toString(),
+			maxPrice: maxPrice.toString(),
 			quantity: quantity.toString(),
 			status: "PENDING",
 		});
@@ -43,7 +43,7 @@ const buyLimit = async (req, res, next) => {
 			from: user.wallet.id,
 			quantity: quantity.toString(),
 			mode: "1",
-			maxPrice: maxpri.toString(),
+			maxPrice: maxPrice.toString(),
 			portfolioId: user.portfolio,
 			transaction: transactionInstance.id,
 			buyLimit: buyLimitTransactionInstance.id,

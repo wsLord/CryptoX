@@ -25,12 +25,12 @@ const Transaction = ({ onAlert }) => {
 				setTransactionList(data);
 			} catch (err) {
 				console.log(err);
-				onAlert("Something went wrong!");
+				// onAlert("Something went wrong!");
 			}
 		};
 
 		fetchData();
-	}, [ctx, onAlert]);
+	}, [ctx]); //, onAlert
 
 	return (
 		<div>
